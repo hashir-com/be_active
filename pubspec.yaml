@@ -38,6 +38,8 @@ dependencies:
   lottie: ^3.3.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  smooth_page_indicator: ^1.2.1
+  fl_chart: ^1.0.0
   
 
 dev_dependencies:
@@ -72,6 +74,9 @@ flutter:
     - assets/sleep.json
     - assets/runner.json
     - assets/running.json
+    - assets/rocketchart.json
+    - assets/goal.json
+    - assets/start.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
