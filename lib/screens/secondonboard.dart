@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'create_account_screen.dart';
 import 'package:be_active/widgets/linechart.dart';
+import 'package:be_active/widgets/icons.dart';
 
 class SecondOnboardingPage extends StatelessWidget {
   const SecondOnboardingPage({super.key});
@@ -21,7 +22,7 @@ class SecondOnboardingPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.1,
+          top: MediaQuery.of(context).size.height * 0.15,
           left: MediaQuery.of(context).size.width / 2 - 145,
           child: Stack(
             alignment: Alignment.center,
@@ -51,33 +52,22 @@ class SecondOnboardingPage extends StatelessWidget {
             ],
           ),
         ),
-        Positioned(
-          top: 105,
-          right: 10,
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: Lottie.asset("assets/goal.json"),
-          ),
-        ),
-        Positioned(
-          top: 325,
-          left: 20,
-          child: SizedBox(
-            height: 90,
-            width: 90,
-            child: Lottie.asset("assets/start.json"),
-          ),
-        ),
+        Padding(padding: EdgeInsets.only(top: 40), child: IconsPage()),
+
         Padding(
-          padding: const EdgeInsets.only(top: 150.0, left: 40, right: 40),
+          padding: const EdgeInsets.only(
+            top: 190.0,
+            left: 50,
+            right: 50,
+            bottom: 300,
+          ),
           child: const ProgressLineChart(),
         ),
         Positioned(
           bottom: 150,
           left: 30,
           child: Text(
-            "Track Your\nProgress",
+            "Track\nYour Progress",
             style: GoogleFonts.righteous(
               fontSize: 44,
               height: 1,

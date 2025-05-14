@@ -40,34 +40,38 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: 780,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 239, 237, 255),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
+      body: Positioned(
+        top: MediaQuery.of(context).size.height * 0.1,
+        left: MediaQuery.of(context).size.width / 2 - 145,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.83,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 239, 237, 255),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
+                ),
+                child: Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                      ), // Spacing above the gender options
+                      _buildGenderSelection(), // Gender selection widgets
+                      const SizedBox(
+                        height: 30,
+                      ), // Spacing between gender and form fields
+                      _buildForm(), // Form fields with validation
+                    ],
+                  ),
                 ),
               ),
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ), // Spacing above the gender options
-                    _buildGenderSelection(), // Gender selection widgets
-                    const SizedBox(
-                      height: 30,
-                    ), // Spacing between gender and form fields
-                    _buildForm(), // Form fields with validation
-                  ],
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -190,8 +194,9 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController controller,
     String label,
     String hint,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool isNumeric = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(left: 40, right: 40, bottom: 20),
       child: TextFormField(
@@ -207,6 +212,9 @@ class _LoginScreenState extends State<LoginScreen> {
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter your $label'; // Error message
+          }
+          if (isNumeric && double.tryParse(value) == null) {
+            return 'Please enter a valid number for $label';
           }
           return null;
         },
