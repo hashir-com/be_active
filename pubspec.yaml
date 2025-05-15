@@ -40,6 +40,7 @@ dependencies:
   hive_flutter: ^1.1.0
   smooth_page_indicator: ^1.2.1
   fl_chart: ^1.0.0
+  flutter_svg: ^2.1.0
   
 
 dev_dependencies:
@@ -77,6 +78,11 @@ flutter:
     - assets/rocketchart.json
     - assets/goal.json
     - assets/start.json
+    - assets/home.svg
+    - assets/settings.svg
+    - assets/plus.svg
+    - assets/explore.png
+    - assets/progress.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

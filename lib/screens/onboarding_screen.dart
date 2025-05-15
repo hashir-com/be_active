@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'firstonboard.dart';
-import 'secondonboard.dart';
+import 'first_onboard.dart';
+import 'second_onboard.dart';
 import 'create_account_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {

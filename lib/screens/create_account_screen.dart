@@ -18,90 +18,89 @@ class _LoginScreenState extends State<LoginScreen> {
   final _weightController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final _box = Hive.box('userbox');
+  final _box = Hive.box('userBox');
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF000DFF),
+      backgroundColor: const Color(0xFF040B90),
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(120),
+        preferredSize: Size.fromHeight(screenHeight * 0.15),
         child: Container(
-          color: const Color(0xFF000DFF),
+          color: const Color(0xFF040B90),
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 30.0),
+              padding: EdgeInsets.only(top: screenHeight * 0.03),
               child: Text(
                 "Create Account",
-                style: GoogleFonts.righteous(fontSize: 38, color: Colors.white),
+                style: GoogleFonts.righteous(
+                  fontSize: screenWidth * 0.08,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),
         ),
       ),
       resizeToAvoidBottomInset: true,
-      body: Positioned(
-        top: MediaQuery.of(context).size.height * 0.1,
-        left: MediaQuery.of(context).size.width / 2 - 145,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.83,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 239, 237, 255),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  height: screenHeight * 0.85,
+                  width: screenWidth,
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 239, 237, 255),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    ),
                   ),
-                ),
-                child: Center(
                   child: Column(
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ), // Spacing above the gender options
-                      _buildGenderSelection(), // Gender selection widgets
-                      const SizedBox(
-                        height: 30,
-                      ), // Spacing between gender and form fields
-                      _buildForm(), // Form fields with validation
+                      SizedBox(height: screenHeight * 0.02),
+                      _buildGenderSelection(screenWidth),
+                      SizedBox(height: screenHeight * 0.03),
+                      _buildForm(screenWidth),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  // Gender selection row
-  Widget _buildGenderSelection() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        // Male option
-        _buildGenderOption(
-          "male",
-          Icons.male,
-          "Male",
-          const Color.fromARGB(255, 69, 62, 255),
-        ),
-        // Female option
-        _buildGenderOption(
-          "female",
-          Icons.female,
-          "Female",
-          const Color.fromARGB(255, 247, 126, 235),
-        ),
-      ],
+  Widget _buildGenderSelection(double screenWidth) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildGenderOption(
+            "male",
+            Icons.male,
+            "Male",
+            const Color.fromARGB(255, 69, 62, 255),
+          ),
+          _buildGenderOption(
+            "female",
+            Icons.female,
+            "Female",
+            const Color.fromARGB(255, 247, 126, 235),
+          ),
+        ],
+      ),
     );
   }
 
-  // Builds each gender option container
   Widget _buildGenderOption(
     String genderType,
     IconData icon,
@@ -141,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Text(
                 genderLabel,
                 style: GoogleFonts.aBeeZee(
-                  fontSize: 12, // Reduced text size
+                  fontSize: 12,
                   color: gender == genderType ? Colors.white : Colors.black,
                 ),
               ),
@@ -152,8 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Form with input fields
-  Widget _buildForm() {
+  Widget _buildForm(double screenWidth) {
     return Form(
       key: _formKey,
       child: Column(
@@ -163,44 +161,55 @@ class _LoginScreenState extends State<LoginScreen> {
             "Name",
             "Enter your Name",
             Icons.person,
+            screenWidth,
           ),
           _buildTextField(
             _ageController,
             "Age",
             "Enter your Age",
             Icons.calendar_today,
+            screenWidth,
+            isNumeric: true,
           ),
           _buildTextField(
             _heightController,
             "Height",
             "Enter your Height",
             Icons.height,
+            screenWidth,
+            isNumeric: true,
           ),
           _buildTextField(
             _weightController,
             "Weight",
             "Enter your Weight",
             Icons.fitness_center,
+            screenWidth,
+            isNumeric: true,
           ),
-          const SizedBox(height: 50), // Spacing before the button
-          _buildContinueButton(), // Continue button
+          const SizedBox(height: 30),
+          _buildContinueButton(screenWidth),
         ],
       ),
     );
   }
 
-  // Creates the input fields for the form
   Widget _buildTextField(
     TextEditingController controller,
     String label,
     String hint,
-    IconData icon, {
+    IconData icon,
+    double screenWidth, {
     bool isNumeric = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(left: 40, right: 40, bottom: 20),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.1,
+        vertical: 10,
+      ),
       child: TextFormField(
         controller: controller,
+        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
@@ -211,7 +220,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
-            return 'Please enter your $label'; // Error message
+            return 'Please enter your $label';
           }
           if (isNumeric && double.tryParse(value) == null) {
             return 'Please enter a valid number for $label';
@@ -222,11 +231,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Continue button widget
-  Widget _buildContinueButton() {
+  Widget _buildContinueButton(double screenWidth) {
     return SizedBox(
-      width: 250, // Reduced button width
-      height: 40, // Reduced button height
+      width: screenWidth * 0.6,
+      height: 45,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF040B90),
@@ -234,33 +242,23 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         onPressed: () {
           if (_formKey.currentState?.validate() ?? false) {
-            // Save data to Hive
             _box.put('name', _nameController.text.trim());
             _box.put('age', _ageController.text.trim());
             _box.put('height', _heightController.text.trim());
             _box.put('weight', _weightController.text.trim());
+            _box.put('sex', gender);
 
             if (gender == "male" || gender == "female") {
-              // Navigate to the home screen
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => HomeScreen(
-                        name: _nameController.text.trim(),
-                        sex: gender,
-                        age: _ageController.text.trim(),
-                        height: _heightController.text.trim(),
-                        weight: _weightController.text.trim(),
-                      ),
-                ),
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
                 (route) => false,
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Please select your gender'),
-                  backgroundColor: const Color.fromARGB(255, 167, 15, 4),
+                  backgroundColor: Color.fromARGB(255, 167, 15, 4),
                   duration: Duration(seconds: 2),
                 ),
               );
