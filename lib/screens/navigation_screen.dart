@@ -34,11 +34,11 @@ class _NavigationScreen extends State<NavigationScreen> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: _buildBottomNavBar(width),
+      bottomNavigationBar: _buildBottomNavBar(width, height),
     );
   }
 
-  Widget _buildBottomNavBar(double width) {
+  Widget _buildBottomNavBar(double width, double height) {
     List<Widget> icons = [
       SvgPicture.asset('assets/home.svg'),
       Image.asset(
@@ -58,7 +58,10 @@ class _NavigationScreen extends State<NavigationScreen> {
     ];
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: width * 0.04, vertical: 20),
+      margin: EdgeInsets.symmetric(
+        horizontal: width * 0.04,
+        vertical: height * 0.030,
+      ),
       padding: EdgeInsets.symmetric(horizontal: width * 0.04),
       height: 65,
       decoration: BoxDecoration(
