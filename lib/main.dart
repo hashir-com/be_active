@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Be Active',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primaryColor: const Color(0xFF040B90)),
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );

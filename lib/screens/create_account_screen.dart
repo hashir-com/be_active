@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
 import 'package:be_active/services/hive_service.dart';
 import 'package:be_active/models/user_model.dart';
+import 'navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -56,7 +57,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: screenHeight * 0.85,
                   width: screenWidth,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 239, 237, 255),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 184, 79, 255),
+                        Color(0xFF040B90),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40),
@@ -67,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(height: screenHeight * 0.02),
                       _buildGenderSelection(screenWidth),
                       SizedBox(height: screenHeight * 0.03),
-                      _buildForm(screenWidth),
+                      _buildForm(screenWidth, screenHeight),
                     ],
                   ),
                 ),
@@ -95,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
             "female",
             Icons.female,
             "Female",
-            const Color.fromARGB(255, 255, 0, 217),
+            const Color.fromARGB(255, 255, 0, 234),
           ),
         ],
       ),
@@ -121,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
           color:
               gender == genderType
                   ? color
-                  : const Color.fromARGB(255, 202, 202, 202),
+                  : const Color.fromARGB(255, 255, 255, 255),
           borderRadius: BorderRadius.circular(45),
         ),
         child: Stack(
@@ -152,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildForm(double screenWidth) {
+  Widget _buildForm(double screenWidth, double screenHieght) {
     return Form(
       key: _formKey,
       child: Column(
@@ -163,6 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
             "Enter your Name",
             Icons.person,
             screenWidth,
+            screenHieght,
           ),
           _buildTextField(
             _ageController,
@@ -170,6 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
             "Enter your Age",
             Icons.calendar_today,
             screenWidth,
+            screenHieght,
             isNumeric: true,
           ),
           _buildTextField(
@@ -178,6 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
             "Enter your Height",
             Icons.height,
             screenWidth,
+            screenHieght,
             isNumeric: true,
           ),
           _buildTextField(
@@ -186,10 +198,11 @@ class _LoginScreenState extends State<LoginScreen> {
             "Enter your Weight",
             Icons.fitness_center,
             screenWidth,
+            screenHieght,
             isNumeric: true,
           ),
           const SizedBox(height: 30),
-          _buildContinueButton(screenWidth),
+          _buildContinueButton(screenWidth, screenHieght),
         ],
       ),
     );
@@ -200,46 +213,98 @@ class _LoginScreenState extends State<LoginScreen> {
     String label,
     String hint,
     IconData icon,
-    double screenWidth, {
+    double screenWidth,
+    double screenHeight, {
     bool isNumeric = false,
   }) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: screenWidth * 0.1,
-        vertical: 10,
+        vertical: screenHeight * 0.015,
       ),
       child: TextFormField(
         controller: controller,
         keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          prefixIcon: Icon(icon),
+          labelStyle: const TextStyle(color: Colors.white),
+          hintStyle: const TextStyle(color: Colors.white70),
+          prefixIcon: Icon(icon, color: Colors.white),
           filled: true,
-          fillColor: const Color.fromARGB(0, 229, 231, 255),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+          fillColor: Colors.transparent,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: Colors.white),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: Colors.white, width: 2),
+          ),
+          errorStyle: const TextStyle(
+            color: Colors.redAccent,
+            fontWeight: FontWeight.bold,
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: Colors.redAccent),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30),
+            borderSide: const BorderSide(color: Colors.redAccent, width: 2),
+          ),
         ),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter your $label';
           }
-          if (isNumeric && double.tryParse(value) == null) {
-            return 'Please enter a valid number for $label';
+
+          if (isNumeric) {
+            if (label == "Age") {
+              final age = int.tryParse(value);
+              if (age == null) return 'Please enter a valid number for Age';
+              if (age < 12 || age > 120) {
+                return 'Age must be between 12 and 120';
+              }
+            }
+            String formattedValue = value.replaceAll(',', '.');
+
+            if (label == "Height") {
+              final height = double.tryParse(formattedValue);
+              if (height == null) {
+                return 'Please enter a valid number for Height';
+              }
+              if (height < 50 || height > 300) {
+                return 'Height must be between 50 and 300 cm';
+              }
+            }
+
+            if (label == "Weight") {
+              final weight = double.tryParse(formattedValue);
+              if (weight == null) {
+                return 'Please enter a valid number for Weight';
+              }
+              if (weight < 20 || weight > 500) {
+                return 'Weight must be between 20 and 500 kg';
+              }
+            }
           }
+
           return null;
         },
       ),
     );
   }
 
-  Widget _buildContinueButton(double screenWidth) {
+  Widget _buildContinueButton(double screenWidth, double screenHeight) {
     return SizedBox(
       width: screenWidth * 0.6,
-      height: 45,
+      height: screenHeight * 0.05,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF040B90),
-          foregroundColor: Colors.white,
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+          foregroundColor: const Color(0xFF040B90),
         ),
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
@@ -248,15 +313,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 name: _nameController.text.trim(),
                 gender: gender,
                 age: int.parse(_ageController.text.trim()),
-                height: double.parse(_heightController.text.trim()),
-                weight: double.parse(_weightController.text.trim()),
+                height: double.parse(
+                  _heightController.text.trim().replaceAll(",", "."),
+                ),
+                weight: double.parse(
+                  _weightController.text.trim().replaceAll(",", "."),
+                ),
               );
 
               await HiveService().saveUser(user);
 
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const NavigationScreen(),
+                ),
                 (route) => false,
               );
             } else {
@@ -266,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
             }
           }
         },
-        child: Text('Continue', style: GoogleFonts.righteous(fontSize: 18)),
+        child: Text('Continue', style: GoogleFonts.righteous(fontSize: 20)),
       ),
     );
   }
