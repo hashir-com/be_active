@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:be_active/services/hive_service.dart';
+import 'package:be_active/models/user_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,29 +12,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double bmi = 0.0;
-  int _currentIndex = 0;
-
   String name = '';
   String sex = '';
   String height = '';
   String weight = '';
+  double bmi = 0;
+  int _currentIndex = 0; // added this
 
   @override
   void initState() {
     super.initState();
-    final box = Hive.box('userBox');
+    final user = HiveService().getUser();
 
-    name = box.get('name', defaultValue: '');
-    sex = box.get('sex', defaultValue: '');
-    height = box.get('height', defaultValue: '0');
-    weight = box.get('weight', defaultValue: '0');
+    if (user != null) {
+      name = user.name;
+      sex = user.gender;
+      height = user.height.toString();
+      weight = user.weight.toString();
 
-    double h = double.tryParse(height) ?? 0;
-    double w = double.tryParse(weight) ?? 0;
-
-    if (h > 0) {
-      bmi = w / ((h / 100) * (h / 100));
+      double h = user.height;
+      double w = user.weight;
+      if (h > 0) {
+        bmi = w / ((h / 100) * (h / 100));
+      }
     }
   }
 
@@ -221,24 +222,23 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration:
-            isActive
-                ? BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  shape: BoxShape.circle,
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                )
-                : null,
+        decoration: isActive
+            ? BoxDecoration(
+                color: const Color.fromARGB(255, 255, 255, 255),
+                shape: BoxShape.circle,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              )
+            : null,
         child: Transform.scale(
-          scale: isActive ? 1.3 : 1.0, // 👈 Increase icon size when active
+          scale: isActive ? 1.3 : 1.0,
           child: icon,
-        ), // No Icon() here, directly use the widget
+        ),
       ),
     );
   }

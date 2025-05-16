@@ -7,7 +7,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   Hive.registerAdapter(UserModelAdapter());
-  await Hive.openBox('userBox');
+  await Hive.openBox<UserModel>('userBox');
 
   runApp(MyApp());
 }

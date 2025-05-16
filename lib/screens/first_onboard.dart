@@ -13,7 +13,7 @@ class FirstOnboardingPage extends StatelessWidget {
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF001AFF)],
+              colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF040B90)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),

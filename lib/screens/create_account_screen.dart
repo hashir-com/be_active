@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
+import 'package:be_active/services/hive_service.dart';
+import 'package:be_active/models/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +20,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _weightController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final _box = Hive.box('userBox');
 
   @override
   Widget build(BuildContext context) {
@@ -88,13 +89,13 @@ class _LoginScreenState extends State<LoginScreen> {
             "male",
             Icons.male,
             "Male",
-            const Color.fromARGB(255, 69, 62, 255),
+            const Color(0xFF040B90),
           ),
           _buildGenderOption(
             "female",
             Icons.female,
             "Female",
-            const Color.fromARGB(255, 247, 126, 235),
+            const Color.fromARGB(255, 255, 0, 217),
           ),
         ],
       ),
@@ -240,15 +241,19 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: const Color(0xFF040B90),
           foregroundColor: Colors.white,
         ),
-        onPressed: () {
-          if (_formKey.currentState?.validate() ?? false) {
-            _box.put('name', _nameController.text.trim());
-            _box.put('age', _ageController.text.trim());
-            _box.put('height', _heightController.text.trim());
-            _box.put('weight', _weightController.text.trim());
-            _box.put('sex', gender);
+        onPressed: () async {
+          if (_formKey.currentState!.validate()) {
+            if (gender == 'male' || gender == 'female') {
+              final user = UserModel(
+                name: _nameController.text.trim(),
+                gender: gender,
+                age: int.parse(_ageController.text.trim()),
+                height: double.parse(_heightController.text.trim()),
+                weight: double.parse(_weightController.text.trim()),
+              );
 
-            if (gender == "male" || gender == "female") {
+              await HiveService().saveUser(user);
+
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
@@ -256,11 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
               );
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Please select your gender'),
-                  backgroundColor: Color.fromARGB(255, 167, 15, 4),
-                  duration: Duration(seconds: 2),
-                ),
+                const SnackBar(content: Text('Please select your gender.')),
               );
             }
           }
