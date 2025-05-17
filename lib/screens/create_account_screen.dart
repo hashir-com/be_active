@@ -24,33 +24,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenHeight = constraints.maxHeight;
+        final screenWidth = constraints.maxWidth;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF040B90),
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(screenHeight * 0.15),
-        child: Container(
-          color: const Color(0xFF040B90),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.03),
-              child: Text(
-                "Create Account",
-                style: GoogleFonts.righteous(
-                  fontSize: screenWidth * 0.08,
-                  color: Colors.white,
+        return Scaffold(
+          backgroundColor: const Color(0xFF040B90),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(screenHeight * 0.15),
+            child: Container(
+              color: const Color(0xFF040B90),
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(top: screenHeight * 0.03),
+                  child: Text(
+                    "Create Account",
+                    style: GoogleFonts.righteous(
+                      fontSize: screenWidth * 0.08,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-      resizeToAvoidBottomInset: true,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
+          resizeToAvoidBottomInset: true,
+          body: SingleChildScrollView(
             child: Column(
               children: [
                 Container(
@@ -65,7 +65,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),
-
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(40),
                       topRight: Radius.circular(40),
@@ -82,9 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -243,12 +242,15 @@ class _LoginScreenState extends State<LoginScreen> {
             borderSide: const BorderSide(color: Colors.white, width: 2),
           ),
           errorStyle: const TextStyle(
-            color: Colors.redAccent,
+            color: Color.fromARGB(255, 255, 255, 255),
             fontWeight: FontWeight.bold,
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
-            borderSide: const BorderSide(color: Colors.redAccent),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 255, 0, 0),
+              width: 2,
+            ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
