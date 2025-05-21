@@ -57,34 +57,36 @@ class _NavigationScreen extends State<NavigationScreen> {
       SvgPicture.asset('assets/settings.svg'),
     ];
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: width * 0.04,
-        vertical: height * 0.030,
-      ),
-      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
-      height: 65,
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF040B90)),
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(50),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(icons.length, (index) {
-          return _buildNavIcon(
-            icons[index],
-            isActive: _currentIndex == index,
-            index: index,
-          );
-        }),
+    return SafeArea(
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: width * 0.04,
+          vertical: 0, // reduce vertical margin
+        ),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+        height: 65,
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFF040B90)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 14),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(icons.length, (index) {
+            return _buildNavIcon(
+              icons[index],
+              isActive: _currentIndex == index,
+              index: index,
+            );
+          }),
+        ),
       ),
     );
   }
@@ -105,7 +107,7 @@ class _NavigationScreen extends State<NavigationScreen> {
         decoration:
             isActive
                 ? BoxDecoration(
-                  color: Colors.white,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   shape: BoxShape.circle,
                   boxShadow: const [
                     BoxShadow(

@@ -6,6 +6,7 @@ import 'package:be_active/models/user_model.dart';
 import 'explore_screen.dart';
 import 'settings_screen.dart';
 import 'progress_screen.dart';
+import 'package:be_active/widgets/date_horizontal.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,6 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Column(
           children: [
+            HorizontalDateList(),
+            SizedBox(height: 20),
             _buildBmiCard(width),
             SizedBox(height: height * 0.04),
             const Text("", style: TextStyle(color: Colors.grey)),
