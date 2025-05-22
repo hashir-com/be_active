@@ -2,10 +2,9 @@
     <application
         android:label="be_active"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        <uses-permission android:name="android.permission.INTERNET"/>
+        android:icon="@mipmap/ic_launcher">
 
-        >
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

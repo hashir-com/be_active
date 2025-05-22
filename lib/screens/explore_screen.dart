@@ -35,7 +35,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  // Youtube video player widget
   Widget youtubeVideo(String videoId) {
     return YoutubePlayerWidget(videoId: videoId);
   }
@@ -44,87 +43,124 @@ class _ExploreScreenState extends State<ExploreScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    if (user == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("User Info")),
-        body: Center(
-          child: Text(
-            "No user data found.",
-            style: theme.textTheme.headlineMedium,
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
-      appBar: AppBar(title: const Text("User Info")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("User Details", style: theme.textTheme.headlineSmall),
-            const SizedBox(height: 16),
-            Card(
-              elevation: 4,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    infoRow(Icons.person, "Name", user!.name, theme),
-                    infoRow(Icons.cake, "Age", user!.age.toString(), theme),
-                    infoRow(Icons.male, "Gender", user!.gender, theme),
-                    infoRow(Icons.height, "Height", "${user!.height} cm", theme),
-                    infoRow(Icons.monitor_weight, "Weight", "${user!.weight} kg", theme),
-                    infoRow(Icons.fitness_center, "BMI",
-                        user!.bmi?.toStringAsFixed(1) ?? 'N/A', theme),
-                    infoRow(Icons.flag, "Goal", user!.goal?.name ?? 'N/A', theme),
-                  ],
+      appBar: AppBar(title: const Text("Explore")),
+      body:
+          user == null
+              ? Center(
+                child: Text(
+                  "No user data found.",
+                  style: theme.textTheme.headlineMedium,
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text("Plans", style: theme.textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Card(
-              elevation: 3,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: Padding(
+              )
+              : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Workout Plan", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 6),
-                    Text(user!.workoutPlan ?? "No workout plan saved.",
-                        style: theme.textTheme.bodyMedium),
+                    Text("User Details", style: theme.textTheme.headlineSmall),
                     const SizedBox(height: 16),
-                    Text("Diet Plan", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 6),
-                    Text(user!.dietPlan ?? "No diet plan saved.",
-                        style: theme.textTheme.bodyMedium),
+                    Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            infoRow(Icons.person, "Name", user!.name, theme),
+                            infoRow(
+                              Icons.cake,
+                              "Age",
+                              user!.age.toString(),
+                              theme,
+                            ),
+                            infoRow(Icons.male, "Gender", user!.gender, theme),
+                            infoRow(
+                              Icons.height,
+                              "Height",
+                              "${user!.height} cm",
+                              theme,
+                            ),
+                            infoRow(
+                              Icons.monitor_weight,
+                              "Weight",
+                              "${user!.weight} kg",
+                              theme,
+                            ),
+                            infoRow(
+                              Icons.fitness_center,
+                              "BMI",
+                              user!.bmi?.toStringAsFixed(1) ?? 'N/A',
+                              theme,
+                            ),
+                            infoRow(
+                              Icons.flag,
+                              "Goal",
+                              user!.goal?.name ?? 'N/A',
+                              theme,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text("Plans", style: theme.textTheme.headlineSmall),
+                    const SizedBox(height: 12),
+                    Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Workout Plan",
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              user!.workoutPlan ?? "No workout plan saved.",
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              "Diet Plan",
+                              style: theme.textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              user!.dietPlan ?? "No diet plan saved.",
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      "Recommended Videos",
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 12),
+                    youtubeVideo(
+                      "https://youtu.be/roHQ3F7d9YQ?si=3NPTyTb5XSUsIvMy",
+                    ),
+                    const SizedBox(height: 16),
+                    youtubeVideo(
+                      "https://youtu.be/g9QGQJ1ypp0?si=6wKHvfQSROmQATU7",
+                    ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text("Recommended Videos", style: theme.textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            // Example YouTube videos relevant to user info (replace IDs with your own)
-            youtubeVideo("dQw4w9WgXcQ"), // Example fitness video
-            const SizedBox(height: 16),
-            youtubeVideo("VbfpW0pbvaU"), // Example diet video
-          ],
-        ),
-      ),
     );
   }
 }
 
-// Separate stateful widget for YoutubePlayer to manage controller lifecycle properly
 class YoutubePlayerWidget extends StatefulWidget {
   final String videoId;
   const YoutubePlayerWidget({super.key, required this.videoId});
@@ -139,18 +175,15 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
   @override
   void initState() {
     super.initState();
-
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: false,
-        mute: false,
-      ),
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
     );
   }
 
   @override
   void dispose() {
+    _controller.pause();
     _controller.dispose();
     super.dispose();
   }
