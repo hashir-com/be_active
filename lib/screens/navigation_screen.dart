@@ -22,8 +22,8 @@ class _NavigationScreen extends State<NavigationScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
     ExploreScreen(),
-    TrackingScreen(),
-    ProgressScreen(),
+    HomeScreen(),
+    HeatMapChart(year: 2025, month: 5, progressData: {}),
     SettingsScreen(),
   ];
 
@@ -34,46 +34,65 @@ class _NavigationScreen extends State<NavigationScreen> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: _buildBottomNavBar(width, height),
+      bottomNavigationBar: _buildBottomNavBar(width, height, context),
     );
   }
 
-  Widget _buildBottomNavBar(double width, double height) {
+  Widget _buildBottomNavBar(double width, double height, BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).primaryColor;
+    final primaryColorLight = Theme.of(context).primaryColorLight;
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final iconColor = isDark ? Colors.white : Colors.black;
+
+    final theme = Theme.of(context);
+    final Color activeColor =
+        theme.brightness == Brightness.dark ? primaryColorLight : primaryColor;
+
     List<Widget> icons = [
-      SvgPicture.asset('assets/home.svg'),
+      SvgPicture.asset(
+        'assets/home.svg',
+        color: _currentIndex == 0 ? activeColor : iconColor,
+      ),
       Image.asset(
         'assets/explore.png',
         width: 30,
         height: 30,
-        fit: BoxFit.contain,
+        color: _currentIndex == 1 ? activeColor : iconColor,
       ),
-      SvgPicture.asset('assets/plus.svg'),
+      SvgPicture.asset(
+        'assets/plus.svg',
+        color: _currentIndex == 2 ? activeColor : iconColor,
+      ),
       Image.asset(
         'assets/progress.png',
         width: 30,
         height: 30,
-        fit: BoxFit.contain,
+        color: _currentIndex == 3 ? activeColor : iconColor,
       ),
-      SvgPicture.asset('assets/settings.svg'),
+      SvgPicture.asset(
+        'assets/settings.svg',
+        color: _currentIndex == 4 ? activeColor : iconColor,
+      ),
     ];
 
     return SafeArea(
       child: Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: width * 0.04,
-          vertical: 0, // reduce vertical margin
-        ),
+        margin: EdgeInsets.symmetric(horizontal: width * 0.04),
         padding: EdgeInsets.symmetric(horizontal: width * 0.04),
         height: 65,
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFF040B90)),
-          color: Colors.white,
+          border: Border.all(color: primaryColor),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(50),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color:
+                  isDark
+                      ? const Color.fromARGB(50, 196, 189, 255)
+                      : Colors.black12,
               blurRadius: 10,
-              offset: Offset(0, 14),
+              offset: const Offset(0, 14),
             ),
           ],
         ),
@@ -98,20 +117,24 @@ class _NavigationScreen extends State<NavigationScreen> {
   }) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
+        if (index == 2) {
+          showTrackOptions(context);
+        } else {
+          setState(() {
+            _currentIndex = index;
+          });
+        }
       },
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration:
             isActive
                 ? BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
                   shape: BoxShape.circle,
+                  color: const Color.fromARGB(0, 255, 255, 255),
                   boxShadow: const [
                     BoxShadow(
-                      color: Colors.black12,
+                      color: Color.fromARGB(31, 169, 169, 169),
                       blurRadius: 6,
                       offset: Offset(0, 3),
                     ),

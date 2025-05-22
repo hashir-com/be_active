@@ -6,6 +6,7 @@ class HorizontalDateList extends StatefulWidget {
   const HorizontalDateList({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HorizontalDateListState createState() => _HorizontalDateListState();
 }
 
@@ -34,10 +35,12 @@ class _HorizontalDateListState extends State<HorizontalDateList> {
     Timer.periodic(Duration(minutes: 1), (timer) {
       DateTime now = DateTime.now();
       if (!isSameDay(now, selectedDate)) {
-        setState(() {
-          selectedDate = now;
-          generateWeekDates();
-        });
+        if (mounted) {
+          setState(() {
+            selectedDate = now;
+            generateWeekDates();
+          });
+        }
         scrollToToday();
       }
     });

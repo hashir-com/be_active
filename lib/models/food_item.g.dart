@@ -1,47 +1,47 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_model.dart';
+part of 'food_item.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserModelAdapter extends TypeAdapter<UserModel> {
+class FoodItemAdapter extends TypeAdapter<FoodItem> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
-  UserModel read(BinaryReader reader) {
+  FoodItem read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserModel(
+    return FoodItem(
       name: fields[0] as String,
-      age: fields[1] as int,
-      gender: fields[2] as String,
-      height: fields[3] as double,
-      weight: fields[4] as double,
-      goalIndex: fields[5] as int?,
+      calories: fields[1] as double,
+      protein: fields[2] as double,
+      fat: fields[3] as double,
+      carbs: fields[4] as double,
+      mealType: fields[5] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UserModel obj) {
+  void write(BinaryWriter writer, FoodItem obj) {
     writer
       ..writeByte(6)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
-      ..write(obj.age)
+      ..write(obj.calories)
       ..writeByte(2)
-      ..write(obj.gender)
+      ..write(obj.protein)
       ..writeByte(3)
-      ..write(obj.height)
+      ..write(obj.fat)
       ..writeByte(4)
-      ..write(obj.weight)
+      ..write(obj.carbs)
       ..writeByte(5)
-      ..write(obj.goalIndex);
+      ..write(obj.mealType);
   }
 
   @override
@@ -50,7 +50,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserModelAdapter &&
+      other is FoodItemAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

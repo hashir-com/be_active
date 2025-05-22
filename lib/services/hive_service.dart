@@ -1,11 +1,11 @@
+import 'package:be_active/models/user_model.dart';
+import 'package:be_active/screens/home_screen.dart';
 import 'package:hive/hive.dart';
-import '../models/user_model.dart';
 
 class HiveService {
   late final Box<UserModel> _userBox;
 
   HiveService() {
-    // Get the already opened box here in the constructor
     _userBox = Hive.box<UserModel>('userBox');
   }
 
@@ -15,5 +15,19 @@ class HiveService {
 
   UserModel? getUser() {
     return _userBox.get('user');
+  }
+
+  // ✅ Moved inside the class
+  void saveUserGoal(UserGoal goal) {
+    final user = getUser();
+    if (user != null) {
+      user.goal = goal;
+      user.save(); // Persist to box
+    }
+  }
+
+  UserGoal? getUserGoal() {
+    final user = getUser();
+    return user?.goal;
   }
 }

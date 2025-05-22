@@ -42,8 +42,14 @@ dependencies:
   fl_chart: ^1.0.0
   flutter_svg: ^2.1.0
   intl: ^0.20.2
-  animate_do: ^4.2.0
+  http: ^1.4.0
+  path_provider: ^2.1.5
   provider: ^6.1.5
+  theme_provider: ^0.6.0
+  webview_flutter: ^4.13.0
+  youtube_player_flutter: ^9.1.1
+  
+
   
 
 dev_dependencies:
