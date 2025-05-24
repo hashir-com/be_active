@@ -1,39 +1,76 @@
-import 'package:be_active/screens/home_screen.dart';
+import 'package:Thryv/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'navigation_screen.dart';
-import 'package:be_active/screens/calorie_tracking_page.dart';
+import 'package:Thryv/screens/calorie_tracking_page.dart';
+import 'sleep.dart';
+import 'steps.dart';
+import 'water.dart';
+import 'weight.dart';
 
 void showTrackOptions(BuildContext context) {
   showModalBottomSheet(
     context: context,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
     ),
-    backgroundColor: Theme.of(context).colorScheme.onPrimary,
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    isScrollControlled: true,
     builder: (_) {
       return Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(
-              "What would you like to track?",
+              "What Would You Like to Track?",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
-            Wrap(
-              spacing: 30,
-              runSpacing: 20,
-              alignment: WrapAlignment.center,
-              children: [
-                _trackOption(context, Icons.fastfood, "Calorie"),
-                _trackOption(context, Icons.local_drink, "Water"),
-                _trackOption(context, Icons.hotel, "Sleep"),
-                _trackOption(context, Icons.directions_walk, "Steps"),
-                _trackOption(context, Icons.monitor_weight, "Weight"),
-              ],
+            const SizedBox(height: 20),
+            _trackItem(
+              context,
+              Icons.restaurant_menu,
+              "Food",
+              Colors.deepOrange,
+              MealTrackerPage(),
             ),
-            SizedBox(height: 20),
+            _trackItem(
+              context,
+              Icons.monitor_weight,
+              "Weight",
+              Colors.teal,
+              WeightPage(),
+            ),
+            _trackItem(
+              context,
+              Icons.local_drink,
+              "Water",
+              Colors.blue,
+              WaterPage(),
+            ),
+            _trackItem(
+              context,
+              Icons.directions_walk,
+              "Steps",
+              Colors.deepPurple,
+              StepPage(),
+            ),
+            _trackItem(
+              context,
+              Icons.bedtime,
+              "Sleep",
+              Colors.indigo,
+              SleepPage(),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       );
@@ -41,30 +78,27 @@ void showTrackOptions(BuildContext context) {
   );
 }
 
-Widget _trackOption(BuildContext context, IconData icon, String label) {
-  return GestureDetector(
+Widget _trackItem(
+  BuildContext context,
+  IconData icon,
+  String label,
+  Color color,
+  Widget page,
+) {
+  return ListTile(
+    leading: Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, color: color),
+    ),
+    title: Text(label),
+    trailing: const Icon(Icons.chevron_right),
     onTap: () {
       Navigator.pop(context);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MealTrackerPage()),
-      );
-      // Add your navigation or action here.
+      Navigator.push(context, MaterialPageRoute(builder: (context) => page));
     },
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue.shade50,
-          ),
-          child: Icon(icon, size: 28, color: Colors.blue),
-        ),
-        SizedBox(height: 8),
-        Text(label, style: TextStyle(fontSize: 14)),
-      ],
-    ),
   );
 }

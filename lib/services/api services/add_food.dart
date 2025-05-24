@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
-import 'package:be_active/models/food_item.dart';
+import 'package:Thryv/models/food_item.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 

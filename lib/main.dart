@@ -5,6 +5,8 @@ import 'models/food_item.dart';
 import 'screens/splash_screen.dart';
 import 'providers/theme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,15 @@ void main() async {
 
   Hive.registerAdapter(FoodItemAdapter());
   await Hive.openBox<FoodItem>('foodBox');
+
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor:
+          Colors.transparent, // Optional: transparent or match your app bar
+      statusBarIconBrightness: Brightness.light, // For Android
+      statusBarBrightness: Brightness.dark, // For iOS
+    ),
+  );
 
   runApp(
     ChangeNotifierProvider(

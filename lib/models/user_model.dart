@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:be_active/screens/home_screen.dart';
+import 'package:Thryv/screens/home_screen.dart';
 import 'package:hive/hive.dart';
 
 part 'user_model.g.dart'; // If not already present

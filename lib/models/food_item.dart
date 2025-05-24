@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'dart:ffi';
 
-import 'package:be_active/screens/home_screen.dart';
+import 'package:Thryv/screens/home_screen.dart';
 
 part 'food_item.g.dart';
 

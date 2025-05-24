@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HeatMapChart extends StatelessWidget {
   final int year;
@@ -80,28 +81,53 @@ class HeatMapChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Column(
-          children: [
-            Text(
-              '${_monthName(month)} $year',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 30),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.count(
-                crossAxisCount: 7,
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                children: buildCalendarCells(),
+    final theme = Theme.of(context);
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(height * 0.12),
+        child: Container(
+          color: theme.primaryColor, // dynamic appbar bg
+          padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SafeArea(
+                child: Text(
+                  "Progress",
+                  style: GoogleFonts.roboto(
+                    fontSize: width * 0.1,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white, // dynamic color
+                  ),
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            buildChart(),
-          ],
+            ],
+          ),
         ),
+      ),
+      body: Column(
+        children: [
+          Text(
+            '${_monthName(month)} $year',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GridView.count(
+              crossAxisCount: 7,
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              children: buildCalendarCells(),
+            ),
+          ),
+          SizedBox(height: 20),
+          buildChart(),
+        ],
       ),
     );
   }

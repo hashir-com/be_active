@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/user_model.dart'; // Adjust path
 import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
-import 'package:be_active/services/hive_service.dart';
+import 'package:Thryv/services/hive_service.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -101,8 +101,18 @@ class _AdminScreenState extends State<AdminScreen> {
               const SizedBox(height: 24),
               Center(
                 child: ElevatedButton(
-                  onPressed: _savePlans,
-                  child: const Text("Save Suggestions"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                    foregroundColor: const Color(0xFF040B90),
+                  ),
+                  onPressed: () {
+                    _savePlans();
+                    // Navigator.pop(context);
+                  },
+                  child: Text(
+                    "Save Suggestions",
+                    style: GoogleFonts.roboto(fontSize: 14),
+                  ),
                 ),
               ),
             ],

@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:be_active/services/api%20services/search.dart';
+import 'package:Thryv/services/api%20services/search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -54,9 +54,11 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     await box.add(newFood);
 
     ScaffoldMessenger.of(
+      // ignore: use_build_context_synchronously
       context,
     ).showSnackBar(SnackBar(content: Text("${item.name} added to your meal")));
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context);
   }
 

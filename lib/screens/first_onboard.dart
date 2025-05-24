@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:be_active/widgets/icons_first_onboard.dart';
+import 'package:Thryv/widgets/icons_first_onboard.dart';
 
 class FirstOnboardingPage extends StatelessWidget {
   const FirstOnboardingPage({super.key});

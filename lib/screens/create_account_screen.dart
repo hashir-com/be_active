@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
-import 'package:be_active/services/hive_service.dart';
-import 'package:be_active/models/user_model.dart';
+import 'package:Thryv/services/hive_service.dart';
+import 'package:Thryv/models/user_model.dart';
 import 'navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {

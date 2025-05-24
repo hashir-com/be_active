@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'admin_screen.dart';
+import 'aboutus.dart';
+import 'account_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -71,8 +73,8 @@ class SettingsScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildDivider(theme),
-                _buildListTile('Unit Measures', Icons.language, theme),
+                // _buildDivider(theme),
+                // _buildListTile('Unit Measures', Icons.language, theme),
               ]),
               const SizedBox(height: 24),
               Text(
@@ -83,11 +85,41 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _buildCard([
-                _buildListTile('About Us', Icons.info_outline, theme),
+                _buildListTile(
+                  'About Us',
+                  Icons.info_outline,
+                  theme,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Aboutus()),
+                    );
+                  },
+                ),
                 _buildDivider(theme),
-                _buildListTile('App Version', Icons.device_hub, theme),
+                _buildListTile(
+                  'App Version',
+                  Icons.device_hub,
+                  theme,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Appversion()),
+                    );
+                  },
+                ),
                 _buildDivider(theme),
-                _buildListTile('License', Icons.article, theme),
+                _buildListTile(
+                  'License',
+                  Icons.article,
+                  theme,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Liscence()),
+                    );
+                  },
+                ),
               ]),
               const SizedBox(height: 24),
               Text(
@@ -98,7 +130,20 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _buildCard([
-                _buildListTile('Account', Icons.person, theme),
+                _buildListTile(
+                  'Account',
+                  Icons.person,
+                  theme,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AccountScreen(),
+                      ),
+                    );
+                  },
+                ),
+
                 _buildDivider(theme),
                 _buildListTile(
                   'Delete',
@@ -107,6 +152,7 @@ class SettingsScreen extends StatelessWidget {
                   iconColor: Colors.red,
                 ),
                 _buildDivider(theme),
+
                 _buildListTile(
                   'Login As Admin',
                   Icons.admin_panel_settings_rounded,

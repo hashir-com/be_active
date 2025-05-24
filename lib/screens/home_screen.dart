@@ -1,11 +1,11 @@
-import 'package:be_active/services/hive_service.dart';
+import 'package:Thryv/services/hive_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:be_active/models/user_model.dart';
+import 'package:Thryv/models/user_model.dart';
 import 'explore_screen.dart';
 import 'settings_screen.dart';
 import 'progress_screen.dart';
-import 'package:be_active/widgets/date_horizontal.dart';
+import 'package:Thryv/widgets/date_horizontal.dart';
 import 'package:hive/hive.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -69,11 +69,13 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Hi, $name",
-                style: GoogleFonts.righteous(
-                  fontSize: width * 0.07,
-                  color: Colors.white,
+              SafeArea(
+                child: Text(
+                  "Hi, $name",
+                  style: GoogleFonts.righteous(
+                    fontSize: width * 0.09,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
@@ -112,21 +114,28 @@ class _HomeScreenState extends State<HomeScreen> {
               children:
                   UserGoal.values.map((goal) {
                     final isSelected = goal == selectedGoal;
-                    return ChoiceChip(
-                      label: Text(userGoalToString(goal)),
-                      selected: isSelected,
-                      selectedColor: Theme.of(context).primaryColor,
-                      labelStyle: TextStyle(
-                        color:
-                            isSelected
-                                ? Theme.of(context).textTheme.bodyMedium!.color
-                                : Theme.of(context).textTheme.bodyMedium!.color,
+                    return SizedBox(
+                      width: width * 0.29,
+                      child: ChoiceChip(
+                        checkmarkColor: Colors.white,
+                        label: Text(userGoalToString(goal)),
+                        selected: isSelected,
+                        selectedColor: Theme.of(context).primaryColor,
+                        labelStyle: TextStyle(
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.color,
+                          fontSize: isSelected ? width * 0.028 : width * 0.03,
+                        ),
+                        onSelected: (selected) {
+                          if (selected) {
+                            _saveGoal(goal);
+                          }
+                        },
                       ),
-                      onSelected: (selected) {
-                        if (selected) {
-                          _saveGoal(goal);
-                        }
-                      },
                     );
                   }).toList(),
             ),
@@ -175,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: GoogleFonts.roboto(
                 fontSize: width * 0.035,
                 fontWeight: FontWeight.w600,
-                color: Theme.of(context).textTheme.bodyMedium!.color,
+                color: Colors.white,
               ),
             ),
           ),

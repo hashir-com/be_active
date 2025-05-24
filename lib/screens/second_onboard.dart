@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'create_account_screen.dart';
-import 'package:be_active/widgets/linechart.dart';
-import 'package:be_active/widgets/icons_second_onboard.dart';
+import 'package:Thryv/widgets/linechart.dart';
+import 'package:Thryv/widgets/icons_second_onboard.dart';
 
 class SecondOnboardingPage extends StatelessWidget {
   const SecondOnboardingPage({super.key});

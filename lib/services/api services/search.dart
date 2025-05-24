@@ -1,4 +1,4 @@
-import 'package:be_active/models/food_item.dart';
+import 'package:Thryv/models/food_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

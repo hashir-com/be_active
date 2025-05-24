@@ -14,20 +14,16 @@ String mealTypeToString(MealType meal) {
     case MealType.lunch:
       return 'Lunch';
     case MealType.eveningTea:
-      return 'Evening Tea';
+      return 'Evening Snack';
     case MealType.dinner:
       return 'Dinner';
   }
 }
 
-// ✅ use this for saving to Hive
-String mealTypeToKey(MealType meal) {
-  return meal.toString().split('.').last; // breakfast, morningSnack, etc.
-}
+String mealTypeToKey(MealType meal) => meal.toString().split('.').last;
 
 class MealTrackerPage extends StatefulWidget {
   const MealTrackerPage({super.key});
-
   @override
   MealTrackerPageState createState() => MealTrackerPageState();
 }
@@ -41,6 +37,14 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     MealType.dinner: [],
   };
 
+  final calorieGoals = {
+    MealType.breakfast: 438,
+    MealType.morningSnack: 219,
+    MealType.lunch: 438,
+    MealType.eveningTea: 219,
+    MealType.dinner: 438,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -50,23 +54,19 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   void _loadSavedMeals() {
     final box = Hive.box<FoodItem>('foodBox');
     final allItems = box.values.toList();
-
-    // Clear previous lists to avoid duplicates on reload
     meals.forEach((key, value) => value.clear());
 
     for (var item in allItems) {
-      MealType? type = _stringToMealType(item.mealType);
-      if (type != null) {
-        meals[type]?.add(item);
+      final meal = _stringToMealType(item.mealType);
+      if (meal != null) {
+        meals[meal]!.add(item);
       }
     }
-
-    setState(() {}); // Refresh UI
+    setState(() {});
   }
 
   MealType? _stringToMealType(String type) {
     switch (type.toLowerCase()) {
-      // ✅ make lowercase before comparing
       case 'breakfast':
         return MealType.breakfast;
       case 'morningsnack':
@@ -85,47 +85,174 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   void _addFood(MealType meal) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => FoodSearchPage(mealType: meal)),
+      MaterialPageRoute(builder: (_) => FoodSearchPage(mealType: meal)),
     );
     _loadSavedMeals();
   }
 
+  int get totalCalories => meals.values
+      .expand((e) => e)
+      .fold(0, (sum, item) => sum + item.calories.toInt());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Track Your Meals')),
+      appBar: AppBar(
+        title: const Text(
+          "Today",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        actions: const [
+          Icon(Icons.settings, size: 24),
+          SizedBox(width: 12),
+          Icon(Icons.more_vert, size: 24),
+          SizedBox(width: 12),
+        ],
+      ),
       body: ListView(
-        children:
-            MealType.values.map((meal) {
-              final foodList = meals[meal]!;
-              int totalCalories = foodList.fold(
-                0,
-                (sum, item) => sum + item.calories.toInt(),
-              );
-
-              return Card(
-                margin: EdgeInsets.all(30),
-                child: ExpansionTile(
-                  title: Text(
-                    '${mealTypeToString(meal)} - $totalCalories kcal',
-                  ),
+        padding: const EdgeInsets.all(16),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+            ),
+            child: Row(
+              children: [
+                Stack(
+                  alignment: Alignment.center,
                   children: [
-                    ...foodList.map(
-                      (food) => ListTile(
-                        title: Text(food.name),
-                        trailing: Text('${food.calories} kcal'),
+                    SizedBox(
+                      height: 55,
+                      width: 55,
+                      child: CircularProgressIndicator(
+                        value: totalCalories / 1750,
+                        strokeWidth: 5,
+                        backgroundColor: Colors.grey.shade200,
+                        valueColor: const AlwaysStoppedAnimation(Colors.orange),
                       ),
                     ),
-                    TextButton.icon(
+                    const Icon(Icons.local_dining, size: 24),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  '$totalCalories of 1750 Cal',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const Spacer(),
+                const Icon(Icons.bar_chart, color: Colors.orange),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          ...MealType.values.map((meal) {
+            final foods = meals[meal]!;
+            final calories = foods.fold(
+              0,
+              (sum, f) => sum + f.calories.toInt(),
+            );
+            final goal = calorieGoals[meal]!;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      mealTypeToString(meal),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '$calories of $goal Cal',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle, color: Colors.orange),
                       onPressed: () => _addFood(meal),
-                      icon: Icon(Icons.add),
-                      label: Text('Add Food'),
                     ),
                   ],
                 ),
-              );
-            }).toList(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black12, blurRadius: 4),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:
+                        foods.isEmpty
+                            ? [_buildEmptyText(meal)]
+                            : [
+                              ...foods.map(
+                                (food) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(child: Text(food.name)),
+                                      Text(
+                                        '${food.calories.toStringAsFixed(1)} Cal',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const Divider(),
+                              GestureDetector(
+                                onTap: () {},
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: const [
+                                    Text("Save as Meal"),
+                                    Icon(Icons.arrow_forward_ios, size: 16),
+                                  ],
+                                ),
+                              ),
+                            ],
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
       ),
     );
+  }
+
+  Widget _buildEmptyText(MealType meal) {
+    switch (meal) {
+      case MealType.breakfast:
+        return const Text("Add something to your breakfast 🍳");
+      case MealType.morningSnack:
+        return const Text("Get energized by grabbing a morning snack 🥜");
+      case MealType.lunch:
+        return const Text("Don't miss lunch 🍱 It's time to get a tasty meal");
+      case MealType.eveningTea:
+        return const Text(
+          "Hey, here are some Healthy Snack Suggestions for you",
+        );
+      case MealType.dinner:
+        return const Text("An early dinner can help you sleep better 🍽😴");
+    }
   }
 }

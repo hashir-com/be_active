@@ -26,7 +26,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -62,9 +61,9 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               Center(
                 child: Text(
-                  'Be Active',
+                  'Thryv',
                   style: GoogleFonts.righteous(
-                    fontSize: 28,
+                    fontSize: 38,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,

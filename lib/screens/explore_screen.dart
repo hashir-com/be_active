@@ -1,7 +1,10 @@
+import 'package:Thryv/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:be_active/models/user_model.dart';
+import 'package:Thryv/models/user_model.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -12,12 +15,33 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   UserModel? user;
+  bool _isFullScreen = false; // Track fullscreen state
 
   @override
   void initState() {
     super.initState();
     final box = Hive.box<UserModel>('userBox');
     user = box.get('user');
+  }
+
+  // Callback from child to toggle fullscreen
+  void _onFullScreenChanged(bool isFullScreen) {
+    setState(() {
+      _isFullScreen = isFullScreen;
+    });
+  }
+
+  List<String> getVideosForGoal(UserGoal? goal) {
+    switch (goal) {
+      case UserGoal.weightLoss:
+        return ["ahnl7GaV_rU", "YJcecddIdWo"];
+      case UserGoal.weightGain:
+        return ["S21o1IdwWf8", "KM3ko1Z4amA"];
+      case UserGoal.muscleGain:
+        return ["2tM1LFFxeKg", "M4K0s792wAU"];
+      default:
+        return [];
+    }
   }
 
   Widget infoRow(IconData icon, String label, String value, ThemeData theme) {
@@ -35,16 +59,43 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Widget youtubeVideo(String videoId) {
-    return YoutubePlayerWidget(videoId: videoId);
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final videoIds = getVideosForGoal(user?.goal);
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Explore")),
+      appBar:
+          _isFullScreen
+              ? null
+              : PreferredSize(
+                preferredSize: Size.fromHeight(height * 0.15),
+                child: Container(
+                  color: theme.primaryColor,
+                  padding: EdgeInsets.only(
+                    top: height * 0.02,
+                    left: width * 0.07,
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SafeArea(
+                        child: Text(
+                          "Explore",
+                          style: GoogleFonts.roboto(
+                            fontSize: height * 0.05,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
       body:
           user == null
               ? Center(
@@ -98,7 +149,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             infoRow(
                               Icons.flag,
                               "Goal",
-                              user!.goal?.name ?? 'N/A',
+                              user!.goal != null
+                                  ? userGoalToString(user!.goal!)
+                                  : 'N/A',
+
                               theme,
                             ),
                           ],
@@ -147,12 +201,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       style: theme.textTheme.headlineSmall,
                     ),
                     const SizedBox(height: 12),
-                    youtubeVideo(
-                      "https://youtu.be/roHQ3F7d9YQ?si=3NPTyTb5XSUsIvMy",
-                    ),
-                    const SizedBox(height: 16),
-                    youtubeVideo(
-                      "https://youtu.be/g9QGQJ1ypp0?si=6wKHvfQSROmQATU7",
+                    ...videoIds.map(
+                      (id) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: YoutubePlayerWidget(
+                          videoId: id,
+                          onFullScreenChanged: _onFullScreenChanged,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -163,7 +219,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
 class YoutubePlayerWidget extends StatefulWidget {
   final String videoId;
-  const YoutubePlayerWidget({super.key, required this.videoId});
+  final ValueChanged<bool> onFullScreenChanged;
+
+  const YoutubePlayerWidget({
+    super.key,
+    required this.videoId,
+    required this.onFullScreenChanged,
+  });
 
   @override
   State<YoutubePlayerWidget> createState() => _YoutubePlayerWidgetState();
@@ -177,7 +239,13 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+      flags: const YoutubePlayerFlags(
+        autoPlay: false,
+        mute: false,
+        enableCaption: true,
+        isLive: false,
+        controlsVisibleAtStart: true,
+      ),
     );
   }
 
@@ -185,15 +253,30 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
   void dispose() {
     _controller.pause();
     _controller.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    widget.onFullScreenChanged(false);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayer(
-      controller: _controller,
-      showVideoProgressIndicator: true,
-      progressIndicatorColor: Theme.of(context).colorScheme.primary,
+    return YoutubePlayerBuilder(
+      onEnterFullScreen: () {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+        widget.onFullScreenChanged(true);
+      },
+      onExitFullScreen: () {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        widget.onFullScreenChanged(false);
+      },
+      player: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Theme.of(context).colorScheme.primary,
+      ),
+      builder: (context, player) {
+        return AspectRatio(aspectRatio: 16 / 9, child: player);
+      },
     );
   }
 }

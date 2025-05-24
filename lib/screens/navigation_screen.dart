@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:be_active/services/hive_service.dart';
-import 'package:be_active/models/user_model.dart';
+import 'package:Thryv/services/hive_service.dart';
+import 'package:Thryv/models/user_model.dart';
 import 'explore_screen.dart';
 import 'settings_screen.dart';
 import 'progress_screen.dart';
 import 'home_screen.dart';
-import 'tracking_screen.dart';
+import 'tracking_screen.dart'; // For the modal function showTrackOptions()
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
@@ -22,7 +22,7 @@ class _NavigationScreen extends State<NavigationScreen> {
   final List<Widget> _screens = [
     HomeScreen(),
     ExploreScreen(),
-    HomeScreen(),
+    SizedBox.shrink(), // Placeholder for track (not a real screen)
     HeatMapChart(year: 2025, month: 5, progressData: {}),
     SettingsScreen(),
   ];
@@ -34,7 +34,12 @@ class _NavigationScreen extends State<NavigationScreen> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: _buildBottomNavBar(width, height, context),
+
+      // ❗ Hide bottom nav when tracking (index == 2)
+      bottomNavigationBar:
+          _currentIndex == 2
+              ? null
+              : _buildBottomNavBar(width, height, context),
     );
   }
 
@@ -118,6 +123,7 @@ class _NavigationScreen extends State<NavigationScreen> {
     return GestureDetector(
       onTap: () {
         if (index == 2) {
+          // Show modal instead of changing index
           showTrackOptions(context);
         } else {
           setState(() {
