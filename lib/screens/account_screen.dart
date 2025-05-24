@@ -32,15 +32,15 @@ class _AccountScreenState extends State<AccountScreen> {
     user = userBox.isNotEmpty ? userBox.getAt(0) : null;
 
     nameController = TextEditingController(text: user?.name ?? '');
-    ageController = TextEditingController(text: user?.age?.toString() ?? '');
+    ageController = TextEditingController(text: user?.age.toString() ?? '');
     heightController = TextEditingController(
-      text: user?.height?.toString() ?? '',
+      text: user?.height.toString() ?? '',
     );
     weightController = TextEditingController(
-      text: user?.weight?.toString() ?? '',
+      text: user?.weight.toString() ?? '',
     );
 
-    final storedGender = user?.gender?.toLowerCase();
+    final storedGender = user?.gender.toLowerCase();
     if (storedGender == 'male') {
       selectedGender = 'Male';
     } else if (storedGender == 'female') {
@@ -89,6 +89,7 @@ class _AccountScreenState extends State<AccountScreen> {
       });
 
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(const SnackBar(content: Text('User details updated')));
     }
