@@ -23,13 +23,16 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       height: fields[3] as double,
       weight: fields[4] as double,
       goalIndex: fields[5] as int?,
+      workoutPlan: fields[6] as String?,
+      dietPlan: fields[7] as String?,
+      bmi: fields[8] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -41,7 +44,13 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(4)
       ..write(obj.weight)
       ..writeByte(5)
-      ..write(obj.goalIndex);
+      ..write(obj.goalIndex)
+      ..writeByte(6)
+      ..write(obj.workoutPlan)
+      ..writeByte(7)
+      ..write(obj.dietPlan)
+      ..writeByte(8)
+      ..write(obj.bmi);
   }
 
   @override

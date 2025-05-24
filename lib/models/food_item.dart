@@ -23,6 +23,10 @@ class FoodItem extends HiveObject {
   final double carbs;
 
   @HiveField(5)
+  final double fiber;
+
+
+  @HiveField(6)
   String mealType;
 
   FoodItem({
@@ -31,16 +35,19 @@ class FoodItem extends HiveObject {
     required this.protein,
     required this.fat,
     required this.carbs,
+    required this.fiber,
     required this.mealType,
   });
 
   factory FoodItem.fromJson(Map<String, dynamic> json) {
+    final nutrients = json['nutrients'] ?? {};
     return FoodItem(
-      name: json['label'],
-      calories: (json['nutrients']['ENERC_KCAL'] ?? 0).toDouble(),
-      protein: (json['nutrients']['PROCNT'] ?? 0).toDouble(),
-      fat: (json['nutrients']['FAT'] ?? 0).toDouble(),
-      carbs: (json['nutrients']['CHOCDF'] ?? 0).toDouble(),
+      name: json['label'] ?? '',
+      calories: (nutrients['ENERC_KCAL'] ?? 0).toDouble(),
+      protein: (nutrients['PROCNT'] ?? 0).toDouble(),
+      fat: (nutrients['FAT'] ?? 0).toDouble(),
+      carbs: (nutrients['CHOCDF'] ?? 0).toDouble(),
+      fiber: (nutrients['FIBTG'] ?? 0).toDouble(),
       mealType: 'lunch',
     );
   }

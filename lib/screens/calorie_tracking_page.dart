@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import '../models/food_item.dart';
 import 'foodsearch.dart';
+import 'nutrient_screen.dart';
 
 enum MealType { breakfast, morningSnack, lunch, eveningTea, dinner }
 
@@ -212,6 +213,15 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                       Text(
                                         '${food.calories.toStringAsFixed(1)} Cal',
                                       ),
+                                      Text(
+                                        "${food.protein.toStringAsFixed(1)} prot",
+                                      ),
+                                      Text(
+                                        "${food.carbs.toStringAsFixed(1)} carb",
+                                      ),
+                                      Text(
+                                        "${food.fat.toStringAsFixed(1)} fat",
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -223,7 +233,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: const [
-                                    Text("Save as Meal"),
+                                    Text("Show Details"),
                                     Icon(Icons.arrow_forward_ios, size: 16),
                                   ],
                                 ),

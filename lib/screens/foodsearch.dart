@@ -48,7 +48,8 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       protein: item.protein,
       fat: item.fat,
       carbs: item.carbs,
-      mealType: mealTypeToKey(widget.mealType), // ✅ lowercase
+      mealType: mealTypeToKey(widget.mealType),
+       fiber: item.fiber, // ✅ lowercase
     );
 
     await box.add(newFood);
