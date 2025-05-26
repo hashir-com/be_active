@@ -102,22 +102,40 @@ class _AccountScreenState extends State<AccountScreen> {
     required String? Function(String?) validator,
     TextInputType inputType = TextInputType.text,
   }) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
+        cursorColor: Colors.white,
         controller: controller,
         keyboardType: inputType,
         validator: validator,
+        style: const TextStyle(color: Colors.white), // white input text
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(32)),
+          labelStyle: const TextStyle(color: Colors.white), // white label text
+          prefixIcon: Icon(icon, color: Colors.white), // white icon
           filled: true,
-          fillColor: Colors.white.withValues(
-            alpha: 0.394,
-            red: 1,
-            green: 1,
-            blue: 1,
+          fillColor: Colors.transparent, // transparent background
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: const BorderSide(color: Colors.white), // white border
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: BorderSide(
+              color: theme.primaryColor,
+              width: 2,
+            ), // focused border color
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: const BorderSide(color: Colors.red), // error border
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(32),
+            borderSide: const BorderSide(color: Colors.red, width: 2),
           ),
         ),
       ),
@@ -132,10 +150,11 @@ class _AccountScreenState extends State<AccountScreen> {
     final width = size.width;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(height * 0.15),
         child: Container(
-          color: theme.primaryColor,
+          color: Colors.black,
           padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
           alignment: Alignment.centerLeft,
           child: Column(
@@ -162,7 +181,7 @@ class _AccountScreenState extends State<AccountScreen> {
             topRight: Radius.circular(12),
           ),
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF040B90)],
+            colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -179,12 +198,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 boxShadow: [
                   BoxShadow(
                     // ignore: deprecated_member_use
-                    color: const Color.from(
-                      alpha: 1,
-                      red: 0,
-                      green: 0,
-                      blue: 0,
-                    ),
+                    color: const Color.fromARGB(0, 164, 101, 101),
                     blurRadius: 15,
                     offset: const Offset(0, 6),
                   ),
@@ -228,28 +242,58 @@ class _AccountScreenState extends State<AccountScreen> {
                                     ? 'Select gender'
                                     : null,
                         decoration: InputDecoration(
+                          filled: true,
+                          fillColor:
+                              Colors.transparent, // transparent background
                           labelText: 'Gender',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          labelStyle: const TextStyle(
+                            color: Colors.white,
+                          ), // white label text
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 16,
                             horizontal: 16,
                           ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: const BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: Theme.of(context).primaryColor,
+                              width: 2,
+                            ),
+                          ),
                         ),
                         dropdownStyleData: DropdownStyleData(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(26),
+                            color:
+                                Theme.of(
+                                  context,
+                                ).primaryColor, // dropdown list background
                           ),
                         ),
 
+                        style: const TextStyle(
+                          color: Colors.white,
+                        ), // selected item text color
                         items:
                             ['Male', 'Female']
                                 .map(
                                   (gender) => DropdownMenuItem<String>(
                                     value: gender,
-                                    child: Text(gender),
+                                    child: Text(
+                                      gender,
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(
+                                          255,
+                                          255,
+                                          255,
+                                          255,
+                                        ),
+                                      ), // dropdown list items text color
+                                    ),
                                   ),
                                 )
                                 .toList(),
@@ -260,6 +304,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         },
                       ),
                     ),
+
                     _buildTextField(
                       label: 'Height (cm)',
                       controller: heightController,

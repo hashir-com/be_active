@@ -1,14 +1,60 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:thryv/models/user_model.dart';
+import 'package:thryv/screens/splash_screen.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'admin_screen.dart';
 import 'aboutus.dart';
 import 'account_screen.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  Future<bool?> _showDeleteConfirmationDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Delete'),
+            content: const Text(
+              'Are you sure you want to delete your user data?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false), // Cancel
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed:
+                    () => Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => SplashScreen()),
+                      (route) => false,
+                    ), // Confirm delete
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
+    );
+  }
+
+  late Box<UserModel> userBox;
+
+  @override
+  void initState() {
+    super.initState();
+    userBox = Hive.box<UserModel>('userBox'); // get the box here
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,11 +192,19 @@ class SettingsScreen extends StatelessWidget {
 
                 _buildDivider(theme),
                 _buildListTile(
-                  'Delete',
+                  'Clear Data',
                   Icons.delete,
                   theme,
                   iconColor: Colors.red,
+                  onTap: () async {
+                    final confirmed = await _showDeleteConfirmationDialog();
+                    if (confirmed == true) {
+                      // Delete user data from Hive
+                      await userBox.clear();
+                    }
+                  },
                 ),
+
                 _buildDivider(theme),
 
                 _buildListTile(
@@ -167,31 +221,31 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ]),
               const SizedBox(height: 40),
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        theme.colorScheme.surface, // dynamic button bg
-                    foregroundColor: Colors.red,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 48,
-                      vertical: 16,
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: Text(
-                    'Log Out',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
-                    ),
-                  ),
-                ),
-              ),
+              // Center(
+              //   child: ElevatedButton(
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor:
+              //           theme.colorScheme.surface, // dynamic button bg
+              //       foregroundColor: Colors.red,
+              //       elevation: 4,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //       padding: const EdgeInsets.symmetric(
+              //         horizontal: 48,
+              //         vertical: 16,
+              //       ),
+              //     ),
+              //     onPressed: () {},
+              //     child: Text(
+              //       'Log Out',
+              //       style: theme.textTheme.titleMedium?.copyWith(
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.red,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
