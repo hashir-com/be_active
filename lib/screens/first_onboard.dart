@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'package:Thryv/widgets/icons_first_onboard.dart';
+import 'package:thryv/widgets/icons_first_onboard.dart';
 
 class FirstOnboardingPage extends StatelessWidget {
   const FirstOnboardingPage({super.key});
@@ -13,7 +13,7 @@ class FirstOnboardingPage extends StatelessWidget {
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF040B90)],
+              colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),

@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF040B90)],
+            colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -37,33 +37,33 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Center(
           child: Stack(
             children: [
-              Center(
-                child: Container(
-                  height: 180,
-                  width: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color.fromARGB(255, 0, 0, 0),
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                ),
-              ),
-              Center(
-                child: Container(
-                  height: 200,
-                  width: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color.fromARGB(0, 0, 0, 0),
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                ),
-              ),
+              // Center(
+              //   child: Container(
+              //     height: 180,
+              //     width: 180,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: const Color.fromARGB(255, 0, 0, 0),
+              //       border: Border.all(color: Colors.white, width: 2),
+              //     ),
+              //   ),
+              // ),
+              // Center(
+              //   child: Container(
+              //     height: 200,
+              //     width: 200,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: const Color.fromARGB(0, 0, 0, 0),
+              //       border: Border.all(color: Colors.white, width: 2),
+              //     ),
+              //   ),
+              // ),
               Center(
                 child: Text(
-                  'Thryv',
-                  style: GoogleFonts.righteous(
-                    fontSize: 38,
+                  'Train. Track. Transform.',
+                  style: GoogleFonts.leagueSpartan(
+                    fontSize: 28,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 1.2,

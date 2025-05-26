@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'package:Thryv/services/api%20services/search.dart';
+import 'package:thryv/services/api%20services/search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -49,7 +49,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       fat: item.fat,
       carbs: item.carbs,
       mealType: mealTypeToKey(widget.mealType),
-       fiber: item.fiber, // ✅ lowercase
+       fiber: item.fiber, date: DateTime.now(), // ✅ lowercase
     );
 
     await box.add(newFood);

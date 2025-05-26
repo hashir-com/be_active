@@ -6,7 +6,7 @@ import 'screens/splash_screen.dart';
 import 'providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-
+import 'package:thryv/models/steps_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +17,9 @@ void main() async {
 
   Hive.registerAdapter(FoodItemAdapter());
   await Hive.openBox<FoodItem>('foodBox');
+
+  Hive.registerAdapter(StepEntryAdapter());
+  await Hive.openBox<StepEntry>('stepsBox');
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
@@ -43,19 +46,19 @@ class AppInitializer extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'Be Active',
+          title: 'thryv',
           debugShowCheckedModeBanner: false,
           themeMode: themeProvider.currentTheme,
           theme: ThemeData(
             brightness: Brightness.light,
-            primaryColor: const Color(0xFF040B90),
+            primaryColor: const Color(0xFF020770),
             primaryColorLight: const Color.fromARGB(255, 85, 94, 255),
             scaffoldBackgroundColor: const Color.fromARGB(255, 243, 243, 255),
             appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            primaryColor: const Color(0xFF040B90),
+            primaryColor: const Color(0xFF020770),
             primaryColorLight: const Color.fromARGB(255, 85, 94, 255),
             scaffoldBackgroundColor: Colors.black,
             appBarTheme: const AppBarTheme(

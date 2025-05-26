@@ -1,8 +1,8 @@
-import 'package:Thryv/screens/home_screen.dart';
+import 'package:thryv/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:Thryv/models/user_model.dart';
+import 'package:thryv/models/user_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 

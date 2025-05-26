@@ -1,11 +1,11 @@
-import 'package:Thryv/services/hive_service.dart';
+import 'package:thryv/services/hive_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:Thryv/models/user_model.dart';
+import 'package:thryv/models/user_model.dart';
 import 'explore_screen.dart';
 import 'settings_screen.dart';
 import 'progress_screen.dart';
-import 'package:Thryv/widgets/date_horizontal.dart';
+import 'package:thryv/widgets/date_horizontal.dart';
 import 'package:hive/hive.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -251,15 +251,4 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-enum UserGoal { weightLoss, weightGain, muscleGain }
 
-String userGoalToString(UserGoal goal) {
-  switch (goal) {
-    case UserGoal.weightLoss:
-      return "Weight Loss";
-    case UserGoal.weightGain:
-      return "Weight Gain";
-    case UserGoal.muscleGain:
-      return "Muscle Gain";
-  }
-}

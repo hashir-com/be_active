@@ -99,7 +99,7 @@ class _HorizontalDateListState extends State<HorizontalDateList> {
               decoration: BoxDecoration(
                 color:
                     isSelected
-                        ? const Color(0xFF040B90)
+                        ? const Color(0xFF020770)
                         : const Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Color(0xFF040B90), width: 1.3),

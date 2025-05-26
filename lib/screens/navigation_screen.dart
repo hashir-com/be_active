@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:Thryv/services/hive_service.dart';
-import 'package:Thryv/models/user_model.dart';
+import 'package:thryv/services/hive_service.dart';
+import 'package:thryv/models/user_model.dart';
 import 'explore_screen.dart';
 import 'settings_screen.dart';
 import 'progress_screen.dart';
@@ -57,6 +57,7 @@ class _NavigationScreen extends State<NavigationScreen> {
     List<Widget> icons = [
       SvgPicture.asset(
         'assets/home.svg',
+        // ignore: deprecated_member_use
         color: _currentIndex == 0 ? activeColor : iconColor,
       ),
       Image.asset(
@@ -67,6 +68,7 @@ class _NavigationScreen extends State<NavigationScreen> {
       ),
       SvgPicture.asset(
         'assets/plus.svg',
+        // ignore: deprecated_member_use
         color: _currentIndex == 2 ? activeColor : iconColor,
       ),
       Image.asset(
@@ -77,6 +79,7 @@ class _NavigationScreen extends State<NavigationScreen> {
       ),
       SvgPicture.asset(
         'assets/settings.svg',
+        // ignore: deprecated_member_use
         color: _currentIndex == 4 ? activeColor : iconColor,
       ),
     ];

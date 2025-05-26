@@ -1,7 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
-import 'package:Thryv/models/food_item.dart';
+import 'package:thryv/models/food_item.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
@@ -22,6 +23,8 @@ Future<void> fetchAndSaveFood(String query) async {
       await foodBox.add(foodItem);
     }
   } else {
-    print('API error: ${response.statusCode}');
+    if (kDebugMode) {
+      print('API error: ${response.statusCode}');
+    }
   }
 }

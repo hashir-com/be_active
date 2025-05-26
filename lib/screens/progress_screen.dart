@@ -6,7 +6,7 @@ class HeatMapChart extends StatelessWidget {
   final int month;
   final Map<DateTime, int> progressData;
 
-  const HeatMapChart({
+  const HeatMapChart({super.key, 
     required this.year,
     required this.month,
     required this.progressData,

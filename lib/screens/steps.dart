@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class StepPage extends StatefulWidget {
-  const StepPage({super.key});
+class StepsScreen extends StatefulWidget {
+  const StepsScreen({super.key});
 
   @override
-  State<StepPage> createState() => _StepPageState();
+  State<StepsScreen> createState() => _StepsState();
 }
 
-class _StepPageState extends State<StepPage> {
+class _StepsState extends State<StepsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("Weight")));
+    return Scaffold();
   }
 }

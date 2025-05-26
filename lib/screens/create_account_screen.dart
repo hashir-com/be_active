@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
-import 'package:Thryv/services/hive_service.dart';
-import 'package:Thryv/models/user_model.dart';
+import 'package:thryv/services/hive_service.dart';
+import 'package:thryv/models/user_model.dart';
 import 'navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,18 +30,18 @@ class _LoginScreenState extends State<LoginScreen> {
         final screenWidth = constraints.maxWidth;
 
         return Scaffold(
-          backgroundColor: const Color(0xFF040B90),
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(screenHeight * 0.15),
             child: Container(
-              color: const Color(0xFF040B90),
+              color: const Color.fromARGB(255, 0, 0, 0),
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.only(top: screenHeight * 0.03),
                   child: Text(
                     "Create Account",
                     style: GoogleFonts.righteous(
-                      fontSize: screenWidth * 0.08,
+                      fontSize: screenWidth * 0.09,
                       color: Colors.white,
                     ),
                   ),
@@ -58,10 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: screenWidth,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 184, 79, 255),
-                        Color(0xFF040B90),
-                      ],
+                      colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'create_account_screen.dart';
-import 'package:Thryv/widgets/linechart.dart';
-import 'package:Thryv/widgets/icons_second_onboard.dart';
+import 'package:thryv/widgets/linechart.dart';
+import 'package:thryv/widgets/icons_second_onboard.dart';
 
 class SecondOnboardingPage extends StatelessWidget {
   const SecondOnboardingPage({super.key});
@@ -15,7 +15,7 @@ class SecondOnboardingPage extends StatelessWidget {
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF040B90)],
+              colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -88,8 +88,8 @@ class SecondOnboardingPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 75,
-          bottom: 30,
+          bottom: MediaQuery.of(context).size.height * 0.03,
+          left: MediaQuery.of(context).size.width / 2 - 135,
           child: ElevatedButton(
             onPressed: () {
               Navigator.push(
@@ -98,7 +98,7 @@ class SecondOnboardingPage extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF001AFF),
+              foregroundColor: const Color.fromARGB(255, 2, 15, 137),
               backgroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 82, vertical: 6),
               textStyle: const TextStyle(

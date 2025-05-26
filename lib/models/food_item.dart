@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'dart:ffi';
 
-import 'package:Thryv/screens/home_screen.dart';
+import 'package:thryv/screens/home_screen.dart';
 
 part 'food_item.g.dart';
 
@@ -25,8 +25,10 @@ class FoodItem extends HiveObject {
   @HiveField(5)
   final double fiber;
 
-
   @HiveField(6)
+  DateTime date;
+
+  @HiveField(7)
   String mealType;
 
   FoodItem({
@@ -36,6 +38,7 @@ class FoodItem extends HiveObject {
     required this.fat,
     required this.carbs,
     required this.fiber,
+    required this.date,
     required this.mealType,
   });
 
@@ -48,6 +51,7 @@ class FoodItem extends HiveObject {
       fat: (nutrients['FAT'] ?? 0).toDouble(),
       carbs: (nutrients['CHOCDF'] ?? 0).toDouble(),
       fiber: (nutrients['FIBTG'] ?? 0).toDouble(),
+      date: DateTime.now(),
       mealType: 'lunch',
     );
   }

@@ -1,7 +1,7 @@
-import 'package:Thryv/screens/home_screen.dart';
+import 'package:thryv/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'navigation_screen.dart';
-import 'package:Thryv/screens/calorie_tracking_page.dart';
+import 'package:thryv/screens/calorie_tracking_page.dart';
 import 'sleep.dart';
 import 'steps.dart';
 import 'water.dart';
@@ -47,28 +47,28 @@ void showTrackOptions(BuildContext context) {
               Icons.monitor_weight,
               "Weight",
               Colors.teal,
-              WeightPage(),
+              WeightScreen(),
             ),
             _trackItem(
               context,
               Icons.local_drink,
               "Water",
               Colors.blue,
-              WaterPage(),
+              WaterScreen(),
             ),
             _trackItem(
               context,
               Icons.directions_walk,
               "Steps",
               Colors.deepPurple,
-              StepPage(),
+              StepsScreen(),
             ),
             _trackItem(
               context,
               Icons.bedtime,
               "Sleep",
               Colors.indigo,
-              SleepPage(),
+              SleepScreen(),
             ),
             const SizedBox(height: 20),
           ],
@@ -89,6 +89,7 @@ Widget _trackItem(
     leading: Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: color.withOpacity(0.1),
         shape: BoxShape.circle,
       ),

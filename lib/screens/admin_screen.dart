@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/user_model.dart'; // Adjust path
 import 'package:hive_flutter/hive_flutter.dart';
 import 'home_screen.dart';
-import 'package:Thryv/services/hive_service.dart';
+import 'package:thryv/services/hive_service.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});

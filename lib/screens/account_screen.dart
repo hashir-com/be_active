@@ -113,7 +113,12 @@ class _AccountScreenState extends State<AccountScreen> {
           prefixIcon: Icon(icon),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32)),
           filled: true,
-          fillColor: Colors.white.withOpacity(0.1),
+          fillColor: Colors.white.withValues(
+            alpha: 0.394,
+            red: 1,
+            green: 1,
+            blue: 1,
+          ),
         ),
       ),
     );
@@ -173,7 +178,13 @@ class _AccountScreenState extends State<AccountScreen> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    // ignore: deprecated_member_use
+                    color: const Color.from(
+                      alpha: 1,
+                      red: 0,
+                      green: 0,
+                      blue: 0,
+                    ),
                     blurRadius: 15,
                     offset: const Offset(0, 6),
                   ),

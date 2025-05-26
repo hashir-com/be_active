@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import '../models/food_item.dart';
 import 'foodsearch.dart';
-import 'nutrient_screen.dart';
+import 'package:thryv/models/user_model.dart';
+import 'package:thryv/util/calorie_screen_utils.dart';
+import 'nutrition_details.dart';
 
 enum MealType { breakfast, morningSnack, lunch, eveningTea, dinner }
 
@@ -25,11 +28,15 @@ String mealTypeToKey(MealType meal) => meal.toString().split('.').last;
 
 class MealTrackerPage extends StatefulWidget {
   const MealTrackerPage({super.key});
+
   @override
   MealTrackerPageState createState() => MealTrackerPageState();
 }
 
 class MealTrackerPageState extends State<MealTrackerPage> {
+  DateTime selectedDate = DateTime.now();
+
+  UserModel? user;
   Map<MealType, List<FoodItem>> meals = {
     MealType.breakfast: [],
     MealType.morningSnack: [],
@@ -38,7 +45,9 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     MealType.dinner: [],
   };
 
-  final calorieGoals = {
+  num totalCalorieGoal = 1750;
+
+  final Map<MealType, int> calorieGoals = {
     MealType.breakfast: 438,
     MealType.morningSnack: 219,
     MealType.lunch: 438,
@@ -46,25 +55,58 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     MealType.dinner: 438,
   };
 
+  final Map<MealType, double> mealDistribution = {
+    MealType.breakfast: 0.25,
+    MealType.morningSnack: 0.125,
+    MealType.lunch: 0.25,
+    MealType.eveningTea: 0.125,
+    MealType.dinner: 0.25,
+  };
+
   @override
   void initState() {
     super.initState();
+
+    final userBox = Hive.box<UserModel>('userBox');
+    user = userBox.get('user');
+
+    if (user != null && user!.bmi != null && user!.goal != null) {
+      totalCalorieGoal = suggestInitialCalorieGoal(user!.bmi!, user!.goal!);
+    } else {
+      totalCalorieGoal = 1750; // Default if no data available
+    }
+
+    _applyMealCalorieGoals();
     _loadSavedMeals();
+  }
+
+  void _applyMealCalorieGoals() {
+    calorieGoals.updateAll((meal, _) {
+      final percentage = mealDistribution[meal]!;
+      return (totalCalorieGoal * percentage).round();
+    });
   }
 
   void _loadSavedMeals() {
     final box = Hive.box<FoodItem>('foodBox');
     final allItems = box.values.toList();
-    meals.forEach((key, value) => value.clear());
+
+    for (var meal in meals.keys) {
+      meals[meal]!.clear();
+    }
 
     for (var item in allItems) {
       final meal = _stringToMealType(item.mealType);
-      if (meal != null) {
+      if (meal != null && isSameDate(item.date, selectedDate)) {
         meals[meal]!.add(item);
       }
     }
+
     setState(() {});
   }
+
+  bool isSameDate(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
 
   MealType? _stringToMealType(String type) {
     switch (type.toLowerCase()) {
@@ -91,28 +133,209 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     _loadSavedMeals();
   }
 
+  void _showEditGoalDialog(MealType selectedMeal) {
+    final controller = TextEditingController(
+      text: calorieGoals[selectedMeal]!.toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Set Calorie Goal for ${mealTypeToString(selectedMeal)}'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: 'Enter goal in Calories',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final newGoal = int.tryParse(controller.text);
+                if (newGoal == null || newGoal <= 0) {
+                  Navigator.pop(context);
+                  return;
+                }
+
+                setState(() {
+                  final totalOldGoal = calorieGoals.values.reduce(
+                    (a, b) => a + b,
+                  );
+                  final otherMeals =
+                      calorieGoals.keys
+                          .where((m) => m != selectedMeal)
+                          .toList();
+
+                  // Update selected meal goal
+                  calorieGoals[selectedMeal] = newGoal;
+
+                  final otherMealDistributionSum = otherMeals
+                      .map((m) => mealDistribution[m]!)
+                      .reduce((a, b) => a + b);
+
+                  for (var meal in otherMeals) {
+                    final ratio =
+                        mealDistribution[meal]! / otherMealDistributionSum;
+                    final newMealGoal =
+                        ((totalOldGoal - newGoal) * ratio).round();
+                    calorieGoals[meal] = newMealGoal;
+                  }
+
+                  totalCalorieGoal = calorieGoals.values.reduce(
+                    (a, b) => a + b,
+                  );
+                });
+
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showEditTotalGoalDialog() {
+    final controller = TextEditingController(text: totalCalorieGoal.toString());
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Set Daily Calorie Goal'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              hintText: 'Enter your calorie goal',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                final input = int.tryParse(controller.text);
+                if (input != null && input > 0) {
+                  setState(() {
+                    totalCalorieGoal = input;
+                    _applyMealCalorieGoals();
+                  });
+                }
+                Navigator.pop(context);
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String _getDateLabel(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final pickedDate = DateTime(date.year, date.month, date.day);
+
+    if (pickedDate == today) return "Today";
+    if (pickedDate == today.subtract(const Duration(days: 1))) {
+      return "Yesterday";
+    }
+
+    return "${_monthName(date.month)} ${date.day}, ${date.year}";
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
+  }
+
   int get totalCalories => meals.values
       .expand((e) => e)
       .fold(0, (sum, item) => sum + item.calories.toInt());
+  String dropdownValue = "Today"; // Default dropdown value
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Today",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: DropdownButton<String>(
+          value: dropdownValue,
+          underline: const SizedBox(),
+          icon: const Icon(Icons.arrow_drop_down),
+          items: const [
+            DropdownMenuItem(
+              value: "Today",
+              child: Text("Today", style: TextStyle(fontSize: 20)),
+            ),
+            DropdownMenuItem(
+              value: "Yesterday",
+              child: Text("Yesterday", style: TextStyle(fontSize: 20)),
+            ),
+            DropdownMenuItem(
+              value: "Pick Date",
+              child: Text("Pick Date", style: TextStyle(fontSize: 20)),
+            ),
+          ],
+          onChanged: (value) async {
+            if (value == "Today") {
+              setState(() {
+                dropdownValue = "Today";
+                selectedDate = DateTime.now();
+                _loadSavedMeals();
+              });
+            } else if (value == "Yesterday") {
+              setState(() {
+                dropdownValue = "Yesterday";
+                selectedDate = DateTime.now().subtract(const Duration(days: 1));
+                _loadSavedMeals();
+              });
+            } else if (value == "Pick Date") {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: selectedDate,
+                firstDate: DateTime(2024),
+                lastDate: DateTime.now(),
+              );
+              if (picked != null) {
+                setState(() {
+                  selectedDate = picked;
+                  dropdownValue = "Pick Date";
+                  _loadSavedMeals();
+                });
+              } else {
+                // User canceled, keep previous dropdownValue
+              }
+            }
+          },
         ),
-        actions: const [
-          Icon(Icons.settings, size: 24),
-          SizedBox(width: 12),
-          Icon(Icons.more_vert, size: 24),
-          SizedBox(width: 12),
-        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          Text(DateFormat.yMMMMd().format(selectedDate)),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -129,30 +352,42 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       height: 55,
                       width: 55,
                       child: CircularProgressIndicator(
-                        value: totalCalories / 1750,
+                        value: totalCalories / totalCalorieGoal,
                         strokeWidth: 5,
                         backgroundColor: Colors.grey.shade200,
-                        valueColor: const AlwaysStoppedAnimation(Colors.orange),
+                        valueColor: const AlwaysStoppedAnimation(
+                          Color(0xFF020770),
+                        ),
                       ),
                     ),
                     const Icon(Icons.local_dining, size: 24),
                   ],
                 ),
                 const SizedBox(width: 16),
-                Text(
-                  '$totalCalories of 1750 Cal',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '$totalCalories of $totalCalorieGoal Cal',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: _showEditTotalGoalDialog,
+                      child: const Icon(Icons.edit, size: 20),
+                    ),
+                  ],
                 ),
                 const Spacer(),
-                const Icon(Icons.bar_chart, color: Colors.orange),
+                const Icon(Icons.bar_chart, color: Color(0xFF020770)),
               ],
             ),
           ),
           const SizedBox(height: 24),
 
+          // Meals list
           ...MealType.values.map((meal) {
             final foods = meals[meal]!;
             final calories = foods.fold(
@@ -179,7 +414,14 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       style: const TextStyle(color: Colors.grey),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add_circle, color: Colors.orange),
+                      icon: const Icon(Icons.edit, size: 18),
+                      onPressed: () => _showEditGoalDialog(meal),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.add_circle,
+                        color: Color(0xFF020770),
+                      ),
                       onPressed: () => _addFood(meal),
                     ),
                   ],
@@ -206,36 +448,46 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                     vertical: 4,
                                   ),
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Expanded(child: Text(food.name)),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (_) => NutritionDetailsPage(
+                                                      foodName: food.name,
+                                                      calories: food.calories,
+                                                      protein: food.protein,
+                                                      fat: food.fat,
+                                                      carbs: food.carbs,
+                                                      fiber: food.fiber,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                          child: Text(food.name),
+                                        ),
+                                      ),
                                       Text(
                                         '${food.calories.toStringAsFixed(1)} Cal',
                                       ),
-                                      Text(
-                                        "${food.protein.toStringAsFixed(1)} prot",
-                                      ),
-                                      Text(
-                                        "${food.carbs.toStringAsFixed(1)} carb",
-                                      ),
-                                      Text(
-                                        "${food.fat.toStringAsFixed(1)} fat",
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          size: 20,
+                                          color: Colors.redAccent,
+                                        ),
+                                        onPressed: () {
+                                          Hive.box<FoodItem>(
+                                            'foodBox',
+                                          ).delete(food.key);
+                                          _loadSavedMeals();
+                                        },
                                       ),
                                     ],
                                   ),
-                                ),
-                              ),
-                              const Divider(),
-                              GestureDetector(
-                                onTap: () {},
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: const [
-                                    Text("Show Details"),
-                                    Icon(Icons.arrow_forward_ios, size: 16),
-                                  ],
                                 ),
                               ),
                             ],
@@ -250,19 +502,9 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   }
 
   Widget _buildEmptyText(MealType meal) {
-    switch (meal) {
-      case MealType.breakfast:
-        return const Text("Add something to your breakfast 🍳");
-      case MealType.morningSnack:
-        return const Text("Get energized by grabbing a morning snack 🥜");
-      case MealType.lunch:
-        return const Text("Don't miss lunch 🍱 It's time to get a tasty meal");
-      case MealType.eveningTea:
-        return const Text(
-          "Hey, here are some Healthy Snack Suggestions for you",
-        );
-      case MealType.dinner:
-        return const Text("An early dinner can help you sleep better 🍽😴");
-    }
+    return Text(
+      'No items added for ${mealTypeToString(meal)}.',
+      style: const TextStyle(color: Colors.grey),
+    );
   }
 }

@@ -1,4 +1,4 @@
-name: Thryv
+name: thryv
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -62,11 +62,23 @@ dev_dependencies:
   hive_generator: ^2.0.1
   build_runner: ^2.4.15
   flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.6
 
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/thryv logo.png"
+  image_path: "assets/thryvv.png"
+
+  flutter_native_splash: ^2.3.10
+
+flutter_native_splash:
+  color: "#FFFFFF" # or your background color
+  image: assets/thryvv.png # your logo path
+  android: true
+  ios: true
+  android_gravity: center
+  ios_content_mode: center
+
  
 
 # For information on the generic Dart part of this file, see the
