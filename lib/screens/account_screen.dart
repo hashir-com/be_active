@@ -126,7 +126,7 @@ class _AccountScreenState extends State<AccountScreen> {
             borderRadius: BorderRadius.circular(32),
             borderSide: BorderSide(
               color: theme.primaryColor,
-              width: 2,
+              width: 3,
             ), // focused border color
           ),
           errorBorder: OutlineInputBorder(

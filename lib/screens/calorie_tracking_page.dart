@@ -281,55 +281,69 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: DropdownButton<String>(
-          value: dropdownValue,
-          underline: const SizedBox(),
-          icon: const Icon(Icons.arrow_drop_down),
-          items: const [
-            DropdownMenuItem(
-              value: "Today",
-              child: Text("Today", style: TextStyle(fontSize: 20)),
-            ),
-            DropdownMenuItem(
-              value: "Yesterday",
-              child: Text("Yesterday", style: TextStyle(fontSize: 20)),
-            ),
-            DropdownMenuItem(
-              value: "Pick Date",
-              child: Text("Pick Date", style: TextStyle(fontSize: 20)),
-            ),
-          ],
-          onChanged: (value) async {
-            if (value == "Today") {
-              setState(() {
-                dropdownValue = "Today";
-                selectedDate = DateTime.now();
-                _loadSavedMeals();
-              });
-            } else if (value == "Yesterday") {
-              setState(() {
-                dropdownValue = "Yesterday";
-                selectedDate = DateTime.now().subtract(const Duration(days: 1));
-                _loadSavedMeals();
-              });
-            } else if (value == "Pick Date") {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: selectedDate,
-                firstDate: DateTime(2024),
-                lastDate: DateTime.now(),
-              );
-              if (picked != null) {
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+        title: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color:
+                Theme.of(
+                  context,
+                ).primaryColor, // background color of dropdown button
+            borderRadius: BorderRadius.circular(
+              12,
+            ), // rounded corners on button
+            border: Border.all(
+              color: const Color.fromARGB(0, 255, 255, 255),
+            ), // white border (optional)
+          ),
+          child: DropdownButton<String>(
+            value: dropdownValue,
+            dropdownColor: Theme.of(context).primaryColor,
+            // background color of dropdown menu (popup)
+            underline: const SizedBox(), // remove underline
+            icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+            style: const TextStyle(color: Colors.white, fontSize: 20),
+            borderRadius: BorderRadius.circular(50),
+            items: const [
+              DropdownMenuItem(value: "Today", child: Text("Today")),
+              DropdownMenuItem(value: "Yesterday", child: Text("Yesterday")),
+              DropdownMenuItem(value: "Pick Date", child: Text("Pick Date")),
+            ],
+            onChanged: (value) async {
+              if (value == "Today") {
                 setState(() {
-                  selectedDate = picked;
-                  dropdownValue = "Pick Date";
+                  dropdownValue = "Today";
+                  selectedDate = DateTime.now();
                   _loadSavedMeals();
                 });
-              } else {
-                // User canceled, keep previous dropdownValue
+              } else if (value == "Yesterday") {
+                setState(() {
+                  dropdownValue = "Yesterday";
+                  selectedDate = DateTime.now().subtract(
+                    const Duration(days: 1),
+                  );
+                  _loadSavedMeals();
+                });
+              } else if (value == "Pick Date") {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime(2024),
+                  lastDate: DateTime.now(),
+                );
+                if (picked != null) {
+                  setState(() {
+                    selectedDate = picked;
+                    dropdownValue = "Pick Date";
+                    _loadSavedMeals();
+                  });
+                } else {
+                  // User canceled, keep previous dropdownValue
+                }
               }
-            }
-          },
+            },
+          ),
         ),
       ),
       body: ListView(
