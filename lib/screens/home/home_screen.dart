@@ -8,6 +8,7 @@ import '../progress_screen.dart';
 import 'package:thryv/widgets/date_horizontal.dart';
 import 'package:hive/hive.dart';
 import 'package:thryv/screens/home/widgets/bmi_card.dart';
+import 'package:thryv/models/user_goal_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     final user = HiveService().getUser();
+    final usergoal = HiveService().getUserGoal();
     if (user != null) {
       name = user.name;
       sex = user.gender;
@@ -36,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         user.save();
       }
 
-      selectedGoal = user.goal;
+      selectedGoal = usergoal?.goal;
     }
   }
 

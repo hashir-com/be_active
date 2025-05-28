@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thryv/models/user_goal_model.dart';
 import 'models/user_model.dart';
 import 'models/food_item.dart';
 import 'screens/boarding/splash_screen.dart';
@@ -14,6 +15,9 @@ void main() async {
 
   Hive.registerAdapter(UserModelAdapter());
   await Hive.openBox<UserModel>('userBox');
+
+  Hive.registerAdapter(UserGoalModelAdapter());
+  await Hive.openBox<UserGoalModel>('userGoalBox');
 
   Hive.registerAdapter(FoodItemAdapter());
   await Hive.openBox<FoodItem>('foodBox');

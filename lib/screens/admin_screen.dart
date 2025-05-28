@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/user_model.dart';
 import 'package:thryv/services/hive_service.dart';
+import 'package:thryv/models/user_goal_model.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -18,6 +19,7 @@ class AdminScreen extends StatefulWidget {
 class _AdminScreenState extends State<AdminScreen> {
   final HiveService _hiveService = HiveService();
   UserModel? user;
+  UserGoalModel? usergoal;
 
   // Each workout has title, desc, and list of image paths
   List<Map<String, dynamic>> workouts = [];
@@ -29,6 +31,7 @@ class _AdminScreenState extends State<AdminScreen> {
   void initState() {
     super.initState();
     user = _hiveService.getUser();
+    usergoal = _hiveService.getUserGoal();
 
     if (user != null) {
       // Load workouts - previously a string, now parse into structure
@@ -36,24 +39,20 @@ class _AdminScreenState extends State<AdminScreen> {
       // but now images must be loaded separately - you need to adapt your model accordingly.
       // For demo, let's assume you added workoutImages saved in user model as List<List<String>> matching workouts
       workouts =
-          (user!.workoutPlan?.isNotEmpty ?? false)
-              ? user!.workoutPlan!.split('\n\n').asMap().entries.map((entry) {
+          (usergoal!.workoutPlan?.isNotEmpty ?? false)
+              ? usergoal!.workoutPlan!.split('\n\n').asMap().entries.map((entry) {
                 final parts = entry.value.split(': ');
                 return {
                   "title": parts[0],
                   "desc": parts.length > 1 ? parts[1] : "",
-                  "images":
-                      (user!.workoutImages != null &&
-                              user!.workoutImages!.length > entry.key)
-                          ? List<String>.from(user!.workoutImages![entry.key])
-                          : <String>[],
+                  
                 };
               }).toList()
               : [];
 
       diets =
-          (user!.dietPlan?.isNotEmpty ?? false)
-              ? user!.dietPlan!.split('\n\n').map((e) {
+          (usergoal!.dietPlan?.isNotEmpty ?? false)
+              ? usergoal!.dietPlan!.split('\n\n').map((e) {
                 final parts = e.split(': ');
                 return {
                   "title": parts[0],
@@ -145,8 +144,6 @@ class _AdminScreenState extends State<AdminScreen> {
                             GestureDetector(
                               onTap: () async {
                                 final List<XFile> newFiles =
-                                    
-                                    
                                     await _picker.pickMultiImage();
                                 if (newFiles.isNotEmpty) {
                                   setStateDialog(() {
@@ -237,17 +234,11 @@ class _AdminScreenState extends State<AdminScreen> {
   void _savePlans() {
     if (user == null) return;
 
-    user!.workoutPlan = workouts
+    usergoal!.workoutPlan = workouts
         .map((e) => "${e['title']}: ${e['desc']}")
         .join("\n\n");
 
-    user!.workoutImages =
-        workouts.map<List<String>>((e) {
-          final List<dynamic>? imgs = e['images'];
-          return imgs != null ? imgs.cast<String>().toList() : <String>[];
-        }).toList();
-
-    user!.dietPlan = diets
+    usergoal!.dietPlan = diets
         .map((e) => "${e['title']}: ${e['desc']}")
         .join("\n\n");
 
@@ -287,7 +278,7 @@ class _AdminScreenState extends State<AdminScreen> {
               _infoRow("BMI", user!.bmi?.toStringAsFixed(1) ?? 'N/A'),
               _infoRow(
                 "Goal",
-                userGoalToString(user!.goal ?? UserGoal.weightGain),
+                userGoalToString(usergoal!.goal ?? UserGoal.weightGain),
               ),
               const SizedBox(height: 24),
 

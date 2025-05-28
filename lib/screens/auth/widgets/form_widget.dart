@@ -5,16 +5,14 @@ import 'package:thryv/screens/home/navigation_screen.dart';
 import 'package:thryv/services/hive_service.dart';
 
 class FormWidget extends StatefulWidget {
-    
   const FormWidget({super.key, required this.gender});
- final String gender;
+  final String gender;
 
   @override
   State<FormWidget> createState() => _FormWidgetState();
 }
 
 class _FormWidgetState extends State<FormWidget> {
- 
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();

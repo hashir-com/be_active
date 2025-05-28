@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:thryv/screens/auth/widgets/form_widget.dart';
 import 'package:thryv/screens/auth/widgets/textfield_widget.dart';
+import 'package:thryv/models/user_goal_model.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -17,6 +18,7 @@ class _AccountScreenState extends State<AccountScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late Box<UserModel> userBox;
+
   UserModel? user;
 
   late TextEditingController nameController;
@@ -31,6 +33,7 @@ class _AccountScreenState extends State<AccountScreen> {
     super.initState();
 
     userBox = Hive.box<UserModel>('userBox');
+
     user = userBox.isNotEmpty ? userBox.getAt(0) : null;
 
     nameController = TextEditingController(text: user?.name ?? '');
@@ -67,9 +70,6 @@ class _AccountScreenState extends State<AccountScreen> {
         gender: selectedGender ?? '',
         height: double.parse(heightController.text),
         weight: double.parse(weightController.text),
-        goalIndex: user?.goalIndex,
-        workoutPlan: user?.workoutPlan,
-        dietPlan: user?.dietPlan,
         bmi: user?.bmi,
       );
 

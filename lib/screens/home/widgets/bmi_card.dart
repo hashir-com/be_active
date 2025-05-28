@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
+import 'package:thryv/models/user_goal_model.dart';
 
 String name = '';
 String sex = '';

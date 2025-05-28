@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/user_model.dart'; // Update path as needed
+import 'package:thryv/models/user_goal_model.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -14,13 +15,16 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   UserModel? user;
+  UserGoalModel? usergoal;
   bool _isFullScreen = false;
 
   @override
   void initState() {
     super.initState();
     final box = Hive.box<UserModel>('userBox');
+    final goalbox = Hive.box<UserGoalModel>('userGoalBox');
     user = box.get('user');
+    usergoal = goalbox.get('usergoal');
   }
 
   void _onFullScreenChanged(bool isFullScreen) {
@@ -110,7 +114,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final videoIds = getVideosForGoal(user?.goal);
+    final videoIds = getVideosForGoal(usergoal?.goal);
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
@@ -192,25 +196,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             infoRow(
                               Icons.flag,
                               "Goal",
-                              user!.goal != null
-                                  ? userGoalToString(user!.goal!)
-                                  : 'N/A',
+                              usergoal?.goal != null
+                                  ? userGoalToString(usergoal!.goal!)
+                                  : 'Not selected',
                               theme,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    Text("Workout Plan", style: theme.textTheme.headlineSmall),
-                    _buildPlanSection("Workout", user!.workoutImages, theme),
-                    const SizedBox(height: 24),
-                    Text("Diet Plan", style: theme.textTheme.headlineSmall),
-                    _buildPlanSection(
-                      "Diet",
-                      user!.workoutImages,
-                      theme,
-                    ), // if added
+                    // if added
                     const SizedBox(height: 24),
                     Text(
                       "Recommended Videos",

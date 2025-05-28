@@ -6,6 +6,7 @@ import '../../../../models/food_item.dart';
 import 'foodsearch.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/util/calorie_screen_utils.dart';
+import 'package:thryv/models/user_goal_model.dart';
 
 enum MealType { breakfast, morningSnack, lunch, eveningTea, dinner }
 
@@ -37,6 +38,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   DateTime selectedDate = DateTime.now();
 
   UserModel? user;
+  UserGoalModel? usergoal;
   Map<MealType, List<FoodItem>> meals = {
     MealType.breakfast: [],
     MealType.morningSnack: [],
@@ -68,10 +70,12 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     super.initState();
 
     final userBox = Hive.box<UserModel>('userBox');
+    final userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
     user = userBox.get('user');
+    usergoal = userGoalBox.get('usergoal');
 
-    if (user != null && user!.bmi != null && user!.goal != null) {
-      totalCalorieGoal = suggestInitialCalorieGoal(user!.bmi!, user!.goal!);
+    if (user != null && user!.bmi != null && usergoal!.goal != null) {
+      totalCalorieGoal = suggestInitialCalorieGoal(user!.bmi!, usergoal!.goal!);
     } else {
       totalCalorieGoal = 1750; // Default if no data available
     }
