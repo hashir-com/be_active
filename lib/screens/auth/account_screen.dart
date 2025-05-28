@@ -3,6 +3,8 @@ import 'package:hive/hive.dart';
 import '../../models/user_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:thryv/screens/auth/widgets/form_widget.dart';
+import 'package:thryv/screens/auth/widgets/textfield_widget.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -95,53 +97,6 @@ class _AccountScreenState extends State<AccountScreen> {
     }
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required IconData icon,
-    required String? Function(String?) validator,
-    TextInputType inputType = TextInputType.text,
-  }) {
-    final theme = Theme.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: TextFormField(
-        cursorColor: Colors.white,
-        controller: controller,
-        keyboardType: inputType,
-        validator: validator,
-        style: const TextStyle(color: Colors.white), // white input text
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.white), // white label text
-          prefixIcon: Icon(icon, color: Colors.white), // white icon
-          filled: true,
-          fillColor: Colors.transparent, // transparent background
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
-            borderSide: const BorderSide(color: Colors.white), // white border
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
-            borderSide: BorderSide(
-              color: theme.primaryColor,
-              width: 3,
-            ), // focused border color
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
-            borderSide: const BorderSide(color: Colors.red), // error border
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(32),
-            borderSide: const BorderSide(color: Colors.red, width: 2),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -209,17 +164,17 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildTextField(
+                    TextfieldWidget(
                       label: 'Name',
                       controller: nameController,
                       icon: Icons.person,
                       validator:
                           (val) =>
-                              val == null || val.isEmpty
+                              val == null || val.trim().isEmpty
                                   ? 'Enter your name'
                                   : null,
                     ),
-                    _buildTextField(
+                    TextfieldWidget(
                       label: 'Age',
                       controller: ageController,
                       icon: Icons.cake,
@@ -305,7 +260,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                     ),
 
-                    _buildTextField(
+                    TextfieldWidget(
                       label: 'Height (cm)',
                       controller: heightController,
                       icon: Icons.height,
@@ -317,7 +272,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         return null;
                       },
                     ),
-                    _buildTextField(
+                    TextfieldWidget(
                       label: 'Weight (kg)',
                       controller: weightController,
                       icon: Icons.monitor_weight,
