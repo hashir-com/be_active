@@ -14,17 +14,18 @@ class FoodSearchPage extends StatefulWidget {
   const FoodSearchPage({super.key, required this.mealType});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FoodSearchPageState createState() => _FoodSearchPageState();
 }
 
 class _FoodSearchPageState extends State<FoodSearchPage> {
   void _showManualAddDialog() {
-    final _nameController = TextEditingController();
-    final _caloriesController = TextEditingController();
-    final _proteinController = TextEditingController();
-    final _fatController = TextEditingController();
-    final _carbsController = TextEditingController();
-    final _fiberController = TextEditingController();
+    final nameController = TextEditingController();
+    final caloriesController = TextEditingController();
+    final proteinController = TextEditingController();
+    final fatController = TextEditingController();
+    final carbsController = TextEditingController();
+    final fiberController = TextEditingController();
 
     showDialog(
       context: context,
@@ -36,31 +37,31 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
-                  controller: _nameController,
+                  controller: nameController,
                   decoration: InputDecoration(labelText: 'Food Name'),
                 ),
                 TextField(
-                  controller: _caloriesController,
+                  controller: caloriesController,
                   decoration: InputDecoration(labelText: 'Calories'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
-                  controller: _proteinController,
+                  controller: proteinController,
                   decoration: InputDecoration(labelText: 'Protein (g)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
-                  controller: _fatController,
+                  controller: fatController,
                   decoration: InputDecoration(labelText: 'Fat (g)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
-                  controller: _carbsController,
+                  controller: carbsController,
                   decoration: InputDecoration(labelText: 'Carbs (g)'),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
-                  controller: _fiberController,
+                  controller: fiberController,
                   decoration: InputDecoration(labelText: 'Fiber (g)'),
                   keyboardType: TextInputType.number,
                 ),
@@ -74,16 +75,16 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final name = _nameController.text.trim();
+                final name = nameController.text.trim();
                 final calories =
-                    double.tryParse(_caloriesController.text.trim()) ?? 0;
+                    double.tryParse(caloriesController.text.trim()) ?? 0;
                 final protein =
-                    double.tryParse(_proteinController.text.trim()) ?? 0;
-                final fat = double.tryParse(_fatController.text.trim()) ?? 0;
+                    double.tryParse(proteinController.text.trim()) ?? 0;
+                final fat = double.tryParse(fatController.text.trim()) ?? 0;
                 final carbs =
-                    double.tryParse(_carbsController.text.trim()) ?? 0;
+                    double.tryParse(carbsController.text.trim()) ?? 0;
                 final fiber =
-                    double.tryParse(_fiberController.text.trim()) ?? 0;
+                    double.tryParse(fiberController.text.trim()) ?? 0;
 
                 if (name.isEmpty || calories <= 0) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -131,9 +132,11 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     await box.add(newFood);
 
     ScaffoldMessenger.of(
+      // ignore: use_build_context_synchronously
       context,
     ).showSnackBar(SnackBar(content: Text("$name added to your meal")));
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context); // Close current screen if needed or just refresh
   }
 

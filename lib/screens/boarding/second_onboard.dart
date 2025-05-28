@@ -94,7 +94,7 @@ class SecondOnboardingPage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => CreateAccountScreen()),
               );
             },
             style: ElevatedButton.styleFrom(

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:hive/hive.dart';
@@ -64,8 +65,8 @@ class _AdminScreenState extends State<AdminScreen> {
   }
 
   Future<void> _pickImages(List<String> imagesList) async {
-    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
-    if (pickedFiles != null && pickedFiles.isNotEmpty) {
+    final List<XFile> pickedFiles = await _picker.pickMultiImage();
+    if (pickedFiles.isNotEmpty) {
       setState(() {
         imagesList.addAll(pickedFiles.map((xfile) => xfile.path));
       });
@@ -143,11 +144,11 @@ class _AdminScreenState extends State<AdminScreen> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                final List<XFile>? newFiles =
+                                final List<XFile> newFiles =
                                     
                                     
                                     await _picker.pickMultiImage();
-                                if (newFiles != null && newFiles.isNotEmpty) {
+                                if (newFiles.isNotEmpty) {
                                   setStateDialog(() {
                                     pickedImages.addAll(
                                       newFiles.map((x) => x.path),
@@ -199,7 +200,9 @@ class _AdminScreenState extends State<AdminScreen> {
                               "desc": item["desc"] as String,
                             });
                           } else {
-                            print("Invalid diet item: $item");
+                            if (kDebugMode) {
+                              print("Invalid diet item: $item");
+                            }
                           }
                         }
                       });

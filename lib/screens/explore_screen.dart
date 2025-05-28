@@ -6,6 +6,8 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../models/user_model.dart'; // Update path as needed
 
 class ExploreScreen extends StatefulWidget {
+  const ExploreScreen({super.key});
+
   @override
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
