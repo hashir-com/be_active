@@ -2,7 +2,7 @@ import 'package:thryv/services/hive_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
-import '../explore_screen.dart';
+import '../explore screen/explore_screen.dart';
 import '../settings_screen.dart';
 import '../progress_screen.dart';
 import 'package:thryv/widgets/date_horizontal.dart';

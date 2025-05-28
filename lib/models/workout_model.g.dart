@@ -1,38 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_goal_model.dart';
+part of 'workout_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
+class WorkoutPlanAdapter extends TypeAdapter<WorkoutPlan> {
   @override
-  final int typeId = 3;
+  final int typeId = 4;
 
   @override
-  UserGoalModel read(BinaryReader reader) {
+  WorkoutPlan read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserGoalModel(
-      goalIndex: fields[0] as int?,
-      workoutPlans: (fields[1] as List?)?.cast<WorkoutPlan>(),
-      dietPlans: (fields[2] as List?)?.cast<DietPlan>(),
+    return WorkoutPlan(
+      workoutName: fields[0] as String?,
+      instruction: fields[1] as String?,
+      information: fields[2] as String?,
+      imageUrl: fields[3] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UserGoalModel obj) {
+  void write(BinaryWriter writer, WorkoutPlan obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
-      ..write(obj.goalIndex)
+      ..write(obj.workoutName)
       ..writeByte(1)
-      ..write(obj.workoutPlans)
+      ..write(obj.instruction)
       ..writeByte(2)
-      ..write(obj.dietPlans);
+      ..write(obj.information)
+      ..writeByte(3)
+      ..write(obj.imageUrl);
   }
 
   @override
@@ -41,7 +44,7 @@ class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserGoalModelAdapter &&
+      other is WorkoutPlanAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

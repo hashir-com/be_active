@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thryv/services/hive_service.dart';
 import 'package:thryv/models/user_model.dart';
-import '../explore_screen.dart';
+import '../explore screen/explore_screen.dart';
 import '../settings_screen.dart';
 import '../progress_screen.dart';
 import 'home_screen.dart';

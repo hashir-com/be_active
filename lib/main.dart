@@ -8,6 +8,8 @@ import 'providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:thryv/models/steps_model.dart';
+import 'models/workout_model.dart';
+import 'package:thryv/models/diet_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,9 @@ void main() async {
 
   Hive.registerAdapter(UserModelAdapter());
   await Hive.openBox<UserModel>('userBox');
+
+  Hive.registerAdapter(WorkoutPlanAdapter());
+  Hive.registerAdapter(DietPlanAdapter());
 
   Hive.registerAdapter(UserGoalModelAdapter());
   await Hive.openBox<UserGoalModel>('userGoalBox');

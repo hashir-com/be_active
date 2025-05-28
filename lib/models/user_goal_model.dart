@@ -1,4 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:thryv/models/workout_model.dart';
+import 'package:thryv/models/diet_model.dart';
 
 part 'user_goal_model.g.dart';
 
@@ -8,14 +10,14 @@ class UserGoalModel extends HiveObject {
   int? goalIndex;
 
   @HiveField(1)
-  String? workoutPlan;
+  List<WorkoutPlan>? workoutPlans;
 
   @HiveField(2)
-  String? dietPlan;
+  List<DietPlan>? dietPlans;
 
   UserGoalModel({this.goalIndex,
-  this.workoutPlan,
-    this.dietPlan,});
+  this.workoutPlans,
+    this.dietPlans,});
 
   UserGoal? get goal => goalIndex != null ? UserGoal.values[goalIndex!] : null;
 
