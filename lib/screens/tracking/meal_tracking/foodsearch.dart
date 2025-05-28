@@ -1,11 +1,12 @@
-// ignore_for_file: library_private_types_in_public_api
 
+import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
 import 'package:thryv/services/api%20services/search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../models/food_item.dart';
-import '../screens/calorie_tracking_page.dart'; // If needed
+import '../../../models/food_item.dart';
+
+// If needed
 
 class FoodSearchPage extends StatefulWidget {
   final MealType mealType;
@@ -169,7 +170,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       carbs: item.carbs,
       mealType: mealTypeToKey(widget.mealType),
       fiber: item.fiber,
-      date: DateTime.now(), // ✅ lowercase
+      date: DateTime.now(),
     );
 
     await box.add(newFood);
@@ -210,6 +211,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               itemBuilder: (context, index) {
                 final food = _foods[index];
                 return ListTile(
+                  onTap: () => _addToMeal(food),
                   title: Text(food.name),
                   subtitle: Text(
                     'Calories: ${food.calories}, Protein: ${food.protein}g',

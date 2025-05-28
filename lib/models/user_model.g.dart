@@ -26,13 +26,17 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       workoutPlan: fields[6] as String?,
       dietPlan: fields[7] as String?,
       bmi: fields[8] as double?,
+      images: (fields[9] as List?)?.cast<Uint8List>(),
+      workoutImages: (fields[10] as List?)
+          ?.map((dynamic e) => (e as List).cast<String>())
+          .toList(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -50,7 +54,11 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(7)
       ..write(obj.dietPlan)
       ..writeByte(8)
-      ..write(obj.bmi);
+      ..write(obj.bmi)
+      ..writeByte(9)
+      ..write(obj.images)
+      ..writeByte(10)
+      ..write(obj.workoutImages);
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'create_account_screen.dart';
+import '../auth/create_account_screen.dart';
 import 'package:thryv/widgets/linechart.dart';
 import 'package:thryv/widgets/icons_second_onboard.dart';
 

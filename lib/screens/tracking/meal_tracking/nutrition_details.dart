@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'calorie_tracking_page.dart';
+import 'package:thryv/models/food_item.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class NutritionDetailsPage extends StatelessWidget {
@@ -18,7 +17,7 @@ class NutritionDetailsPage extends StatelessWidget {
     required this.protein,
     required this.fat,
     required this.carbs,
-    required this.fiber,
+    required this.fiber, required List<FoodItem> foodItems, required String mealType,
   });
 
   @override
@@ -39,7 +38,7 @@ class NutritionDetailsPage extends StatelessWidget {
                 child: Text(
                   foodName,
                   style: GoogleFonts.righteous(
-                    fontSize: width * 0.05,
+                    fontSize: width * 0.08,
                     color: Colors.white,
                   ),
                 ),
@@ -56,46 +55,48 @@ class NutritionDetailsPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 26),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildNutritionCard(
-              'Calories',
-              calories,
-              Icons.local_fire_department,
-              Colors.orange,
-            ),
-            _buildNutritionCard(
-              'Protein',
-              protein,
-              Icons.fitness_center,
-              Colors.blue,
-            ),
-            _buildNutritionCard('Fat', fat, Icons.oil_barrel, Colors.red),
-            _buildNutritionCard(
-              'Carbs',
-              carbs,
-              Icons.bubble_chart,
-              Colors.green,
-            ),
-            _buildNutritionCard('Fiber', fiber, Icons.grass, Colors.purple),
-            SizedBox(height: 170),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "Back",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).primaryColor,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16, top: 26),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildNutritionCard(
+                'Calories',
+                calories,
+                Icons.local_fire_department,
+                Colors.orange,
+              ),
+              _buildNutritionCard(
+                'Protein',
+                protein,
+                Icons.fitness_center,
+                Colors.blue,
+              ),
+              _buildNutritionCard('Fat', fat, Icons.oil_barrel, Colors.red),
+              _buildNutritionCard(
+                'Carbs',
+                carbs,
+                Icons.bubble_chart,
+                Colors.green,
+              ),
+              _buildNutritionCard('Fiber', fiber, Icons.grass, Colors.purple),
+              SizedBox(height: 70),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Back",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

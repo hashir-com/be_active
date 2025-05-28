@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'home_screen.dart';
+import '../home/home_screen.dart';
 import 'package:thryv/services/hive_service.dart';
 import 'package:thryv/models/user_model.dart';
-import 'navigation_screen.dart';
+import '../home/navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

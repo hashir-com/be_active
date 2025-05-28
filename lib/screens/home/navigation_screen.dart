@@ -3,11 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:thryv/services/hive_service.dart';
 import 'package:thryv/models/user_model.dart';
-import 'explore_screen.dart';
-import 'settings_screen.dart';
-import 'progress_screen.dart';
+import '../explore_screen.dart';
+import '../settings_screen.dart';
+import '../progress_screen.dart';
 import 'home_screen.dart';
-import 'tracking_screen.dart'; // For the modal function showTrackOptions()
+import '../tracking/tracking_screen.dart'; // For the modal function showTrackOptions()
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});

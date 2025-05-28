@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/user_model.dart';
 import 'models/food_item.dart';
-import 'screens/splash_screen.dart';
+import 'screens/boarding/splash_screen.dart';
 import 'providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';

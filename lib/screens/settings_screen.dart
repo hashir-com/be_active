@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:thryv/models/user_model.dart';
-import 'package:thryv/screens/splash_screen.dart';
+import 'package:thryv/screens/boarding/splash_screen.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'admin_screen.dart';
 import 'aboutus.dart';
-import 'account_screen.dart';
+import 'auth/account_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

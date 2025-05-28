@@ -1,7 +1,7 @@
-import 'package:thryv/screens/home_screen.dart';
+import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
+import 'package:thryv/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'navigation_screen.dart';
-import 'package:thryv/screens/calorie_tracking_page.dart';
+import '../home/navigation_screen.dart';
 import 'sleep.dart';
 import 'steps.dart';
 import 'water.dart';

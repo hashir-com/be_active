@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'first_onboard.dart';
 import 'second_onboard.dart';
-import 'create_account_screen.dart';
+import '../auth/create_account_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

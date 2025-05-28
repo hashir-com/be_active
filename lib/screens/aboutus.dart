@@ -11,7 +11,7 @@ class Aboutus extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(28.0),
           child: Text(
-            "Be Active is a Health tracking app helps users to track their habits and make changes to lead a better lifestyle",
+            "thryv is a Health tracking app helps users to track their habits and make changes to lead a better lifestyle",
           ),
         ),
       ),
@@ -29,7 +29,7 @@ class Appversion extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(28.0),
-          child: Text("     Be Active \nVersion : v27.5"),
+          child: Text("         thryv \nVersion : v1.0.0.0"),
         ),
       ),
     );
@@ -46,7 +46,7 @@ class Liscence extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(28.0),
-          child: Text("Be Active is Lisenced!"),
+          child: Text("thryv is Lisenced!"),
         ),
       ),
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import '../models/food_item.dart';
+import 'package:thryv/screens/tracking/meal_tracking/nutrition_details.dart';
+import '../../../../models/food_item.dart';
 import 'foodsearch.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/util/calorie_screen_utils.dart';
-import 'nutrition_details.dart';
 
 enum MealType { breakfast, morningSnack, lunch, eveningTea, dinner }
 
@@ -241,36 +241,36 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     );
   }
 
-  String _getDateLabel(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final pickedDate = DateTime(date.year, date.month, date.day);
+  // String _getDateLabel(DateTime date) {
+  //   final now = DateTime.now();
+  //   final today = DateTime(now.year, now.month, now.day);
+  //   final pickedDate = DateTime(date.year, date.month, date.day);
 
-    if (pickedDate == today) return "Today";
-    if (pickedDate == today.subtract(const Duration(days: 1))) {
-      return "Yesterday";
-    }
+  //   if (pickedDate == today) return "Today";
+  //   if (pickedDate == today.subtract(const Duration(days: 1))) {
+  //     return "Yesterday";
+  //   }
 
-    return "${_monthName(date.month)} ${date.day}, ${date.year}";
-  }
+  //   return "${_monthName(date.month)} ${date.day}, ${date.year}";
+  // }
 
-  String _monthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
+  // String _monthName(int month) {
+  //   const months = [
+  //     'Jan',
+  //     'Feb',
+  //     'Mar',
+  //     'Apr',
+  //     'May',
+  //     'Jun',
+  //     'Jul',
+  //     'Aug',
+  //     'Sep',
+  //     'Oct',
+  //     'Nov',
+  //     'Dec',
+  //   ];
+  //   return months[month - 1];
+  // }
 
   int get totalCalories => meals.values
       .expand((e) => e)
@@ -349,7 +349,10 @@ class MealTrackerPageState extends State<MealTrackerPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(DateFormat.yMMMMd().format(selectedDate)),
+          Text(
+            "Selected Date: ${DateFormat.yMMMMd().format(selectedDate)}",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -477,6 +480,8 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                                       fat: food.fat,
                                                       carbs: food.carbs,
                                                       fiber: food.fiber,
+                                                      foodItems: [],
+                                                      mealType: '',
                                                     ),
                                               ),
                                             );

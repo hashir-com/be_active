@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
-import 'package:thryv/screens/home_screen.dart';
+import 'dart:typed_data';
 import 'package:hive/hive.dart';
 
-part 'user_model.g.dart'; // If not already present
+part 'user_model.g.dart';
 
 @HiveType(typeId: 0)
 class UserModel extends HiveObject {
@@ -34,6 +32,12 @@ class UserModel extends HiveObject {
   @HiveField(8)
   double? bmi;
 
+  @HiveField(9)
+  List<Uint8List> images;
+
+  @HiveField(10)
+  List<List<String>>? workoutImages;
+
   UserModel({
     required this.name,
     required this.age,
@@ -44,7 +48,9 @@ class UserModel extends HiveObject {
     this.workoutPlan,
     this.dietPlan,
     this.bmi,
-  });
+    List<Uint8List>? images,
+    this.workoutImages,
+  }) : images = images ?? [];
 
   UserGoal? get goal => goalIndex != null ? UserGoal.values[goalIndex!] : null;
 
@@ -66,9 +72,8 @@ String userGoalToString(UserGoal goal) {
 
 int suggestInitialCalorieGoal(double bmi, UserGoal goal) {
   if (bmi < 18.5 && goal == UserGoal.weightLoss) {
-    return 2500; // Special case: underweight but wants to lose weight
+    return 2500;
   }
-
   if (goal == UserGoal.weightLoss) {
     if (bmi >= 30) return 1600;
     if (bmi >= 25) return 1700;
@@ -80,6 +85,5 @@ int suggestInitialCalorieGoal(double bmi, UserGoal goal) {
     if (bmi < 16.5) return 2500;
     return 2300;
   }
-
-  return 2000; // Default
+  return 2000;
 }
