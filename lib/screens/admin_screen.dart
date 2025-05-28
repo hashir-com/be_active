@@ -113,7 +113,7 @@ class AdminScreenState extends State<AdminScreen> {
 
         // Default border
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(24),
           borderSide: const BorderSide(
             color: Colors.grey,
           ), // Default border color
@@ -121,7 +121,7 @@ class AdminScreenState extends State<AdminScreen> {
 
         // When TextField is not focused
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(24),
           borderSide: const BorderSide(
             color: Color.fromARGB(255, 255, 255, 255),
           ), // Change this
@@ -129,7 +129,7 @@ class AdminScreenState extends State<AdminScreen> {
 
         // When TextField is focused (clicked)
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(
             color: Color.fromARGB(255, 119, 40, 255),
             width: 2,
@@ -296,7 +296,12 @@ class AdminScreenState extends State<AdminScreen> {
                           Icons.fitness_center,
                           color: Color.fromARGB(255, 20, 0, 149),
                         ),
-                        label: const Text('Add Workout'),
+                        label: const Text(
+                          'Add Workout',
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 9, 1, 114),
+                          ),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color.fromARGB(
                             255,
