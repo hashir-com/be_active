@@ -18,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -34,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
       double w = user.weight;
       if (h > 0) {
         bmi = w / ((h / 100) * (h / 100));
-        user.bmi = bmi; // ✅ Update value
+        user.bmi = bmi;
         user.save();
       }
 
@@ -51,15 +50,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(height * 0.2),
         child: Container(
-          color: Theme.of(context).primaryColor,
+          color: theme.primaryColor,
           padding: EdgeInsets.only(top: height * 0.07, left: width * 0.05),
           alignment: Alignment.centerLeft,
           child: Column(
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   "Hi, $name",
                   style: GoogleFonts.righteous(
                     fontSize: width * 0.09,
-                    color: Colors.white,
+                    color: theme.highlightColor,
                   ),
                 ),
               ),
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 "Let’s make habit together!",
                 style: GoogleFonts.roboto(
                   fontSize: width * 0.035,
-                  color: Colors.white,
+                  color: theme.highlightColor,
                 ),
               ),
             ],
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.bodyLarge!.color,
+                color: theme.textTheme.bodyLarge!.color,
               ),
             ),
             const SizedBox(height: 10),
@@ -113,14 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     return SizedBox(
                       width: width * 0.29,
                       child: ChoiceChip(
-                        checkmarkColor: Colors.white,
+                        checkmarkColor: theme.highlightColor,
                         label: Text(userGoalToString(goal)),
                         selected: isSelected,
-                        selectedColor: Theme.of(context).primaryColor,
+                        selectedColor: theme.primaryColor,
                         labelStyle: TextStyle(
                           color:
                               isSelected
-                                  ? Colors.white
+                                  ? theme.highlightColor
                                   : Theme.of(
                                     context,
                                   ).textTheme.bodyMedium!.color,
@@ -142,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
               "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
               style: TextStyle(
                 fontSize: 16,
-                color: Theme.of(context).textTheme.bodyMedium!.color,
+                color: theme.textTheme.bodyMedium!.color,
               ),
             ),
           ],
@@ -151,5 +151,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-

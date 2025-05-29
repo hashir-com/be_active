@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
+import 'package:thryv/admin_panel/admin_screen.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
-import 'admin_screen.dart';
 import 'aboutus.dart';
 import 'auth/account_screen.dart';
 
@@ -49,6 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   late Box<UserModel> userBox;
+  late Box<UserGoalModel> userGoalBox;
 
   @override
   void initState() {
@@ -201,6 +203,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (confirmed == true) {
                       // Delete user data from Hive
                       await userBox.clear();
+                      await userGoalBox.clear();
                     }
                   },
                 ),

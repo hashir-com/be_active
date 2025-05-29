@@ -8,9 +8,11 @@ import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/explore screen/diet_detail_screen.dart';
 import 'package:thryv/screens/explore screen/workout_detail_screen.dart';
 import '../models/user_goal_model.dart';
+import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
+import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
 
 class AdminScreen extends StatefulWidget {
-  const AdminScreen({Key? key}) : super(key: key);
+  const AdminScreen({super.key});
 
   @override
   State<AdminScreen> createState() => AdminScreenState();
@@ -21,7 +23,6 @@ class AdminScreenState extends State<AdminScreen> {
   final _workoutInstructionController = TextEditingController();
   final _workoutInfoController = TextEditingController();
   final _workoutImageController = TextEditingController();
-
   final _dietNameController = TextEditingController();
   final _dietServingsController = TextEditingController();
   final _dietCaloriesController = TextEditingController();
@@ -95,72 +96,6 @@ class AdminScreenState extends State<AdminScreen> {
     });
   }
 
-  Widget buildInputField(
-    String label,
-    TextEditingController controller, {
-    int maxLines = 1,
-    TextInputType? keyboardType,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(color: Colors.white),
-        filled: true,
-        fillColor: const Color.fromARGB(0, 245, 245, 245),
-
-        // Default border
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24),
-          borderSide: const BorderSide(
-            color: Colors.grey,
-          ), // Default border color
-        ),
-
-        // When TextField is not focused
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(24),
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 255, 255, 255),
-          ), // Change this
-        ),
-
-        // When TextField is focused (clicked)
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20),
-          borderSide: const BorderSide(
-            color: Color.fromARGB(255, 119, 40, 255),
-            width: 2,
-          ), // Change this
-        ),
-      ),
-    );
-  }
-
-  Widget infoRow(IconData icon, String label, String value, ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 12),
-          Text("$label:", style: TextStyle(color: Colors.white, fontSize: 16)),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: const Color.fromARGB(255, 196, 209, 255),
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

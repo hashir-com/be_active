@@ -1,41 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:thryv/models/user_goal_model.dart';
-import 'models/user_model.dart';
-import 'models/food_item.dart';
-import 'screens/boarding/splash_screen.dart';
-import 'providers/theme_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-import 'package:thryv/models/steps_model.dart';
-import 'models/workout_model.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:provider/provider.dart';
+import 'package:thryv/helpers/hive_setup_registration.dart';
+import 'package:thryv/theme/app_colors.dart';
+import 'package:thryv/screens/boarding/splash_screen.dart';
+import 'package:thryv/providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-
-  Hive.registerAdapter(UserModelAdapter());
-  await Hive.openBox<UserModel>('userBox');
-
-  Hive.registerAdapter(WorkoutPlanAdapter());
-  Hive.registerAdapter(DietPlanAdapter());
-
-  Hive.registerAdapter(UserGoalModelAdapter());
-  await Hive.openBox<UserGoalModel>('userGoalBox');
-
-  Hive.registerAdapter(FoodItemAdapter());
-  await Hive.openBox<FoodItem>('foodBox');
-
-  Hive.registerAdapter(StepEntryAdapter());
-  await Hive.openBox<StepEntry>('stepsBox');
+  await initHive(); // 🔄 Register adapters and open boxes
 
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor:
-          Colors.transparent, // Optional: transparent or match your app bar
-      statusBarIconBrightness: Brightness.light, // For Android
-      statusBarBrightness: Brightness.dark, // For iOS
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
     ),
   );
 
@@ -60,18 +39,20 @@ class AppInitializer extends StatelessWidget {
           themeMode: themeProvider.currentTheme,
           theme: ThemeData(
             brightness: Brightness.light,
-            primaryColor: const Color(0xFF020770),
-            primaryColorLight: const Color.fromARGB(255, 85, 94, 255),
-            scaffoldBackgroundColor: const Color.fromARGB(255, 243, 243, 255),
+            highlightColor: AppColors.white,
+            primaryColor: AppColors.primary,
+            primaryColorLight: AppColors.accent,
+            scaffoldBackgroundColor: AppColors.backgroundLight,
             appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
           ),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-            primaryColor: const Color(0xFF020770),
-            primaryColorLight: const Color.fromARGB(255, 85, 94, 255),
-            scaffoldBackgroundColor: Colors.black,
+            highlightColor: AppColors.white,
+            primaryColor: AppColors.primary,
+            primaryColorLight: AppColors.accent,
+            scaffoldBackgroundColor: AppColors.backgroundDark,
             appBarTheme: const AppBarTheme(
-              backgroundColor: Color.fromARGB(255, 255, 255, 255),
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
           ),

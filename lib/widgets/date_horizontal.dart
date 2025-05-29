@@ -77,57 +77,81 @@ class _HorizontalDateListState extends State<HorizontalDateList> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: weekDates.length,
-        itemBuilder: (context, index) {
-          DateTime date = weekDates[index];
-          bool isSelected = isSameDay(date, selectedDate);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double itemWidth =
+            (constraints.maxWidth - 4 * 1 * weekDates.length) /
+            weekDates.length;
 
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedDate = date;
-              });
+        return SizedBox(
+          height: 80,
+          child: ListView.builder(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            itemCount: weekDates.length,
+            itemBuilder: (context, index) {
+              DateTime date = weekDates[index];
+              bool isSelected = isSameDay(date, selectedDate);
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+                child: Container(
+                  width: itemWidth,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 7,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color:
+                        isSelected
+                            ? Theme.of(context).primaryColor
+                            : Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColorDark,
+                      width: 0,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        DateFormat.E().format(date),
+                        style: TextStyle(
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.color,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        DateFormat.d().format(date),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isSelected
+                                  ? Colors.white
+                                  : Theme.of(
+                                    context,
+                                  ).textTheme.bodyMedium!.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
             },
-            child: Container(
-              width: 60,
-              margin: EdgeInsets.symmetric(horizontal: 6, vertical: 10),
-              decoration: BoxDecoration(
-                color:
-                    isSelected
-                        ? const Color(0xFF020770)
-                        : const Color.fromARGB(255, 255, 255, 255),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Color(0xFF040B90), width: 1.3),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    DateFormat.E().format(date),
-                    style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    DateFormat.d().format(date),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : Colors.black,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
