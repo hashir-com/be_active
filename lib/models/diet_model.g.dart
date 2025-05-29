@@ -18,21 +18,24 @@ class DietPlanAdapter extends TypeAdapter<DietPlan> {
     };
     return DietPlan(
       dietName: fields[0] as String?,
-      servings: fields[1] as int?,
+      servings: fields[1] as String?,
       calorie: fields[2] as int?,
+      mealType: fields[3] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DietPlan obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.dietName)
       ..writeByte(1)
       ..write(obj.servings)
       ..writeByte(2)
-      ..write(obj.calorie);
+      ..write(obj.calorie)
+      ..writeByte(3)
+      ..write(obj.mealType);
   }
 
   @override

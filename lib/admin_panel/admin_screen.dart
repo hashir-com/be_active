@@ -24,6 +24,7 @@ class AdminScreenState extends State<AdminScreen> {
   final _workoutInfoController = TextEditingController();
   final _workoutImageController = TextEditingController();
   final _dietNameController = TextEditingController();
+  final _mealTypeController = TextEditingController();
   final _dietServingsController = TextEditingController();
   final _dietCaloriesController = TextEditingController();
 
@@ -88,8 +89,9 @@ class AdminScreenState extends State<AdminScreen> {
   void addDiet() {
     if (_dietNameController.text.isEmpty) return;
     final diet = DietPlan(
+      mealType:_mealTypeController.text,
       dietName: _dietNameController.text,
-      servings: int.tryParse(_dietServingsController.text) ?? 0,
+      servings: _dietServingsController.text,
       calorie: int.tryParse(_dietCaloriesController.text) ?? 0,
     );
     userGoal!.dietPlans ??= [];
@@ -266,6 +268,8 @@ class AdminScreenState extends State<AdminScreen> {
                         color: Colors.white,
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    buildInputField('Meal Type', _mealTypeController),
                     const SizedBox(height: 10),
                     buildInputField('Diet Name', _dietNameController),
                     const SizedBox(height: 10),
