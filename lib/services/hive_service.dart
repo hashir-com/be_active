@@ -14,22 +14,30 @@ class HiveService {
 
   Future<void> saveUser(UserModel user) async {
     await _userBox.put('user', user);
-
   }
 
   UserModel? getUser() {
     return _userBox.get('user');
   }
-   UserGoalModel? getUserGoal() {
+
+  UserGoalModel? getUserGoal() {
     return _userGoalBox.get('usergoal');
   }
 
   // ✅ Moved inside the class
   void saveUserGoal(UserGoal goal) {
-    final user = getUserGoal();
-    if (user != null) {
-      user.goal = goal;
-      user.save(); // Persist to box
+    final userGoalModel = getUserGoal();
+
+    if (userGoalModel != null) {
+      // Update existing goal and save
+      userGoalModel.goal = goal;
+      userGoalModel.save();
+    } else {
+      // Create new UserGoalModel and save it in the box
+      final newUserGoal = UserGoalModel(goalIndex: goal.index);
+      _userGoalBox.put('usergoal', newUserGoal);
     }
   }
 }
+
+abstract class HiveObject with HiveObjectMixin {}

@@ -37,8 +37,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
   }
 
   void _onFullScreenChanged(bool isFullScreen) {
-    setState(() {
-      _isFullScreen = isFullScreen;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _isFullScreen = isFullScreen;
+        });
+      }
     });
   }
 
@@ -231,18 +235,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                       : const Icon(Icons.fitness_center),
                               title: Text(workout.workoutName ?? 'No name'),
                               subtitle: Text(workout.instruction ?? ''),
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    userGoal!.workoutPlans!.removeAt(index);
-                                    saveUserGoal();
-                                  });
-                                },
-                              ),
                             ),
                           );
                         },

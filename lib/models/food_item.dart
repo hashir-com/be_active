@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'dart:ffi';
 
 import 'package:thryv/screens/home/home_screen.dart';
+import 'package:thryv/services/hive_service.dart';
 
 part 'food_item.g.dart';
 

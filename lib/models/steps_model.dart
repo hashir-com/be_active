@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:thryv/services/hive_service.dart';
 
 part 'steps_model.g.dart';
 

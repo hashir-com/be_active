@@ -31,17 +31,15 @@ class AdminScreenState extends State<AdminScreen> {
   UserGoalModel? userGoal;
 
   UserModel? user;
-  UserGoalModel? usergoal;
 
   @override
   void initState() {
     super.initState();
     final box = Hive.box<UserModel>('userBox');
     final goalbox = Hive.box<UserGoalModel>('userGoalBox');
-    userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
+    userGoalBox = goalbox;
     userGoal = goalbox.get('goal') ?? UserGoalModel();
     user = box.get('user');
-    usergoal = goalbox.get('usergoal');
   }
 
   @override
@@ -61,7 +59,15 @@ class AdminScreenState extends State<AdminScreen> {
   }
 
   void addWorkout() {
-    if (_workoutNameController.text.isEmpty) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Workout added successfully!')));
+
+    if (_workoutNameController.text.isEmpty ||
+        _workoutInstructionController.text.isEmpty ||
+        _workoutInfoController.text.isEmpty) {
+      return;
+    }
     final workout = WorkoutPlan(
       workoutName: _workoutNameController.text,
       instruction: _workoutInstructionController.text,
@@ -95,7 +101,6 @@ class AdminScreenState extends State<AdminScreen> {
       _dietCaloriesController.clear();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -186,8 +191,8 @@ class AdminScreenState extends State<AdminScreen> {
                             infoRow(
                               Icons.flag,
                               "Goal",
-                              usergoal?.goal != null
-                                  ? userGoalToString(usergoal!.goal!)
+                              userGoal?.goal != null
+                                  ? userGoalToString(userGoal!.goal!)
                                   : 'Not selected',
                               theme,
                             ),

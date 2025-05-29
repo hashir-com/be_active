@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:thryv/services/hive_service.dart';
 
 part 'workout_model.g.dart'; // <- this is important for generated code
 
