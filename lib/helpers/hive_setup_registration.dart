@@ -18,6 +18,7 @@ Future<void> initHive() async {
 
   await Hive.openBox<UserModel>('userBox');
   await Hive.openBox<UserGoalModel>('userGoalBox');
+  await Hive.openBox<DietPlan>('dietPlans');
   await Hive.openBox<WorkoutPlan>('workoutBox');
   await Hive.openBox<FoodItem>('foodBox');
   await Hive.openBox<StepEntry>('stepsBox');

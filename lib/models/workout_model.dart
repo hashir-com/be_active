@@ -17,5 +17,5 @@ class WorkoutPlan extends HiveObject {
   @HiveField(3)
   String? imageUrl;
 
-  WorkoutPlan({this.workoutName, this.instruction, this.information, this.imageUrl});
+  WorkoutPlan({this.workoutName, this.instruction, this.information, this.imageUrl,});
 }

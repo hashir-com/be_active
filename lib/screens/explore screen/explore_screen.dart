@@ -274,7 +274,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (_) => DietDetailScreen(diet: diet),
+                                        (_) => DietDetailScreen(diet: diet, index: index,),
                                   ),
                                 );
                               },

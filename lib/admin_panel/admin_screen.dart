@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thryv/admin_panel/edit_diet_screen.dart';
+import 'package:thryv/admin_panel/widgets/image_pick_widget.dart';
+import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
 import 'package:thryv/models/diet_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/models/workout_model.dart';
@@ -10,6 +13,8 @@ import 'package:thryv/screens/explore screen/workout_detail_screen.dart';
 import '../models/user_goal_model.dart';
 import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
 import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -19,6 +24,25 @@ class AdminScreen extends StatefulWidget {
 }
 
 class AdminScreenState extends State<AdminScreen> {
+  File? _pickedImage;
+
+  void _pickImage() async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _pickedImage = File(image.path);
+      });
+      _workoutImageController.text = image.path;
+    }
+  }
+
+  void _deleteImage() {
+    setState(() {
+      _pickedImage = null;
+      _workoutImageController.clear();
+    });
+  }
+
   final _workoutNameController = TextEditingController();
   final _workoutInstructionController = TextEditingController();
   final _workoutInfoController = TextEditingController();
@@ -30,17 +54,20 @@ class AdminScreenState extends State<AdminScreen> {
 
   late Box<UserGoalModel> userGoalBox;
   UserGoalModel? userGoal;
+  DietPlan? diet;
 
   UserModel? user;
 
   @override
   void initState() {
     super.initState();
+    final dietbox = Hive.box<DietPlan>('dietPlans');
     final box = Hive.box<UserModel>('userBox');
     final goalbox = Hive.box<UserGoalModel>('userGoalBox');
     userGoalBox = goalbox;
     userGoal = goalbox.get('goal') ?? UserGoalModel();
     user = box.get('user');
+    diet = dietbox.get('diet');
   }
 
   @override
@@ -60,10 +87,6 @@ class AdminScreenState extends State<AdminScreen> {
   }
 
   void addWorkout() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Workout added successfully!')));
-
     if (_workoutNameController.text.isEmpty ||
         _workoutInstructionController.text.isEmpty ||
         _workoutInfoController.text.isEmpty) {
@@ -79,17 +102,21 @@ class AdminScreenState extends State<AdminScreen> {
     userGoal!.workoutPlans!.add(workout);
     saveUserGoal();
     setState(() {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Workout added successfully!')));
       _workoutNameController.clear();
       _workoutInstructionController.clear();
       _workoutInfoController.clear();
       _workoutImageController.clear();
+      _deleteImage();
     });
   }
 
   void addDiet() {
     if (_dietNameController.text.isEmpty) return;
     final diet = DietPlan(
-      mealType:_mealTypeController.text,
+      mealType: _mealTypeController.text,
       dietName: _dietNameController.text,
       servings: _dietServingsController.text,
       calorie: int.tryParse(_dietCaloriesController.text) ?? 0,
@@ -225,15 +252,19 @@ class AdminScreenState extends State<AdminScreen> {
                       maxLines: 2,
                     ),
                     const SizedBox(height: 10),
-                    buildInputField(
-                      'Image URL or Path',
-                      _workoutImageController,
+                    buildImagePickerField(
+                      'Workout Image',
+                      _pickedImage,
+                      _pickImage,
+                      _deleteImage,
                     ),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: ElevatedButton.icon(
-                        onPressed: addWorkout,
+                        onPressed: () {
+                          addWorkout();
+                        },
                         icon: const Icon(
                           Icons.fitness_center,
                           color: Color.fromARGB(255, 20, 0, 149),
@@ -269,7 +300,18 @@ class AdminScreenState extends State<AdminScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    buildInputField('Meal Type', _mealTypeController),
+                    GradientDropdown(
+                      label: 'Meal Type',
+                      options: [
+                        'Breakfast',
+                        'Morning Snack',
+                        'Lunch',
+                        'Evening Tea',
+                        'Dinner',
+                      ],
+                      controller: _mealTypeController,
+                    ),
+
                     const SizedBox(height: 10),
                     buildInputField('Diet Name', _dietNameController),
                     const SizedBox(height: 10),
@@ -323,7 +365,7 @@ class AdminScreenState extends State<AdminScreen> {
                           final workout = userGoal!.workoutPlans![index];
                           return Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(42),
                             ),
                             elevation: 4,
                             child: ListTile(
@@ -349,17 +391,27 @@ class AdminScreenState extends State<AdminScreen> {
                                       ),
                               title: Text(workout.workoutName ?? ''),
                               subtitle: Text(workout.instruction ?? ''),
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.delete_forever,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    userGoal!.workoutPlans!.removeAt(index);
-                                    saveUserGoal();
-                                  });
-                                },
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline_rounded,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        userGoal!.workoutPlans!.removeAt(index);
+                                        saveUserGoal();
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () {},
+                                    tooltip: 'Edit',
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 Navigator.push(
@@ -395,9 +447,11 @@ class AdminScreenState extends State<AdminScreen> {
                         itemCount: userGoal!.dietPlans!.length,
                         itemBuilder: (context, index) {
                           final diet = userGoal!.dietPlans![index];
+                          // ✅ Not diet.keyAt!
+
                           return Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(42),
                             ),
                             elevation: 4,
                             child: ListTile(
@@ -405,28 +459,76 @@ class AdminScreenState extends State<AdminScreen> {
                                 Icons.restaurant_menu,
                                 color: Colors.green,
                               ),
-                              title: Text(diet.dietName ?? ''),
+                              title: Text(diet.mealType ?? ''),
                               subtitle: Text(
-                                'Servings: ${diet.servings}, Calories: ${diet.calorie}',
+                                '${diet.dietName}\n Servings: ${diet.servings}\n Calories: ${diet.calorie}',
                               ),
-                              trailing: IconButton(
-                                icon: const Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    userGoal!.dietPlans!.removeAt(index);
-                                    saveUserGoal();
-                                  });
-                                },
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        userGoal!.dietPlans!.removeAt(index);
+                                        saveUserGoal();
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    onPressed: () async {
+                                      // Validate index before pushing
+                                      if (index < 0 ||
+                                          index >=
+                                              (userGoal?.dietPlans?.length ??
+                                                  0)) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Invalid diet item index.',
+                                            ),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      final edited = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => EditDietScreen(
+                                                diet: diet,
+                                                index: index,
+                                                userGoal: userGoal!,
+                                              ),
+                                        ),
+                                      );
+
+                                      if (edited == true) {
+                                        setState(() {
+                                          // Refresh UI after editing
+                                        });
+                                      }
+                                    },
+                                    tooltip: 'Edit',
+                                  ),
+                                ],
                               ),
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (_) => DietDetailScreen(diet: diet),
+                                        (_) => DietDetailScreen(
+                                          diet: diet,
+                                          index: index,
+                                        ),
                                   ),
                                 );
                               },
