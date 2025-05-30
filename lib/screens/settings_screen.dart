@@ -52,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   late Box<UserModel> userBox;
-  late Box<UserGoalModel> userGoalBox;
+  late Box<UserGoalModel>? userGoalBox;
   late Box<WorkoutPlan> workoutplan;
   late Box<DietPlan> dietplan;
 
@@ -61,7 +61,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     userBox = Hive.box<UserModel>('userBox');
     workoutplan = Hive.box<WorkoutPlan>('workoutBox');
-    dietplan = Hive.box<DietPlan>('dietPlans'); // get the box here
+    dietplan = Hive.box<DietPlan>('dietPlans');
+    userGoalBox = Hive.box<UserGoalModel>('userGoalBox'); // get the box here
   }
 
   @override
@@ -164,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 _buildDivider(theme),
                 _buildListTile(
-                  'License',
+                  'Terms and Conditions',
                   Icons.article,
                   theme,
                   onTap: () {
@@ -208,12 +209,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final confirmed = await _showDeleteConfirmationDialog();
                     if (confirmed == true) {
                       // Delete user data from Hive
+                      // Close Hive and delete all data from device storage
+                      await Hive.close();
                       await Hive.deleteFromDisk();
 
-                      await userBox.clear();
-                      await userGoalBox.clear();
-                      await workoutplan.clear();
-                      await dietplan.clear();
+                      // Restart app state (wipe userGoal or any model variables)
+                      setState(() {
+                        userGoalBox = null;
+                      });
+
+                      // Optional: Restart the whole app screen
                     }
                   },
                 ),

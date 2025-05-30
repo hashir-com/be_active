@@ -393,7 +393,7 @@ class AdminScreenState extends State<AdminScreen> {
                               leading:
                                   workout.imageUrl != null
                                       ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(18),
                                         child: Image.file(
                                           File(workout.imageUrl!),
                                           width: 50,
@@ -409,6 +409,7 @@ class AdminScreenState extends State<AdminScreen> {
                                         Icons.fitness_center,
                                         color: Colors.indigo,
                                       ),
+                                      
                               title: Text(workout.workoutName ?? ''),
                               subtitle: Text(workout.instruction ?? ''),
                               trailing: Row(
@@ -528,11 +529,12 @@ class AdminScreenState extends State<AdminScreen> {
                               leading:
                                   diet.dietimage != null
                                       ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(18),
                                         child: Image.file(
                                           File(diet.dietimage!),
                                           width: 50,
-                                          fit: BoxFit.cover,
+                                          height: 50,
+                                          fit: BoxFit.fill,
                                           errorBuilder:
                                               (_, __, ___) => const Icon(
                                                 Icons.restaurant_menu_rounded,
@@ -545,9 +547,7 @@ class AdminScreenState extends State<AdminScreen> {
                                         color: Colors.indigo,
                                       ),
                               title: Text(diet.mealType ?? ''),
-                              subtitle: Text(
-                                '${diet.dietName}\n Servings: ${diet.servings}\n Calories: ${diet.calorie}',
-                              ),
+                              subtitle: Text('${diet.dietName}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [

@@ -172,23 +172,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     // if added
                     const SizedBox(height: 24),
-                    Text(
-                      "Recommended Videos",
-                      style: theme.textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 12),
-                    ...videoIds.map(
-                      (id) => Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: YoutubePlayerWidget(
-                          videoId: id,
-                          onFullScreenChanged: _onFullScreenChanged,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
                     // Display Workouts List
                     if (userGoal?.workoutPlans != null &&
                         userGoal!.workoutPlans!.isNotEmpty) ...[
@@ -207,6 +190,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemBuilder: (context, index) {
                           final workout = userGoal!.workoutPlans![index];
                           return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(42),
+                            ),
                             elevation: 10,
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
@@ -224,16 +210,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
                               leading:
                                   workout.imageUrl != null
-                                      ? Image.file(
-                                        File(workout.imageUrl!),
-                                        width: 50,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (_, __, ___) => const Icon(
-                                              Icons.image_not_supported,
-                                            ),
+                                      ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: Image.file(
+                                          File(workout.imageUrl!),
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (_, __, ___) => const Icon(
+                                                Icons.broken_image,
+                                                color: Colors.grey,
+                                              ),
+                                        ),
                                       )
-                                      : const Icon(Icons.fitness_center),
+                                      : const Icon(
+                                        Icons.fitness_center,
+                                        color: Colors.indigo,
+                                      ),
 
                               title: Text(workout.workoutName ?? 'No name'),
                               subtitle: Text(workout.instruction ?? ''),
@@ -263,23 +256,31 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemBuilder: (context, index) {
                           final diet = userGoal!.dietPlans![index];
                           return Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(42),
+                            ),
                             elevation: 3,
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
                               leading:
                                   diet.dietimage != null
-                                      ? Image.file(
-                                        File(diet.dietimage!),
-                                        width: 50,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (_, __, ___) => const Icon(
-                                              Icons.image_not_supported,
-                                            ),
+                                      ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(18),
+                                        child: Image.file(
+                                          File(diet.dietimage!),
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.fill,
+                                          errorBuilder:
+                                              (_, __, ___) => const Icon(
+                                                Icons.restaurant_menu_rounded,
+                                                color: Colors.grey,
+                                              ),
+                                        ),
                                       )
                                       : const Icon(
-                                        Icons.restaurant_menu_rounded,
-                                        color: Colors.green,
+                                        Icons.fitness_center,
+                                        color: Colors.indigo,
                                       ),
                               title: Text(diet.dietName ?? 'No name'),
                               subtitle: Text(
@@ -302,6 +303,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         },
                       ),
                     ],
+                    const SizedBox(height: 24),
+                    Text(
+                      "Recommended Videos",
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 12),
+                    ...videoIds.map(
+                      (id) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: YoutubePlayerWidget(
+                          videoId: id,
+                          onFullScreenChanged: _onFullScreenChanged,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),

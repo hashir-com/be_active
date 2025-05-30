@@ -245,37 +245,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     );
   }
 
-  // String _getDateLabel(DateTime date) {
-  //   final now = DateTime.now();
-  //   final today = DateTime(now.year, now.month, now.day);
-  //   final pickedDate = DateTime(date.year, date.month, date.day);
-
-  //   if (pickedDate == today) return "Today";
-  //   if (pickedDate == today.subtract(const Duration(days: 1))) {
-  //     return "Yesterday";
-  //   }
-
-  //   return "${_monthName(date.month)} ${date.day}, ${date.year}";
-  // }
-
-  // String _monthName(int month) {
-  //   const months = [
-  //     'Jan',
-  //     'Feb',
-  //     'Mar',
-  //     'Apr',
-  //     'May',
-  //     'Jun',
-  //     'Jul',
-  //     'Aug',
-  //     'Sep',
-  //     'Oct',
-  //     'Nov',
-  //     'Dec',
-  //   ];
-  //   return months[month - 1];
-  // }
-
   int get totalCalories => meals.values
       .expand((e) => e)
       .fold(0, (sum, item) => sum + item.calories.toInt());
@@ -290,29 +259,38 @@ class MealTrackerPageState extends State<MealTrackerPage> {
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color:
-                Theme.of(
-                  context,
-                ).primaryColor, // background color of dropdown button
-            borderRadius: BorderRadius.circular(
-              12,
-            ), // rounded corners on button
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: const Color.fromARGB(0, 255, 255, 255),
-            ), // white border (optional)
+              color:
+                  Theme.of(
+                    context,
+                  ).primaryColor, // Border color matching primary to effectively hide it
+            ),
           ),
           child: DropdownButton<String>(
             value: dropdownValue,
             dropdownColor: Theme.of(context).primaryColor,
-            // background color of dropdown menu (popup)
-            underline: const SizedBox(), // remove underline
-            icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-            style: const TextStyle(color: Colors.white, fontSize: 20),
+            underline: const SizedBox(),
+            icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: 20,
+            ),
             borderRadius: BorderRadius.circular(50),
-            items: const [
-              DropdownMenuItem(value: "Today", child: Text("Today")),
-              DropdownMenuItem(value: "Yesterday", child: Text("Yesterday")),
-              DropdownMenuItem(value: "Pick Date", child: Text("Pick Date")),
+            items: [
+              DropdownMenuItem(
+                value: "Today",
+                child: Text("Today", style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: "Yesterday",
+                child: Text("Yesterday", style: TextStyle(color: Colors.white)),
+              ),
+              DropdownMenuItem(
+                value: "Pick Date",
+                child: Text("Pick Date", style: TextStyle(color: Colors.white)),
+              ),
             ],
             onChanged: (value) async {
               if (value == "Today") {
@@ -335,6 +313,35 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   initialDate: selectedDate,
                   firstDate: DateTime(2024),
                   lastDate: DateTime.now(),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: Theme.of(context).colorScheme.copyWith(
+                          primary:
+                              Theme.of(
+                                context,
+                              ).colorScheme.primary, // header background color
+                          onPrimary:
+                              Theme.of(
+                                context,
+                              ).primaryColor, // header text color
+                          onSurface:
+                              Theme.of(
+                                context,
+                              ).colorScheme.onSurface, // body text color
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.primary, // button text color
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
                 );
                 if (picked != null) {
                   setState(() {
@@ -355,14 +362,23 @@ class MealTrackerPageState extends State<MealTrackerPage> {
         children: [
           Text(
             "Selected Date: ${DateFormat.yMMMMd().format(selectedDate)}",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).shadowColor.withOpacity(0.12),
+                  blurRadius: 6,
+                ),
+              ],
             ),
             child: Row(
               children: [
@@ -375,13 +391,18 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       child: CircularProgressIndicator(
                         value: totalCalories / totalCalorieGoal,
                         strokeWidth: 5,
-                        backgroundColor: Colors.grey.shade200,
-                        valueColor: const AlwaysStoppedAnimation(
-                          Color(0xFF020770),
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceVariant,
+                        valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
-                    const Icon(Icons.local_dining, size: 24),
+                    Icon(
+                      Icons.local_dining,
+                      size: 24,
+                      color: Theme.of(context).primaryColor,
+                    ),
                   ],
                 ),
                 const SizedBox(width: 16),
@@ -389,20 +410,25 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   children: [
                     Text(
                       '$totalCalories of $totalCalorieGoal Cal',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: _showEditTotalGoalDialog,
-                      child: const Icon(Icons.edit, size: 20),
+                      child: Icon(
+                        Icons.edit,
+                        size: 20,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),
                 const Spacer(),
-                const Icon(Icons.bar_chart, color: Color(0xFF020770)),
+                Icon(Icons.bar_chart, color: Theme.of(context).primaryColor),
               ],
             ),
           ),
@@ -424,24 +450,31 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   children: [
                     Text(
                       mealTypeToString(meal),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const Spacer(),
                     Text(
                       '$calories of $goal Cal',
-                      style: const TextStyle(color: Colors.grey),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.edit, size: 18),
+                      icon: Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
                       onPressed: () => _showEditGoalDialog(meal),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add_circle,
-                        color: Color(0xFF020770),
+                        color: Theme.of(context).primaryColor,
                       ),
                       onPressed: () => _addFood(meal),
                     ),
@@ -451,10 +484,13 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 4),
+                      BoxShadow(
+                        color: Theme.of(context).shadowColor.withOpacity(0.12),
+                        blurRadius: 4,
+                      ),
                     ],
                   ),
                   child: Column(
@@ -490,17 +526,34 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                               ),
                                             );
                                           },
-                                          child: Text(food.name),
+                                          child: Text(
+                                            food.name,
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.onSurface,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                       Text(
                                         '${food.calories.toStringAsFixed(1)} Cal',
+                                        style: TextStyle(
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                        ),
                                       ),
                                       IconButton(
-                                        icon: const Icon(
+                                        icon: Icon(
                                           Icons.delete,
                                           size: 20,
-                                          color: Colors.redAccent,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.error,
                                         ),
                                         onPressed: () {
                                           Hive.box<FoodItem>(
@@ -527,7 +580,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   Widget _buildEmptyText(MealType meal) {
     return Text(
       'No items added for ${mealTypeToString(meal)}.',
-      style: const TextStyle(color: Colors.grey),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
     );
   }
 }
