@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:thryv/admin_panel/edit_diet_screen.dart';
 import 'package:thryv/admin_panel/widgets/image_pick_widget.dart';
 import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
+import 'package:thryv/admin_panel/widgets/workout_edit_page.dart';
 import 'package:thryv/models/diet_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/models/workout_model.dart';
@@ -15,6 +17,7 @@ import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
 import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:path/path.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -26,17 +29,26 @@ class AdminScreen extends StatefulWidget {
 class AdminScreenState extends State<AdminScreen> {
   File? _pickedImage;
 
-  void _pickImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image != null) {
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      final appDir = await getApplicationDocumentsDirectory(); // app directory
+      final fileName = basename(picked.path); // file name only
+      final savedImage = await File(
+        picked.path,
+      ).copy('${appDir.path}/$fileName');
+
       setState(() {
-        _pickedImage = File(image.path);
+        _pickedImage = savedImage;
+        _workoutImageController.text = savedImage.path; // save local path
       });
-      _workoutImageController.text = image.path;
     }
   }
 
   void _deleteImage() {
+    if (_pickedImage != null && _pickedImage!.existsSync()) {
+      _pickedImage!.deleteSync(); // optional: remove from storage
+    }
     setState(() {
       _pickedImage = null;
       _workoutImageController.clear();
@@ -86,7 +98,7 @@ class AdminScreenState extends State<AdminScreen> {
     await userGoalBox.put('goal', userGoal!);
   }
 
-  void addWorkout() {
+  void addWorkout(BuildContext context) {
     if (_workoutNameController.text.isEmpty ||
         _workoutInstructionController.text.isEmpty ||
         _workoutInfoController.text.isEmpty) {
@@ -96,7 +108,7 @@ class AdminScreenState extends State<AdminScreen> {
       workoutName: _workoutNameController.text,
       instruction: _workoutInstructionController.text,
       information: _workoutInfoController.text,
-      imageUrl: _workoutImageController.text,
+      imageUrl: _pickedImage?.path,
     );
     userGoal!.workoutPlans ??= [];
     userGoal!.workoutPlans!.add(workout);
@@ -120,6 +132,7 @@ class AdminScreenState extends State<AdminScreen> {
       dietName: _dietNameController.text,
       servings: _dietServingsController.text,
       calorie: int.tryParse(_dietCaloriesController.text) ?? 0,
+      dietimage: _pickedImage?.path,
     );
     userGoal!.dietPlans ??= [];
     userGoal!.dietPlans!.add(diet);
@@ -128,6 +141,7 @@ class AdminScreenState extends State<AdminScreen> {
       _dietNameController.clear();
       _dietServingsController.clear();
       _dietCaloriesController.clear();
+      _deleteImage();
     });
   }
 
@@ -263,7 +277,7 @@ class AdminScreenState extends State<AdminScreen> {
                       padding: const EdgeInsets.all(18.0),
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          addWorkout();
+                          addWorkout(context);
                         },
                         icon: const Icon(
                           Icons.fitness_center,
@@ -318,13 +332,20 @@ class AdminScreenState extends State<AdminScreen> {
                     buildInputField(
                       'Servings',
                       _dietServingsController,
-                      keyboardType: TextInputType.number,
+                      // keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 10),
                     buildInputField(
                       'Calories',
                       _dietCaloriesController,
                       keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 10),
+                    buildImagePickerField(
+                      'Workout Image',
+                      _pickedImage,
+                      _pickImage,
+                      _deleteImage,
                     ),
                     const SizedBox(height: 10),
                     Padding(
@@ -370,12 +391,11 @@ class AdminScreenState extends State<AdminScreen> {
                             elevation: 4,
                             child: ListTile(
                               leading:
-                                  workout.imageUrl != null &&
-                                          workout.imageUrl!.isNotEmpty
+                                  workout.imageUrl != null
                                       ? ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          workout.imageUrl!,
+                                        child: Image.file(
+                                          File(workout.imageUrl!),
                                           width: 50,
                                           fit: BoxFit.cover,
                                           errorBuilder:
@@ -400,15 +420,65 @@ class AdminScreenState extends State<AdminScreen> {
                                       color: Colors.red,
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        userGoal!.workoutPlans!.removeAt(index);
-                                        saveUserGoal();
-                                      });
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              "Confirm Deletion",
+                                            ),
+                                            content: const Text(
+                                              "Are you sure you want to delete this workout?",
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed:
+                                                    () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(), // Cancel
+                                                child: const Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    userGoal!.workoutPlans!
+                                                        .removeAt(index);
+                                                    saveUserGoal();
+                                                  });
+                                                  Navigator.of(
+                                                    ctx,
+                                                  ).pop(); // Close the dialog
+                                                },
+                                                child: const Text(
+                                                  "Delete",
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
                                   ),
+
                                   IconButton(
                                     icon: const Icon(Icons.edit),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => EditWorkoutScreen(
+                                                workout: workout,
+                                                index: index,
+                                                userGoal: userGoal!,
+                                              ),
+                                        ),
+                                      );
+                                    },
                                     tooltip: 'Edit',
                                   ),
                                 ],
@@ -455,10 +525,25 @@ class AdminScreenState extends State<AdminScreen> {
                             ),
                             elevation: 4,
                             child: ListTile(
-                              leading: const Icon(
-                                Icons.restaurant_menu,
-                                color: Colors.green,
-                              ),
+                              leading:
+                                  diet.dietimage != null
+                                      ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.file(
+                                          File(diet.dietimage!),
+                                          width: 50,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (_, __, ___) => const Icon(
+                                                Icons.restaurant_menu_rounded,
+                                                color: Colors.grey,
+                                              ),
+                                        ),
+                                      )
+                                      : const Icon(
+                                        Icons.fitness_center,
+                                        color: Colors.indigo,
+                                      ),
                               title: Text(diet.mealType ?? ''),
                               subtitle: Text(
                                 '${diet.dietName}\n Servings: ${diet.servings}\n Calories: ${diet.calorie}',
@@ -472,10 +557,47 @@ class AdminScreenState extends State<AdminScreen> {
                                       color: Colors.red,
                                     ),
                                     onPressed: () {
-                                      setState(() {
-                                        userGoal!.dietPlans!.removeAt(index);
-                                        saveUserGoal();
-                                      });
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext ctx) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                              "Confirm Deletion",
+                                            ),
+                                            content: const Text(
+                                              "Are you sure you want to delete this workout?",
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed:
+                                                    () =>
+                                                        Navigator.of(
+                                                          ctx,
+                                                        ).pop(), // Cancel
+                                                child: const Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    userGoal!.dietPlans!
+                                                        .removeAt(index);
+                                                    saveUserGoal();
+                                                  });
+                                                  Navigator.of(
+                                                    ctx,
+                                                  ).pop(); // Close the dialog
+                                                },
+                                                child: const Text(
+                                                  "Delete",
+                                                  style: TextStyle(
+                                                    color: Colors.red,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
                                   ),
                                   IconButton(

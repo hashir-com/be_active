@@ -21,13 +21,14 @@ class DietPlanAdapter extends TypeAdapter<DietPlan> {
       servings: fields[1] as String?,
       calorie: fields[2] as int?,
       mealType: fields[3] as String?,
+      dietimage: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DietPlan obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.dietName)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class DietPlanAdapter extends TypeAdapter<DietPlan> {
       ..writeByte(2)
       ..write(obj.calorie)
       ..writeByte(3)
-      ..write(obj.mealType);
+      ..write(obj.mealType)
+      ..writeByte(4)
+      ..write(obj.dietimage);
   }
 
   @override

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:thryv/models/diet_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
+import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'aboutus.dart';
@@ -51,11 +53,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   late Box<UserModel> userBox;
   late Box<UserGoalModel> userGoalBox;
+  late Box<WorkoutPlan> workoutplan;
+  late Box<DietPlan> dietplan;
 
   @override
   void initState() {
     super.initState();
-    userBox = Hive.box<UserModel>('userBox'); // get the box here
+    userBox = Hive.box<UserModel>('userBox');
+    workoutplan = Hive.box<WorkoutPlan>('workoutBox');
+    dietplan = Hive.box<DietPlan>('dietPlans'); // get the box here
   }
 
   @override
@@ -202,8 +208,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final confirmed = await _showDeleteConfirmationDialog();
                     if (confirmed == true) {
                       // Delete user data from Hive
+                      await Hive.deleteFromDisk();
+
                       await userBox.clear();
                       await userGoalBox.clear();
+                      await workoutplan.clear();
+                      await dietplan.clear();
                     }
                   },
                 ),

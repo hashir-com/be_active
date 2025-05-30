@@ -17,5 +17,14 @@ class DietPlan extends HiveObject {
   @HiveField(3)
   String? mealType;
 
-  DietPlan({this.dietName, this.servings, this.calorie, this.mealType});
+  @HiveField(4)
+  String? dietimage;
+
+  DietPlan({
+    this.dietName,
+    this.servings,
+    this.calorie,
+    this.mealType,
+    this.dietimage,
+  });
 }

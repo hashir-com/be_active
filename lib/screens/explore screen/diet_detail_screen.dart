@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:thryv/models/diet_model.dart';
 
@@ -11,42 +13,68 @@ class DietDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(diet.mealType ?? 'Diet Detail'),
-        backgroundColor: Colors.green.shade600,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Card(
-            elevation: 6,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: Colors.green.shade50,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildDetailRow(
-                    Icons.fastfood,
-                    'Diet Name',
-                    diet.dietName ?? '',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    Icons.restaurant_menu,
-                    'Servings',
-                    '${diet.servings ?? 0}',
-                  ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow(
-                    Icons.local_fire_department,
-                    'Calories',
-                    '${diet.calorie ?? 0} kcal',
-                  ),
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 0, 0, 0),
+              Color.fromARGB(255, 4, 144, 41),
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(46),
+              ),
+              color: const Color.fromARGB(255, 255, 255, 255),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (diet.dietimage != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(46),
+                        child: Image.file(
+                          File(diet.dietimage!),
+                          height: 200,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (_, __, ___) =>
+                                  const Icon(Icons.broken_image, size: 60),
+                        ),
+                      ),
+                    SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.fastfood,
+                      'Diet Name',
+                      diet.dietName ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.restaurant_menu,
+                      'Servings',
+                      '${diet.servings ?? 0}',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildDetailRow(
+                      Icons.local_fire_department,
+                      'Calories',
+                      '${diet.calorie ?? 0} kcal',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:thryv/models/workout_model.dart';
 
@@ -11,7 +13,7 @@ class WorkoutDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(workout.workoutName ?? 'Workout Detail'),
-        backgroundColor: const Color.fromARGB(255, 24, 10, 114),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         foregroundColor: Colors.white,
         elevation: 4,
       ),
@@ -29,7 +31,7 @@ class WorkoutDetailScreen extends StatelessWidget {
             child: Card(
               elevation: 16,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(26),
+                borderRadius: BorderRadius.circular(46),
               ),
 
               color: const Color.fromARGB(255, 255, 255, 255),
@@ -38,12 +40,11 @@ class WorkoutDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (workout.imageUrl != null &&
-                        workout.imageUrl!.isNotEmpty)
+                    if (workout.imageUrl != null)
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          workout.imageUrl!,
+                        borderRadius: BorderRadius.circular(46),
+                        child: Image.file(
+                          File(workout.imageUrl!),
                           height: 200,
                           width: double.infinity,
                           fit: BoxFit.cover,

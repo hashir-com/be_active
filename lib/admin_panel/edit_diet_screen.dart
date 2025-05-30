@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:thryv/models/diet_model.dart';
 import 'package:hive/hive.dart';
 import 'package:thryv/models/user_goal_model.dart';
@@ -27,6 +30,8 @@ class _EditDietScreenState extends State<EditDietScreen> {
   late TextEditingController _servingsController;
   late TextEditingController _caloriesController;
 
+  File? _pickedImage;
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +44,19 @@ class _EditDietScreenState extends State<EditDietScreen> {
     _caloriesController = TextEditingController(
       text: widget.diet.calorie?.toString() ?? '',
     );
+    _pickedImage =
+        widget.diet.dietimage != null ? File(widget.diet.dietimage!) : null;
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _pickedImage = File(pickedFile.path);
+      });
+    }
   }
 
   void loadUserGoal() async {
@@ -53,6 +71,7 @@ class _EditDietScreenState extends State<EditDietScreen> {
       mealType: _typeController.text.trim(),
       servings: _servingsController.text.trim(),
       calorie: int.tryParse(_caloriesController.text.trim()) ?? 0,
+      dietimage: _pickedImage?.path,
     );
 
     // Update the diet in the list
@@ -75,42 +94,78 @@ class _EditDietScreenState extends State<EditDietScreen> {
         backgroundColor: Colors.green.shade600,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildTextField(_typeController, 'Meal Type', Icons.fastfood),
-            const SizedBox(height: 12),
-            _buildTextField(_nameController, 'Diet Name', Icons.fastfood),
-            const SizedBox(height: 12),
-            _buildTextField(
-              _servingsController,
-              'Servings',
-              Icons.restaurant_menu,
-              isNumber: true,
-            ),
-            const SizedBox(height: 12),
-            _buildTextField(
-              _caloriesController,
-              'Calories',
-              Icons.local_fire_department,
-              isNumber: true,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _saveChanges,
-              icon: const Icon(Icons.save),
-              label: const Text('Save Changes'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade700,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              _buildTextField(_typeController, 'Meal Type', Icons.fastfood),
+              const SizedBox(height: 12),
+              _buildTextField(_nameController, 'Diet Name', Icons.fastfood),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _servingsController,
+                'Servings',
+                Icons.restaurant_menu,
+                isNumber: true,
+              ),
+              const SizedBox(height: 12),
+              _buildTextField(
+                _caloriesController,
+                'Calories',
+                Icons.local_fire_department,
+                isNumber: true,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Diet Image',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  child:
+                      _pickedImage != null
+                          ? ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.file(
+                              _pickedImage!,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
+                          )
+                          : const Center(
+                            child: Icon(
+                              Icons.add_photo_alternate,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                          ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              ElevatedButton.icon(
+                onPressed: _saveChanges,
+                icon: const Icon(Icons.save),
+                label: const Text('Save Changes'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

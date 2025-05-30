@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -205,7 +207,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemBuilder: (context, index) {
                           final workout = userGoal!.workoutPlans![index];
                           return Card(
-                            elevation: 3,
+                            elevation: 10,
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
                               onTap: () {
@@ -221,10 +223,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               },
 
                               leading:
-                                  workout.imageUrl != null &&
-                                          workout.imageUrl!.isNotEmpty
-                                      ? Image.network(
-                                        workout.imageUrl!,
+                                  workout.imageUrl != null
+                                      ? Image.file(
+                                        File(workout.imageUrl!),
                                         width: 50,
                                         fit: BoxFit.cover,
                                         errorBuilder:
@@ -233,6 +234,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                             ),
                                       )
                                       : const Icon(Icons.fitness_center),
+
                               title: Text(workout.workoutName ?? 'No name'),
                               subtitle: Text(workout.instruction ?? ''),
                             ),
@@ -264,7 +266,21 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             elevation: 3,
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
-                              leading: const Icon(Icons.restaurant_menu),
+                              leading:
+                                  diet.dietimage != null
+                                      ? Image.file(
+                                        File(diet.dietimage!),
+                                        width: 50,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (_, __, ___) => const Icon(
+                                              Icons.image_not_supported,
+                                            ),
+                                      )
+                                      : const Icon(
+                                        Icons.restaurant_menu_rounded,
+                                        color: Colors.green,
+                                      ),
                               title: Text(diet.dietName ?? 'No name'),
                               subtitle: Text(
                                 'Servings: ${diet.servings ?? 0}, Calories: ${diet.calorie ?? 0}',
@@ -274,7 +290,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder:
-                                        (_) => DietDetailScreen(diet: diet, index: index,),
+                                        (_) => DietDetailScreen(
+                                          diet: diet,
+                                          index: index,
+                                        ),
                                   ),
                                 );
                               },
