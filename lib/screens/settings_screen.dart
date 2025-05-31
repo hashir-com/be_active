@@ -9,6 +9,7 @@ import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
+import 'package:thryv/theme/app_colors.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'aboutus.dart';
 import 'auth/account_screen.dart';
@@ -43,7 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ), // Confirm delete
                 child: const Text(
                   'Delete',
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: AppColors.errorRed),
                 ),
               ),
             ],
@@ -88,7 +89,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   style: GoogleFonts.roboto(
                     fontSize: width * 0.1,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white, // dynamic color
+                    color: AppColors.white, // instead of Colors.white
+                    // dynamic color
                   ),
                 ),
               ),
@@ -204,7 +206,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Clear Data',
                   Icons.delete,
                   theme,
-                  iconColor: Colors.red,
+                  iconColor: AppColors.errorRed,
                   onTap: () async {
                     final confirmed = await _showDeleteConfirmationDialog();
                     if (confirmed == true) {
@@ -229,7 +231,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Login As Admin',
                   Icons.admin_panel_settings_rounded,
                   theme,
-                  iconColor: Colors.red,
+                  iconColor: AppColors.errorRed,
+
                   onTap: () {
                     Navigator.push(
                       context,
@@ -281,7 +284,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black12,
+                color: AppColors.shadowLight,
                 blurRadius: 4,
                 offset: Offset(0, 2),
               ),

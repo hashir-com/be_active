@@ -17,7 +17,9 @@ class NutritionDetailsPage extends StatelessWidget {
     required this.protein,
     required this.fat,
     required this.carbs,
-    required this.fiber, required List<FoodItem> foodItems, required String mealType,
+    required this.fiber,
+    required List<FoodItem> foodItems,
+    required String mealType,
   });
 
   @override
@@ -38,7 +40,7 @@ class NutritionDetailsPage extends StatelessWidget {
                 child: Text(
                   foodName,
                   style: GoogleFonts.righteous(
-                    fontSize: width * 0.08,
+                    fontSize: width * 0.06,
                     color: Colors.white,
                   ),
                 ),
