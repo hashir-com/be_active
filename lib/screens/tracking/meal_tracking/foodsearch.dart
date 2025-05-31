@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, duplicate_ignore
+
 import 'dart:async';
 
 import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
@@ -135,6 +137,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
 
     await box.add(newFood);
     ScaffoldMessenger.of(
+      // ignore: use_build_context_synchronously
       context,
     ).showSnackBar(SnackBar(content: Text("$name added to your meal")));
     Navigator.pop(context);

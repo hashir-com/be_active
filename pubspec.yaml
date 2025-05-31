@@ -69,13 +69,12 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/thryvv.png"
-
-  flutter_native_splash: ^2.3.10
-
+  image_path: "assets/newlogo.png"
+  
 flutter_native_splash:
+android_12:
   color: "#FFFFFF" # or your background color
-  image: assets/thryvv.png # your logo path
+  image: assets/newlogo.png # your logo path
   android: true
   ios: true
   android_gravity: center

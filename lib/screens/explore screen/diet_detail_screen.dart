@@ -49,7 +49,7 @@ class DietDetailScreen extends StatelessWidget {
                           File(diet.dietimage!),
                           height: 200,
                           width: double.infinity,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.fill,
                           errorBuilder:
                               (_, __, ___) =>
                                   const Icon(Icons.broken_image, size: 60),

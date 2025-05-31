@@ -17,10 +17,10 @@ class BmiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-  return _buildBmiCard(context, width);
+    return _buildBmiCard(context, width);
   }
 
-  Widget _buildBmiCard(BuildContext context,double width) {
+  Widget _buildBmiCard(BuildContext context, double width) {
     String bmiCategory = _getBmiCategory(bmi);
     String bmiCategoryinfo = _getBmiCategoryinfo(bmi);
     Color bmiColor = _getBmiColor(bmi);

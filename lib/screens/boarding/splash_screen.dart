@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:thryv/helpers/hive_setup_registration.dart';
 
 import 'onboarding_screen.dart';
 
@@ -14,6 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously

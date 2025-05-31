@@ -1,23 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:thryv/admin_panel/edit_diet_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart'; // Keep hive_flutter for ValueListenableBuilder
 import 'package:thryv/admin_panel/widgets/image_pick_widget.dart';
 import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
-import 'package:thryv/admin_panel/widgets/workout_edit_page.dart';
-import 'package:thryv/models/diet_model.dart';
-import 'package:thryv/models/user_model.dart';
-import 'package:thryv/models/workout_model.dart';
-import 'package:thryv/screens/explore screen/diet_detail_screen.dart';
-import 'package:thryv/screens/explore screen/workout_detail_screen.dart';
-import '../models/user_goal_model.dart';
 import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
 import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'package:path/path.dart';
+import 'package:thryv/models/user_goal_model.dart';
+import 'package:thryv/services/data_service.dart'; // Import the new DataService
+import 'package:thryv/admin_panel/controllers/workout_form_controller.dart'; // Import controllers
+import 'package:thryv/admin_panel/controllers/diet_form_controller.dart';
+import 'package:thryv/admin_panel/widgets/workout_list_item.dart'; // Import new list item widgets
+import 'package:thryv/admin_panel/widgets/diet_list_item.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -27,122 +20,56 @@ class AdminScreen extends StatefulWidget {
 }
 
 class AdminScreenState extends State<AdminScreen> {
-  File? _pickedImage;
+  // Use a single instance of DataService for data access
+  final DataService _dataService = DataService();
 
-  Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      final appDir = await getApplicationDocumentsDirectory(); // app directory
-      final fileName = basename(picked.path); // file name only
-      final savedImage = await File(
-        picked.path,
-      ).copy('${appDir.path}/$fileName');
-
-      setState(() {
-        _pickedImage = savedImage;
-        _workoutImageController.text = savedImage.path; // save local path
-      });
-    }
-  }
-
-  void _deleteImage() {
-    if (_pickedImage != null && _pickedImage!.existsSync()) {
-      _pickedImage!.deleteSync(); // optional: remove from storage
-    }
-    setState(() {
-      _pickedImage = null;
-      _workoutImageController.clear();
-    });
-  }
-
-  final _workoutNameController = TextEditingController();
-  final _workoutInstructionController = TextEditingController();
-  final _workoutInfoController = TextEditingController();
-  final _workoutImageController = TextEditingController();
-  final _dietNameController = TextEditingController();
-  final _mealTypeController = TextEditingController();
-  final _dietServingsController = TextEditingController();
-  final _dietCaloriesController = TextEditingController();
-
-  late Box<UserGoalModel> userGoalBox;
-  UserGoalModel? userGoal;
-  DietPlan? diet;
-
-  UserModel? user;
+  // Use ChangeNotifiers for form state management
+  late WorkoutFormController _workoutFormController;
+  late DietFormController _dietFormController;
 
   @override
   void initState() {
     super.initState();
-    final dietbox = Hive.box<DietPlan>('dietPlans');
-    final box = Hive.box<UserModel>('userBox');
-    final goalbox = Hive.box<UserGoalModel>('userGoalBox');
-    userGoalBox = goalbox;
-    userGoal = goalbox.get('usergoal') ?? UserGoalModel();
-    user = box.get('user');
-    diet = dietbox.get('diet');
+    // Initialize DataService and load data
+    _dataService.init().then((_) {
+      setState(() {
+        // Force a rebuild after data is loaded
+      });
+    });
+
+    _workoutFormController = WorkoutFormController(_dataService);
+    _dietFormController = DietFormController(_dataService);
+
+    // Add listeners to controllers to rebuild the UI when their state changes
+    _workoutFormController.addListener(_onFormControllerChanged);
+    _dietFormController.addListener(_onFormControllerChanged);
+  }
+
+  void _onFormControllerChanged() {
+    setState(() {
+      // Rebuild the UI when any form controller notifies changes
+    });
   }
 
   @override
   void dispose() {
-    _workoutNameController.dispose();
-    _workoutInstructionController.dispose();
-    _workoutInfoController.dispose();
-    _workoutImageController.dispose();
-    _dietNameController.dispose();
-    _dietServingsController.dispose();
-    _dietCaloriesController.dispose();
+    _workoutFormController.removeListener(_onFormControllerChanged);
+    _dietFormController.removeListener(_onFormControllerChanged);
+    _workoutFormController.dispose();
+    _dietFormController.dispose();
     super.dispose();
   }
 
-  Future<void> saveUserGoal() async {
-    await userGoalBox.put('usergoal', userGoal!);
-  }
-
-  void addWorkout(BuildContext context) {
-    if (_workoutNameController.text.isEmpty ||
-        _workoutInstructionController.text.isEmpty ||
-        _workoutInfoController.text.isEmpty) {
-      return;
+  // Helper method to convert UserGoalEnum to String for UI display
+  String userGoalToString(UserGoal goal) {
+    switch (goal) {
+      case UserGoal.weightLoss:
+        return 'Lose Weight';
+      case UserGoal.weightGain:
+        return 'Gain Weight';
+      case UserGoal.muscleGain:
+        return 'Maintain Weight';
     }
-    final workout = WorkoutPlan(
-      workoutName: _workoutNameController.text,
-      instruction: _workoutInstructionController.text,
-      information: _workoutInfoController.text,
-      imageUrl: _pickedImage?.path,
-    );
-    userGoal!.workoutPlans ??= [];
-    userGoal!.workoutPlans!.add(workout);
-    saveUserGoal();
-    setState(() {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Workout added successfully!')));
-      _workoutNameController.clear();
-      _workoutInstructionController.clear();
-      _workoutInfoController.clear();
-      _workoutImageController.clear();
-      _deleteImage();
-    });
-  }
-
-  void addDiet() {
-    if (_dietNameController.text.isEmpty) return;
-    final diet = DietPlan(
-      mealType: _mealTypeController.text,
-      dietName: _dietNameController.text,
-      servings: _dietServingsController.text,
-      calorie: int.tryParse(_dietCaloriesController.text) ?? 0,
-      dietimage: _pickedImage?.path,
-    );
-    userGoal!.dietPlans ??= [];
-    userGoal!.dietPlans!.add(diet);
-    saveUserGoal();
-    setState(() {
-      _dietNameController.clear();
-      _dietServingsController.clear();
-      _dietCaloriesController.clear();
-      _deleteImage();
-    });
   }
 
   @override
@@ -151,6 +78,16 @@ class AdminScreenState extends State<AdminScreen> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+
+    // It's safer to check if user and userGoal are loaded before accessing their properties
+    if (_dataService.currentUser == null ||
+        _dataService.currentUserGoal == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => FocusScope.of(context).unfocus(),
@@ -198,488 +135,315 @@ class AdminScreenState extends State<AdminScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "User Details",
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
-                      const SizedBox(height: 16),
-                      Card(
-                        color: const Color.fromARGB(0, 255, 193, 7),
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              infoRow(Icons.person, "Name", user!.name, theme),
-                              infoRow(Icons.cake, "Age", "${user!.age}", theme),
-                              infoRow(
-                                Icons.male,
-                                "Gender",
-                                user!.gender,
-                                theme,
-                              ),
-                              infoRow(
-                                Icons.height,
-                                "Height",
-                                "${user!.height} cm",
-                                theme,
-                              ),
-                              infoRow(
-                                Icons.monitor_weight,
-                                "Weight",
-                                "${user!.weight} kg",
-                                theme,
-                              ),
-                              infoRow(
-                                Icons.fitness_center,
-                                "BMI",
-                                user!.bmi?.toStringAsFixed(1) ?? 'N/A',
-                                theme,
-                              ),
-                              infoRow(
-                                Icons.flag,
-                                "Goal",
-                                userGoal?.goal != null
-                                    ? userGoalToString(userGoal!.goal!)
-                                    : 'Not selected',
-                                theme,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        'Add Workout',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      buildInputField('Workout Name', _workoutNameController),
-                      const SizedBox(height: 10),
-                      buildInputField(
-                        'Instruction',
-                        _workoutInstructionController,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 10),
-                      buildInputField(
-                        'Information',
-                        _workoutInfoController,
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 10),
-                      buildImagePickerField(
-                        'Workout Image',
-                        _pickedImage,
-                        _pickImage,
-                        _deleteImage,
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            addWorkout(context);
-                          },
-                          icon: const Icon(
-                            Icons.fitness_center,
-                            color: Color.fromARGB(255, 20, 0, 149),
-                          ),
-                          label: const Text(
-                            'Add Workout',
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 9, 1, 114),
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              253,
-                              253,
-                              253,
-                            ),
-                            minimumSize: const Size.fromHeight(45),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      const Text(
-                        'Add Diet Item',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      GradientDropdown(
-                        label: 'Meal Type',
-                        options: [
-                          'Breakfast',
-                          'Morning Snack',
-                          'Lunch',
-                          'Evening Tea',
-                          'Dinner',
-                        ],
-                        controller: _mealTypeController,
-                      ),
-
-                      const SizedBox(height: 10),
-                      buildInputField('Diet Name', _dietNameController),
-                      const SizedBox(height: 10),
-                      buildInputField(
-                        'Servings',
-                        _dietServingsController,
-                        // keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 10),
-                      buildInputField(
-                        'Calories',
-                        _dietCaloriesController,
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(height: 10),
-                      buildImagePickerField(
-                        'Diet Image',
-                        _pickedImage,
-                        _pickImage,
-                        _deleteImage,
-                      ),
-                      const SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: ElevatedButton.icon(
-                          onPressed: addDiet,
-                          icon: const Icon(
-                            Icons.restaurant,
-                            color: Colors.white,
-                          ),
-                          label: const Text(
-                            'Add Diet Item',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green[700],
-                            minimumSize: const Size.fromHeight(45),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      if (userGoal?.workoutPlans?.isNotEmpty ?? false) ...[
-                        const Text(
-                          'Saved Workouts',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: userGoal!.workoutPlans!.length,
-                          itemBuilder: (context, index) {
-                            final workout = userGoal!.workoutPlans![index];
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(42),
-                              ),
-                              elevation: 4,
-                              child: ListTile(
-                                leading:
-                                    workout.imageUrl != null
-                                        ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            18,
-                                          ),
-                                          child: Image.file(
-                                            File(workout.imageUrl!),
-                                            width: 50,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (_, __, ___) => const Icon(
-                                                  Icons.broken_image,
-                                                  color: Colors.grey,
-                                                ),
-                                          ),
-                                        )
-                                        : const Icon(
-                                          Icons.fitness_center,
-                                          color: Colors.indigo,
-                                        ),
-
-                                title: Text(workout.workoutName ?? ''),
-                                subtitle: Text(workout.information ?? ''),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete_outline_rounded,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext ctx) {
-                                            return AlertDialog(
-                                              title: const Text(
-                                                "Confirm Deletion",
-                                              ),
-                                              content: const Text(
-                                                "Are you sure you want to delete this workout?",
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed:
-                                                      () =>
-                                                          Navigator.of(
-                                                            ctx,
-                                                          ).pop(), // Cancel
-                                                  child: const Text("Cancel"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      userGoal!.workoutPlans!
-                                                          .removeAt(index);
-                                                      saveUserGoal();
-                                                    });
-                                                    Navigator.of(
-                                                      ctx,
-                                                    ).pop(); // Close the dialog
-                                                  },
-                                                  child: const Text(
-                                                    "Delete",
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) => EditWorkoutScreen(
-                                                  workout: workout,
-                                                  index: index,
-                                                  userGoal: userGoal!,
-                                                ),
-                                          ),
-                                        );
-                                      },
-                                      tooltip: 'Edit',
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => WorkoutDetailScreen(
-                                            workout: workout,
-                                          ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      _buildUserDetailsSection(theme),
+                      _buildAddWorkoutSection(context),
+                      _buildAddDietSection(context),
+                      _buildSavedWorkoutsList(),
                       const SizedBox(height: 24),
-
-                      if (userGoal?.dietPlans?.isNotEmpty ?? false) ...[
-                        const Text(
-                          'Saved Diet Items',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: userGoal!.dietPlans!.length,
-                          itemBuilder: (context, index) {
-                            final diet = userGoal!.dietPlans![index];
-                            // ✅ Not diet.keyAt!
-
-                            return Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(42),
-                              ),
-                              elevation: 4,
-                              child: ListTile(
-                                leading:
-                                    diet.dietimage != null
-                                        ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            18,
-                                          ),
-                                          child: Image.file(
-                                            File(diet.dietimage!),
-                                            width: 50,
-                                            height: 50,
-                                            fit: BoxFit.fill,
-                                            errorBuilder:
-                                                (_, __, ___) => const Icon(
-                                                  Icons.restaurant_menu_rounded,
-                                                  color: Colors.grey,
-                                                ),
-                                          ),
-                                        )
-                                        : const Icon(
-                                          Icons.fitness_center,
-                                          color: Colors.indigo,
-                                        ),
-                                title: Text(diet.mealType ?? ''),
-                                subtitle: Text('${diet.dietName}'),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.delete_outline,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext ctx) {
-                                            return AlertDialog(
-                                              title: const Text(
-                                                "Confirm Deletion",
-                                              ),
-                                              content: const Text(
-                                                "Are you sure you want to delete this workout?",
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed:
-                                                      () =>
-                                                          Navigator.of(
-                                                            ctx,
-                                                          ).pop(), // Cancel
-                                                  child: const Text("Cancel"),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      userGoal!.dietPlans!
-                                                          .removeAt(index);
-                                                      saveUserGoal();
-                                                    });
-                                                    Navigator.of(
-                                                      ctx,
-                                                    ).pop(); // Close the dialog
-                                                  },
-                                                  child: const Text(
-                                                    "Delete",
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () async {
-                                        // Validate index before pushing
-                                        if (index < 0 ||
-                                            index >=
-                                                (userGoal?.dietPlans?.length ??
-                                                    0)) {
-                                          ScaffoldMessenger.of(
-                                            context,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                'Invalid diet item index.',
-                                              ),
-                                            ),
-                                          );
-                                          return;
-                                        }
-
-                                        final edited = await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (_) => EditDietScreen(
-                                                  diet: diet,
-                                                  index: index,
-                                                  userGoal: userGoal!,
-                                                ),
-                                          ),
-                                        );
-
-                                        if (edited == true) {
-                                          setState(() {
-                                            // Refresh UI after editing
-                                          });
-                                        }
-                                      },
-                                      tooltip: 'Edit',
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder:
-                                          (_) => DietDetailScreen(
-                                            diet: diet,
-                                            index: index,
-                                          ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      _buildSavedDietItemsList(),
                     ],
                   ),
                 ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserDetailsSection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "User Details",
+          style: TextStyle(color: Colors.white, fontSize: 26),
+        ),
+        const SizedBox(height: 16),
+        Card(
+          color: const Color.fromARGB(0, 255, 193, 7),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                infoRow(
+                  Icons.person,
+                  "Name",
+                  _dataService.currentUser!.name,
+                  theme,
+                ),
+                infoRow(
+                  Icons.cake,
+                  "Age",
+                  "${_dataService.currentUser!.age}",
+                  theme,
+                ),
+                infoRow(
+                  Icons.male,
+                  "Gender",
+                  _dataService.currentUser!.gender,
+                  theme,
+                ),
+                infoRow(
+                  Icons.height,
+                  "Height",
+                  "${_dataService.currentUser!.height} cm",
+                  theme,
+                ),
+                infoRow(
+                  Icons.monitor_weight,
+                  "Weight",
+                  "${_dataService.currentUser!.weight} kg",
+                  theme,
+                ),
+                infoRow(
+                  Icons.fitness_center,
+                  "BMI",
+                  _dataService.currentUser!.bmi?.toStringAsFixed(1) ?? 'N/A',
+                  theme,
+                ),
+                infoRow(
+                  Icons.flag,
+                  "Goal",
+                  _dataService.currentUserGoal?.goal != null
+                      ? userGoalToString(_dataService.currentUserGoal!.goal!)
+                      : 'Not selected',
+                  theme,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAddWorkoutSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Add Workout',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        buildInputField(
+          'Workout Name',
+          _workoutFormController.workoutNameController,
+        ),
+        const SizedBox(height: 10),
+        buildInputField(
+          'Instruction',
+          _workoutFormController.workoutInstructionController,
+          maxLines: 2,
+        ),
+        const SizedBox(height: 10),
+        buildInputField(
+          'Information',
+          _workoutFormController.workoutInfoController,
+          maxLines: 2,
+        ),
+        const SizedBox(height: 10),
+        buildImagePickerField(
+          'Workout Image',
+          _workoutFormController
+              .pickedImage, // Use the controller's picked image
+          _workoutFormController.pickImage,
+          _workoutFormController.deleteImage,
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: ElevatedButton.icon(
+            onPressed: () => _workoutFormController.addWorkout(context),
+            icon: const Icon(
+              Icons.fitness_center,
+              color: Color.fromARGB(255, 20, 0, 149),
+            ),
+            label: const Text(
+              'Add Workout',
+              style: TextStyle(color: Color.fromARGB(255, 9, 1, 114)),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 253, 253, 253),
+              minimumSize: const Size.fromHeight(45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
+      ],
+    );
+  }
+
+  Widget _buildAddDietSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Add Diet Item',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        GradientDropdown(
+          label: 'Meal Type',
+          options: const [
+            'Breakfast',
+            'Morning Snack',
+            'Lunch',
+            'Evening Tea',
+            'Dinner',
+          ],
+          controller: _dietFormController.mealTypeController,
+        ),
+        const SizedBox(height: 10),
+        buildInputField('Diet Name', _dietFormController.dietNameController),
+        const SizedBox(height: 10),
+        buildInputField('Servings', _dietFormController.dietServingsController),
+        const SizedBox(height: 10),
+        buildInputField(
+          'Calories',
+          _dietFormController.dietCaloriesController,
+          keyboardType: TextInputType.number,
+        ),
+        const SizedBox(height: 10),
+        buildImagePickerField(
+          'Diet Image',
+          _dietFormController.pickedImage, // Use the controller's picked image
+          _dietFormController.pickImage,
+          _dietFormController.deleteImage,
+        ),
+        const SizedBox(height: 10),
+        Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: ElevatedButton.icon(
+            onPressed: _dietFormController.addDiet,
+            icon: const Icon(
+              Icons.restaurant_menu_rounded,
+              color: Colors.white,
+            ),
+            label: const Text(
+              'Add Diet Item',
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green[700],
+              minimumSize: const Size.fromHeight(45),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 30),
+      ],
+    );
+  }
+
+  Widget _buildSavedWorkoutsList() {
+    return ValueListenableBuilder<Box<UserGoalModel>>(
+      valueListenable: Hive.box<UserGoalModel>('userGoalBox').listenable(),
+      builder: (context, box, _) {
+        final userGoal = box.get('usergoal') ?? UserGoalModel();
+        if (userGoal.workoutPlans?.isEmpty ?? true) {
+          return const SizedBox.shrink(); // Hide if no workouts
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Saved Workouts',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: userGoal.workoutPlans!.length,
+              itemBuilder: (context, index) {
+                final workout = userGoal.workoutPlans![index];
+                return WorkoutListItem(
+                  workout: workout,
+                  index: index,
+                  userGoal: userGoal,
+                  onWorkoutDeleted: () {
+                    _dataService.saveUserGoal(); // Save after deletion
+                    setState(() {}); // Rebuild to update the list
+                  },
+                  onWorkoutEdited: () {
+                    _dataService.saveUserGoal(); // Save after edit
+                    setState(() {}); // Rebuild to update the list
+                  },
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSavedDietItemsList() {
+    return ValueListenableBuilder<Box<UserGoalModel>>(
+      valueListenable: Hive.box<UserGoalModel>('userGoalBox').listenable(),
+      builder: (context, box, _) {
+        final userGoal = box.get('usergoal') ?? UserGoalModel();
+        if (userGoal.dietPlans?.isEmpty ?? true) {
+          return const SizedBox.shrink(); // Hide if no diets
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Saved Diet Items',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: userGoal.dietPlans!.length,
+              itemBuilder: (context, index) {
+                final diet = userGoal.dietPlans![index];
+                return DietListItem(
+                  diet: diet,
+                  index: index,
+                  userGoal: userGoal,
+                  onDietDeleted: () {
+                    _dataService.saveUserGoal(); // Save after deletion
+                    setState(() {}); // Rebuild to update the list
+                  },
+                  onDietEdited: () {
+                    _dataService.saveUserGoal(); // Save after edit
+                    setState(() {}); // Rebuild to update the list
+                  },
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

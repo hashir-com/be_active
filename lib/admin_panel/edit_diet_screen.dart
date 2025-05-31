@@ -81,8 +81,9 @@ class _EditDietScreenState extends State<EditDietScreen> {
     final box = await Hive.openBox<UserGoalModel>('userGoalBox');
 
     // Save the entire updated userGoal object (assuming it has a key, e.g., 'currentUserGoal')
-    await box.put('goal', widget.userGoal);
+    await box.put('usergoal', widget.userGoal);
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context, true); // Return true to signal successful edit
   }
 
@@ -183,7 +184,7 @@ class _EditDietScreenState extends State<EditDietScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.green),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(22)),
       ),
     );
   }

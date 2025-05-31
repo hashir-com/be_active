@@ -29,7 +29,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     super.initState();
     final box = Hive.box<UserModel>('userBox');
     final goalbox = Hive.box<UserGoalModel>('userGoalBox');
-    userGoal = goalbox.get('goal') ?? UserGoalModel();
+    userGoal = goalbox.get('usergoal') ?? UserGoalModel();
     user = box.get('user');
     usergoal = goalbox.get('usergoal');
   }
@@ -215,7 +215,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                         child: Image.file(
                                           File(workout.imageUrl!),
                                           width: 50,
-                                          fit: BoxFit.cover,
+                                          height: 50,
+                                          fit: BoxFit.fill,
                                           errorBuilder:
                                               (_, __, ___) => const Icon(
                                                 Icons.broken_image,
@@ -279,12 +280,12 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                         ),
                                       )
                                       : const Icon(
-                                        Icons.fitness_center,
-                                        color: Colors.indigo,
+                                        Icons.restaurant_menu_rounded,
+                                        color: Color.fromARGB(255, 63, 181, 71),
                                       ),
-                              title: Text(diet.dietName ?? 'No name'),
+                              title: Text(diet.mealType ?? 'No name'),
                               subtitle: Text(
-                                'Servings: ${diet.servings ?? 0}, Calories: ${diet.calorie ?? 0}',
+                                'Food: ${diet.dietName ?? 0}, Calories: ${diet.calorie ?? 0}',
                               ),
                               onTap: () {
                                 Navigator.push(

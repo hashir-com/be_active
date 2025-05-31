@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -5,7 +7,7 @@ import 'package:thryv/screens/tracking/meal_tracking/nutrition_details.dart';
 import '../../../../models/food_item.dart';
 import 'foodsearch.dart';
 import 'package:thryv/models/user_model.dart';
-import 'package:thryv/util/calorie_screen_utils.dart';
+import 'package:thryv/util/image_utility.dart';
 import 'package:thryv/models/user_goal_model.dart';
 
 enum MealType { breakfast, morningSnack, lunch, eveningTea, dinner }
@@ -375,6 +377,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
+                  // ignore: deprecated_member_use
                   color: Theme.of(context).shadowColor.withOpacity(0.12),
                   blurRadius: 6,
                 ),
@@ -392,7 +395,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         value: totalCalories / totalCalorieGoal,
                         strokeWidth: 5,
                         backgroundColor:
-                            Theme.of(context).colorScheme.surfaceVariant,
+                            Theme.of(context).colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation(
                           Theme.of(context).primaryColor,
                         ),
@@ -485,11 +488,11 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(26),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).shadowColor.withOpacity(0.12),
-                        blurRadius: 4,
+                        color: Theme.of(context).shadowColor.withOpacity(0.42),
+                        blurRadius: 10,
                       ),
                     ],
                   ),
@@ -497,7 +500,12 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children:
                         foods.isEmpty
-                            ? [_buildEmptyText(meal)]
+                            ? [
+                              GestureDetector(
+                                onTap: () => _addFood(meal),
+                                child: _buildEmptyText(meal),
+                              ),
+                            ]
                             : [
                               ...foods.map(
                                 (food) => Padding(
@@ -579,7 +587,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
 
   Widget _buildEmptyText(MealType meal) {
     return Text(
-      'No items added for ${mealTypeToString(meal)}.',
+      'Add Your Food for ${mealTypeToString(meal)} to Track your Calorie intake🔥😋',
       style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
     );
   }

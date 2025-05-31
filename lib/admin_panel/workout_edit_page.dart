@@ -62,8 +62,9 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
     widget.userGoal.workoutPlans![widget.index] = updatedWorkout;
 
     final box = await Hive.openBox<UserGoalModel>('userGoalBox');
-    await box.put('goal', widget.userGoal);
+    await box.put('usergoal', widget.userGoal);
 
+    // ignore: use_build_context_synchronously
     Navigator.pop(context, true);
   }
 
@@ -151,8 +152,8 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blue),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        prefixIcon: Icon(icon, color: Theme.of(context).primaryColorLight),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(22)),
       ),
     );
   }

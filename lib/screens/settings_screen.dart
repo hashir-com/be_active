@@ -37,11 +37,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed:
-                    () => Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => SplashScreen()),
-                      (route) => false,
-                    ), // Confirm delete
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => SplashScreen()),
+                    (route) => false,
+                  );
+                }, // Confirm delete
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: AppColors.errorRed),
@@ -210,9 +211,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () async {
                     final confirmed = await _showDeleteConfirmationDialog();
                     if (confirmed == true) {
-                      // Delete user data from Hive
-                      // Close Hive and delete all data from device storage
-                      await Hive.close();
                       await Hive.deleteFromDisk();
 
                       // Restart app state (wipe userGoal or any model variables)
