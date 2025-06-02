@@ -133,7 +133,7 @@ class _WeightScreenState extends State<WeightScreen> {
           ),
           const SizedBox(height: 8),
           LinearProgressIndicator(
-            borderRadius: BorderRadius.circular(48),
+            borderRadius: BorderRadius.circular(8),
             value: progressPercent,
             minHeight: 14,
             backgroundColor: Colors.grey.shade300,
