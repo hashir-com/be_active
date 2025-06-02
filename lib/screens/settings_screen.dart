@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
+import 'package:restart_app/restart_app.dart';
 import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_item.dart';
+import 'package:thryv/models/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
@@ -37,7 +40,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: const Text('Cancel'),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
+                  await Hive.box<UserModel>('userBox').clear();
+                  await Hive.box<UserGoalModel>('userGoalBox').clear();
+                  await Hive.box<DietPlan>('dietPlans').clear();
+                  await Hive.box<WorkoutPlan>('workoutBox').clear();
+                  await Hive.box<FoodItem>('foodBox').clear();
+                  await Hive.box<StepEntry>('stepsBox').clear();
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreen()),
                     (route) => false,
@@ -211,8 +220,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () async {
                     final confirmed = await _showDeleteConfirmationDialog();
                     if (confirmed == true) {
-                      await Hive.deleteFromDisk();
-
                       // Restart app state (wipe userGoal or any model variables)
                       setState(() {
                         userGoalBox = null;

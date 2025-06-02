@@ -271,7 +271,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                           File(diet.dietimage!),
                                           width: 50,
                                           height: 50,
-                                          fit: BoxFit.fill,
+                                          fit: BoxFit.cover,
                                           errorBuilder:
                                               (_, __, ___) => const Icon(
                                                 Icons.restaurant_menu_rounded,

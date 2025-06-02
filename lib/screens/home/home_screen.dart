@@ -98,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
             HorizontalDateList(),
             const SizedBox(height: 20),
             Text(
-              "Select Your Goal",
+              "Suggested",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -128,9 +128,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: isSelected ? width * 0.028 : width * 0.03,
                         ),
                         onSelected: (selected) {
-                          if (selected) {
-                            _saveGoal(goal);
-                          }
+                          // if (selected) {
+                          //   _saveGoal(goal);
+                          // }
                         },
                       ),
                     );

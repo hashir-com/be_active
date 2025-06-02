@@ -6,11 +6,13 @@ import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
 import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
 import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
 import 'package:thryv/models/user_goal_model.dart';
+import 'package:thryv/screens/home/widgets/bmi_card.dart';
 import 'package:thryv/services/data_service.dart'; // Import the new DataService
 import 'package:thryv/admin_panel/controllers/workout_form_controller.dart'; // Import controllers
 import 'package:thryv/admin_panel/controllers/diet_form_controller.dart';
 import 'package:thryv/admin_panel/widgets/workout_list_item.dart'; // Import new list item widgets
 import 'package:thryv/admin_panel/widgets/diet_list_item.dart';
+import 'package:thryv/services/hive_service.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -68,8 +70,15 @@ class AdminScreenState extends State<AdminScreen> {
       case UserGoal.weightGain:
         return 'Gain Weight';
       case UserGoal.muscleGain:
-        return 'Maintain Weight';
+        return 'Muscle Gain';
     }
+  }
+
+  void _saveGoal(UserGoal goal) {
+    HiveService().saveUserGoal(goal);
+    setState(() {
+      selectedGoal = goal;
+    });
   }
 
   @override
@@ -136,6 +145,48 @@ class AdminScreenState extends State<AdminScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildUserDetailsSection(theme),
+                      SizedBox(height: 10),
+                      Text(
+                        "Suggest User Goal",
+                        style: TextStyle(
+                          color: Theme.of(context).highlightColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Wrap(
+                        spacing: 4,
+                        children:
+                            UserGoal.values.map((goal) {
+                              final isSelected = goal == selectedGoal;
+                              return SizedBox(
+                                width: width * 0.29,
+                                child: ChoiceChip(
+                                  checkmarkColor: theme.highlightColor,
+                                  label: Text(userGoalToString(goal)),
+                                  selected: isSelected,
+                                  selectedColor: theme.primaryColorLight,
+                                  labelStyle: TextStyle(
+                                    color:
+                                        isSelected
+                                            ? theme.highlightColor
+                                            : Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium!.color,
+                                    fontSize:
+                                        isSelected
+                                            ? width * 0.028
+                                            : width * 0.03,
+                                  ),
+                                  onSelected: (selected) {
+                                    if (selected) {
+                                      _saveGoal(goal);
+                                    }
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                      SizedBox(height: 10),
                       _buildAddWorkoutSection(context),
                       _buildAddDietSection(context),
                       _buildSavedWorkoutsList(),

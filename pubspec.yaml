@@ -51,6 +51,7 @@ dependencies:
   dropdown_button2: ^2.3.9
   image_picker: ^1.1.2
   path: ^1.9.1
+  restart_app: ^1.3.2
 
   
 
