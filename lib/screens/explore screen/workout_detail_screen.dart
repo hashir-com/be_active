@@ -61,19 +61,19 @@ class WorkoutDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     _buildDetailRow(
-                      Icons.info_outline,
+                      Icons.format_list_numbered_rounded,
                       '	Number of Sets',
                       workout.sets.toString(),
                     ),
                     const SizedBox(height: 16),
                     _buildDetailRow(
-                      Icons.info_outline,
+                      Icons.replay_sharp,
                       'Repetition Type',
                       workout.unitType ?? "",
                     ),
                     const SizedBox(height: 16),
                     _buildDetailRow(
-                      Icons.info_outline,
+                      Icons.access_time,
                       'Reps / Duration',
                       workout.unitValue ?? '',
                     ),

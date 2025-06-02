@@ -11,5 +11,6 @@ class WeightEntry extends HiveObject {
   @HiveField(1)
   double weight;
 
-  WeightEntry({required this.date, required this.weight});
+
+  WeightEntry({required this.date, required this.weight, });
 }

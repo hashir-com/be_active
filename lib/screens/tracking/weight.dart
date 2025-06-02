@@ -15,6 +15,7 @@ class WeightScreen extends StatefulWidget {
 
 class _WeightScreenState extends State<WeightScreen> {
   late UserModel user;
+  late WeightEntry startweight;
   late Box<UserModel> userBox;
   late Box<WeightEntry> weightBox;
 
@@ -31,13 +32,20 @@ class _WeightScreenState extends State<WeightScreen> {
 
   void loadUserData() {
     user = userBox.getAt(0)!;
+
+    // Set startingWeight only if it doesn't already exist
+    if (user.startingWeight == null) {
+      user.startingWeight = user.weight;
+      user.save();
+    }
+
     if (user.goalWeight == null) {
-      user.goalWeight = user.weight;
+      user.goalWeight = user.weight - 5;
       user.save();
     }
 
     currentWeight = user.weight;
-    goalWeight = user.goalWeight ?? (user.weight - 5);
+    goalWeight = user.goalWeight!;
   }
 
   // for firstWhereOrNull
@@ -72,19 +80,21 @@ class _WeightScreenState extends State<WeightScreen> {
   void updateGoalWeight(double change) {
     setState(() {
       goalWeight += change;
-      user.bmi = goalWeight;
+      user.goalWeight = goalWeight; // ✅ Correct field
       user.save();
     });
   }
 
   double get progressPercent {
-    double? start = user.goalWeight; // initial weight (or starting weight)
-    double goal = goalWeight; // goal weight (target weight)
+    double? start = user.startingWeight;
+    double? goal = user.goalWeight;
 
-    if (start == null || start <= goal) return 0;
+    if (start == null || goal == null || start <= goal) return 1.0;
+    if (currentWeight <= goal) return 1.0;
 
-    double lost = start - currentWeight;
     double totalLoss = start - goal;
+    double lost = start - currentWeight;
+
     return (lost / totalLoss).clamp(0.0, 1.0);
   }
 

@@ -25,7 +25,10 @@ class UserModel extends HiveObject {
   double? bmi;
 
   @HiveField(6)
-  double? goalWeight; // Add this line
+  double? goalWeight;
+
+  @HiveField(7)
+  double? startingWeight; // Add this line
 
   UserModel({
     required this.name,
@@ -35,5 +38,6 @@ class UserModel extends HiveObject {
     required this.weight,
     this.bmi,
     this.goalWeight,
+    this.startingWeight,
   });
 }
