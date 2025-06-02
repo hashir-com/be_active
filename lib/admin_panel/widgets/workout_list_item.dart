@@ -24,38 +24,30 @@ class WorkoutListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(42),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(42)),
       elevation: 4,
       child: ListTile(
-        leading: workout.imageUrl != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: Image.file(
-                  File(workout.imageUrl!),
-                  width: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.broken_image,
-                    color: Colors.grey,
+        leading:
+            workout.imageUrl != null
+                ? ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.file(
+                    File(workout.imageUrl!),
+                    width: 50,
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (_, __, ___) =>
+                            const Icon(Icons.broken_image, color: Colors.grey),
                   ),
-                ),
-              )
-            : const Icon(
-                Icons.fitness_center,
-                color: Colors.indigo,
-              ),
+                )
+                : const Icon(Icons.fitness_center, color: Colors.indigo),
         title: Text(workout.workoutName ?? ''),
         subtitle: Text(workout.information ?? ''),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(
-                Icons.delete_outline_rounded,
-                color: Colors.red,
-              ),
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
               onPressed: () => _confirmDelete(context),
             ),
             IconButton(
@@ -69,9 +61,7 @@ class WorkoutListItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => WorkoutDetailScreen(
-                workout: workout,
-              ),
+              builder: (_) => WorkoutDetailScreen(workout: workout),
             ),
           );
         },
@@ -97,10 +87,7 @@ class WorkoutListItem extends StatelessWidget {
                 onWorkoutDeleted(); // Trigger parent rebuild/save
                 Navigator.of(ctx).pop(); // Close the dialog
               },
-              child: const Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -112,11 +99,12 @@ class WorkoutListItem extends StatelessWidget {
     final edited = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditWorkoutScreen(
-          workout: workout,
-          index: index,
-          userGoal: userGoal,
-        ),
+        builder:
+            (context) => EditWorkoutScreen(
+              workout: workout,
+              index: index,
+              userGoal: userGoal,
+            ),
       ),
     );
 

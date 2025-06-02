@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart'; // Keep hive_flutter for ValueListenableBuilder
+import 'package:thryv/admin_panel/widgets/SetTimeRepSelector.dart';
 import 'package:thryv/admin_panel/widgets/image_pick_widget.dart';
 import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
 import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
@@ -294,6 +295,12 @@ class AdminScreenState extends State<AdminScreen> {
           'Instruction',
           _workoutFormController.workoutInstructionController,
           maxLines: 2,
+        ),
+        const SizedBox(height: 10),
+        SetTimeRepSelector(
+          setsController: _workoutFormController.setsController,
+          modeController: _workoutFormController.unitTypeController,
+          valueController: _workoutFormController.unitValueController,
         ),
         const SizedBox(height: 10),
         buildInputField(

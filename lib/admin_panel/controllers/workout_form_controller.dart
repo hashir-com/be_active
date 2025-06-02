@@ -7,9 +7,13 @@ import 'package:thryv/util/image_utility.dart';
 
 class WorkoutFormController extends ChangeNotifier {
   final TextEditingController workoutNameController = TextEditingController();
-  final TextEditingController workoutInstructionController = TextEditingController();
+  final TextEditingController workoutInstructionController =
+      TextEditingController();
   final TextEditingController workoutInfoController = TextEditingController();
   final TextEditingController workoutImageController = TextEditingController();
+  final setsController = TextEditingController(); // e.g., '3'
+  final unitTypeController = TextEditingController(); // 'reps' or 'time'
+  final unitValueController = TextEditingController(); // '15 reps' or '30 min'
 
   File? _pickedImage;
   File? get pickedImage => _pickedImage;
@@ -23,7 +27,7 @@ class WorkoutFormController extends ChangeNotifier {
     if (path != null) {
       _pickedImage = File(path);
       workoutImageController.text = path;
-      notifyListeners(); 
+      notifyListeners();
     }
   }
 
@@ -37,7 +41,10 @@ class WorkoutFormController extends ChangeNotifier {
   void addWorkout(BuildContext context) {
     if (workoutNameController.text.isEmpty ||
         workoutInstructionController.text.isEmpty ||
-        workoutInfoController.text.isEmpty) {
+        workoutInfoController.text.isEmpty ||
+        setsController.text.isEmpty ||
+        unitTypeController.text.isEmpty ||
+        unitValueController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all workout fields!')),
       );
@@ -49,6 +56,9 @@ class WorkoutFormController extends ChangeNotifier {
       instruction: workoutInstructionController.text,
       information: workoutInfoController.text,
       imageUrl: _pickedImage?.path,
+      sets: int.parse(setsController.text),
+      unitType: unitTypeController.text,
+      unitValue: unitValueController.text,
     );
 
     _dataService.currentUserGoal!.workoutPlans ??= [];
@@ -59,7 +69,6 @@ class WorkoutFormController extends ChangeNotifier {
       const SnackBar(content: Text('Workout added successfully!')),
     );
 
-    // Clear form and image
     clearForm();
   }
 
@@ -67,7 +76,10 @@ class WorkoutFormController extends ChangeNotifier {
     workoutNameController.clear();
     workoutInstructionController.clear();
     workoutInfoController.clear();
-    deleteImage(); 
+    setsController.clear();
+    unitTypeController.clear();
+    unitValueController.clear();
+    deleteImage();
   }
 
   @override

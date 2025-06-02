@@ -21,13 +21,16 @@ class WorkoutPlanAdapter extends TypeAdapter<WorkoutPlan> {
       instruction: fields[1] as String?,
       information: fields[2] as String?,
       imageUrl: fields[3] as String?,
+      sets: fields[4] as int?,
+      unitType: fields[5] as String?,
+      unitValue: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, WorkoutPlan obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.workoutName)
       ..writeByte(1)
@@ -35,7 +38,13 @@ class WorkoutPlanAdapter extends TypeAdapter<WorkoutPlan> {
       ..writeByte(2)
       ..write(obj.information)
       ..writeByte(3)
-      ..write(obj.imageUrl);
+      ..write(obj.imageUrl)
+      ..writeByte(4)
+      ..write(obj.sets)
+      ..writeByte(5)
+      ..write(obj.unitType)
+      ..writeByte(6)
+      ..write(obj.unitValue);
   }
 
   @override

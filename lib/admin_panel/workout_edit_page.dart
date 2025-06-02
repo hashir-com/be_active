@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:thryv/admin_panel/widgets/SetTimeRepSelector.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:hive/hive.dart';
 import 'package:thryv/models/user_goal_model.dart';
@@ -25,6 +26,9 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
   late TextEditingController _nameController;
   late TextEditingController _instructionController;
   late TextEditingController _infoController;
+  late TextEditingController _setController;
+  late TextEditingController _typeController;
+  late TextEditingController _valueController;
 
   File? _pickedImage;
 
@@ -32,6 +36,11 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.workout.workoutName);
+    _setController = TextEditingController(
+      text: widget.workout.sets?.toString(),
+    );
+    _typeController = TextEditingController(text: widget.workout.unitType);
+    _valueController = TextEditingController(text: widget.workout.unitValue);
     _instructionController = TextEditingController(
       text: widget.workout.instruction,
     );
@@ -80,6 +89,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            SizedBox(height: 5),
             _buildTextField(
               _nameController,
               'Workout Name',
@@ -89,6 +99,43 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
             _buildTextField(_instructionController, 'Instructions', Icons.list),
             const SizedBox(height: 12),
             _buildTextField(_infoController, 'Information', Icons.info),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black26),
+                borderRadius: BorderRadius.circular(46),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const SizedBox(width: 12),
+                      Icon(
+                        Icons.timer,
+                        color: Theme.of(context).primaryColorLight,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Set / Time / Reps',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColorDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SetTimeRepSelector(
+                    setsController: _setController,
+                    modeController: _typeController,
+                    valueController: _valueController,
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 12),
             const Text(
               'Workout Image',
