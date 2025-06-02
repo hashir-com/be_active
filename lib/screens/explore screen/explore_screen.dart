@@ -230,7 +230,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                       ),
 
                               title: Text(workout.workoutName ?? 'No name'),
-                              subtitle: Text(workout.information ?? ''),
+                              subtitle: Text(
+                                "Sets :${workout.sets}\n${workout.unitType}:${workout.unitValue}",
+                              ),
                             ),
                           );
                         },

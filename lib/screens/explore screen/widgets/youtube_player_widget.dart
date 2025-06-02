@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -37,10 +36,20 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
 
   @override
   void dispose() {
-    _controller.pause();
-    _controller.dispose();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    widget.onFullScreenChanged(false);
+    if (mounted) {
+      try {
+        _controller.pause();
+        _controller.dispose();
+      } catch (e) {
+        debugPrint("Controller dispose error: $e");
+      }
+
+      // Reset system UI if it was changed
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+      // Notify fullscreen exit safely
+      widget.onFullScreenChanged(false);
+    }
     super.dispose();
   }
 

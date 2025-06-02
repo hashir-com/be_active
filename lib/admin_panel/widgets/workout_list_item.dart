@@ -42,7 +42,10 @@ class WorkoutListItem extends StatelessWidget {
                 )
                 : const Icon(Icons.fitness_center, color: Colors.indigo),
         title: Text(workout.workoutName ?? ''),
-        subtitle: Text(workout.information ?? ''),
+
+        subtitle: Text(
+          "Sets:${workout.sets.toString()},\n${workout.unitType}:${workout.unitValue}",
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -66,6 +66,9 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       instruction: _instructionController.text.trim(),
       information: _infoController.text.trim(),
       imageUrl: _pickedImage?.path,
+      unitType: _typeController.text.trim(),
+      unitValue: _valueController.text.trim(),
+      sets: int.tryParse(_setController.text.trim()),
     );
 
     widget.userGoal.workoutPlans![widget.index] = updatedWorkout;
