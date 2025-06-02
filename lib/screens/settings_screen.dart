@@ -10,6 +10,7 @@ import 'package:thryv/models/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
+import 'package:thryv/models/weight_entry.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
 import 'package:thryv/theme/app_colors.dart';
@@ -47,6 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   await Hive.box<WorkoutPlan>('workoutBox').clear();
                   await Hive.box<FoodItem>('foodBox').clear();
                   await Hive.box<StepEntry>('stepsBox').clear();
+                  await Hive.box<WeightEntry>('weightHistoryBox').clear();
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreen()),
                     (route) => false,

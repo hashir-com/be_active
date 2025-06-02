@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thryv/models/weight_entry.dart';
 import '../models/user_model.dart';
 import '../models/food_item.dart';
 import '../models/user_goal_model.dart';
@@ -15,7 +16,9 @@ Future<void> initHive() async {
   Hive.registerAdapter(UserGoalModelAdapter());
   Hive.registerAdapter(FoodItemAdapter());
   Hive.registerAdapter(StepEntryAdapter());
+  Hive.registerAdapter(WeightEntryAdapter());
 
+  await Hive.openBox<WeightEntry>('weightHistoryBox');
   await Hive.openBox<UserModel>('userBox');
   await Hive.openBox<UserGoalModel>('userGoalBox');
   await Hive.openBox<DietPlan>('dietPlans');

@@ -24,6 +24,9 @@ class UserModel extends HiveObject {
   @HiveField(5)
   double? bmi;
 
+  @HiveField(6)
+  double? goalWeight; // Add this line
+
   UserModel({
     required this.name,
     required this.age,
@@ -31,5 +34,6 @@ class UserModel extends HiveObject {
     required this.height,
     required this.weight,
     this.bmi,
+    this.goalWeight,
   });
 }

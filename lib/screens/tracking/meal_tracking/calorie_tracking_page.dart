@@ -370,6 +370,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
+          SizedBox(height: 5),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -395,7 +396,9 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         value: totalCalories / totalCalorieGoal,
                         strokeWidth: 5,
                         backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainerHighest,
+                            Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation(
                           Theme.of(context).primaryColor,
                         ),
