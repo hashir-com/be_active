@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:thryv/models/workout_model.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/services/hive_service.dart';
 
 part 'user_goal_model.g.dart';

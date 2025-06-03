@@ -6,13 +6,10 @@ part 'steps_model.g.dart';
 @HiveType(typeId: 2)
 class StepEntry extends HiveObject {
   @HiveField(0)
-  DateTime date;
+  final DateTime date;
 
   @HiveField(1)
-  int steps;
+  final int steps;
 
-  @HiveField(2)
-  int stepGoal;
-
-  StepEntry({required this.date, required this.steps, required this.stepGoal});
+  StepEntry({required this.date, required this.steps});
 }

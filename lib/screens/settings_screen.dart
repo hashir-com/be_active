@@ -1,11 +1,13 @@
 // ignore: file_names
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:thryv/models/diet_model.dart';
-import 'package:thryv/models/food_item.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
+import 'package:thryv/models/food_model.dart/food_item.dart';
 import 'package:thryv/models/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';

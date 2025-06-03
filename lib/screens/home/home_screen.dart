@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
 import 'package:thryv/services/hive_service.dart';
 import 'package:flutter/material.dart';

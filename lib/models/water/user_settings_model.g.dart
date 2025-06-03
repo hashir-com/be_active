@@ -1,35 +1,32 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'steps_model.dart';
+part of 'user_settings_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class StepEntryAdapter extends TypeAdapter<StepEntry> {
+class UserSettingsModelAdapter extends TypeAdapter<UserSettingsModel> {
   @override
-  final int typeId = 2;
+  final int typeId = 7;
 
   @override
-  StepEntry read(BinaryReader reader) {
+  UserSettingsModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return StepEntry(
-      date: fields[0] as DateTime,
-      steps: fields[1] as int,
+    return UserSettingsModel(
+      waterGoal: fields[0] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, StepEntry obj) {
+  void write(BinaryWriter writer, UserSettingsModel obj) {
     writer
-      ..writeByte(2)
-      ..writeByte(0)
-      ..write(obj.date)
       ..writeByte(1)
-      ..write(obj.steps);
+      ..writeByte(0)
+      ..write(obj.waterGoal);
   }
 
   @override
@@ -38,7 +35,7 @@ class StepEntryAdapter extends TypeAdapter<StepEntry> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is StepEntryAdapter &&
+      other is UserSettingsModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

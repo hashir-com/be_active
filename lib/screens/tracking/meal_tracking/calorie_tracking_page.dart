@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/screens/tracking/meal_tracking/nutrition_details.dart';
-import '../../../../models/food_item.dart';
+import '../../../models/food_model.dart/food_item.dart';
 import 'foodsearch.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/util/image_utility.dart';
@@ -76,10 +76,10 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     user = userBox.get('user');
     usergoal = userGoalBox.get('usergoal');
 
-    if (user != null && user!.bmi != null && usergoal!.goal != null) {
+    if (user?.bmi != null && usergoal?.goal != null) {
       totalCalorieGoal = suggestInitialCalorieGoal(user!.bmi!, usergoal!.goal!);
     } else {
-      totalCalorieGoal = 1750; // Default if no data available
+      totalCalorieGoal = 1750;
     }
 
     _applyMealCalorieGoals();

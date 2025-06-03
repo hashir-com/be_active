@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/services/data_service.dart';
 import 'package:thryv/util/image_utility.dart';

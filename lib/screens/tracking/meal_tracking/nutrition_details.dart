@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:thryv/models/food_item.dart';
+import 'package:thryv/models/food_model.dart/food_item.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class NutritionDetailsPage extends StatelessWidget {

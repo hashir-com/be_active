@@ -1,83 +1,240 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:thryv/models/water/water_intake_model.dart';
+import 'package:thryv/models/water/user_settings_model.dart';
 
 class WaterScreen extends StatefulWidget {
   const WaterScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
-  _WaterScreenState createState() => _WaterScreenState();
+  State<WaterScreen> createState() => _WaterScreenState();
 }
 
 class _WaterScreenState extends State<WaterScreen> {
-  int glassesDrunk = 6;
-  final int totalGlasses = 11;
+  final waterBox = Hive.box<WaterIntakeModel>('water_intake');
+  final settingsBox = Hive.box<UserSettingsModel>('user_settings');
 
-  void _incrementGlass() {
-    if (glassesDrunk < totalGlasses) {
-      setState(() {
-        glassesDrunk++;
-      });
-    }
+  int waterGoal = 8;
+  int glassesDrunk = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTodayIntake();
+    _loadUserGoal();
   }
 
-  void _decrementGlass() {
-    if (glassesDrunk > 0) {
-      setState(() {
-        glassesDrunk--;
-      });
+  void _loadTodayIntake() {
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final today = waterBox.get(todayKey);
+    setState(() {
+      glassesDrunk = today?.glassesDrunk ?? 0;
+    });
+  }
+
+  void _loadUserGoal() {
+    final goalModel = settingsBox.get('goal');
+    setState(() {
+      waterGoal = goalModel?.waterGoal ?? 8;
+    });
+  }
+
+  void _updateIntake(int change) {
+    setState(() {
+      glassesDrunk += change;
+      glassesDrunk = glassesDrunk.clamp(0, waterGoal);
+    });
+
+    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final todayModel = WaterIntakeModel(
+      date: DateTime.now(),
+      glassesDrunk: glassesDrunk,
+    );
+    waterBox.put(todayKey, todayModel);
+  }
+
+  void _changeGoal() async {
+    final controller = TextEditingController(text: waterGoal.toString());
+    final newGoal = await showDialog<int>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: const Text('Change Water Goal'),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Enter new goal (glasses)",
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  final value = int.tryParse(controller.text);
+                  if (value != null && value > 0) {
+                    settingsBox.put(
+                      'goal',
+                      UserSettingsModel(waterGoal: value),
+                    );
+                    Navigator.pop(ctx, value);
+                  }
+                },
+                child: const Text("Save"),
+              ),
+            ],
+          ),
+    );
+    if (newGoal != null) {
+      setState(() => waterGoal = newGoal);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double progress = glassesDrunk / totalGlasses;
+    final progress = glassesDrunk / waterGoal;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(),
-        title: const Text("Water Tracker"),
-      ),
+      appBar: AppBar(title: const Text("Water Tracker"), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            "$glassesDrunk of $totalGlasses Glasses",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            elevation: 4,
+            color: theme.colorScheme.surface,
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        "$glassesDrunk / $waterGoal Glasses",
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: _changeGoal,
+                        icon: const Icon(Icons.edit, size: 20),
+                        tooltip: 'Edit Goal',
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 18,
+                        borderRadius: BorderRadius.circular(10),
+                        color: theme.primaryColor,
+                        backgroundColor: theme.colorScheme.primary.withOpacity(
+                          0.2,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Text(
+                          "${(progress * 100).toInt()}%",
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(value: progress, color: Colors.deepPurple),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Center(
             child: Stack(
               alignment: Alignment.center,
               children: [
-                CircleAvatar(radius: 80, backgroundColor: Colors.blue.shade100),
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.blue.shade300,
-                  child: const Icon(Icons.local_drink, size: 30, color: Colors.white),
+                // Outer circle background
+                Container(
+                  width: 160,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.primaryColorLight.withOpacity(0.15),
+                  ),
+                ),
+                // Progress fill circle
+                SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: CircularProgressIndicator(
+                    value: glassesDrunk / waterGoal,
+                    strokeWidth: 20,
+                    backgroundColor: theme.primaryColorLight.withOpacity(0.15),
+                    valueColor: AlwaysStoppedAnimation(theme.primaryColor),
+                  ),
+                ),
+                // Icon in the center
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.primaryColorLight,
+                  ),
+                  child: const Icon(
+                    Icons.water_drop_outlined,
+                    size: 40,
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 10),
           Center(
-            child: Text(
-              "1 Glass (250 ml)",
-              style: const TextStyle(fontSize: 16),
-            ),
+            child: Text("1 Glass = 250 ml", style: theme.textTheme.bodyMedium),
           ),
           const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: _decrementGlass, icon: const Icon(Icons.remove)),
-              IconButton(onPressed: _incrementGlass, icon: const Icon(Icons.add)),
+              IconButton(
+                onPressed: () => _updateIntake(-1),
+                icon: const Icon(Icons.remove_circle, size: 32),
+                tooltip: 'Remove Glass',
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                onPressed: () => _updateIntake(1),
+                icon: const Icon(Icons.add_circle, size: 32),
+                tooltip: 'Add Glass',
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-          const Text("Daily Water Intake", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          const SizedBox(height: 200, child: WaterBarChart()),
+          const SizedBox(height: 30),
+          Text(
+            "This Week",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          SizedBox(height: 200, child: WaterBarChart(waterGoal: waterGoal)),
+          SizedBox(height: 50),
         ],
       ),
     );
@@ -85,27 +242,80 @@ class _WaterScreenState extends State<WaterScreen> {
 }
 
 class WaterBarChart extends StatelessWidget {
-  const WaterBarChart({super.key});
+  final int waterGoal;
+
+  const WaterBarChart({super.key, required this.waterGoal});
 
   @override
   Widget build(BuildContext context) {
-    return BarChart(
-      BarChartData(
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: true, getTitlesWidget: (value, meta) {
-              const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-              return Text(days[value.toInt()]);
-            }),
-          ),
-        ),
-        barGroups: List.generate(7, (index) {
-          return BarChartGroupData(
-            x: index,
-            barRods: [BarChartRodData(toY: (index + 1) * 1.0, color: Colors.blue.shade700)],
+    final theme = Theme.of(context);
+    final waterBox = Hive.box<WaterIntakeModel>('water_intake');
+
+    return ValueListenableBuilder(
+      valueListenable: waterBox.listenable(),
+      builder: (context, Box<WaterIntakeModel> box, _) {
+        final today = DateTime.now();
+        List<BarChartGroupData> barGroups = [];
+
+        for (int i = 6; i >= 0; i--) {
+          final day = today.subtract(Duration(days: i));
+          final key = DateFormat('yyyy-MM-dd').format(day);
+          final intake = box.get(key)?.glassesDrunk ?? 0;
+
+          barGroups.add(
+            BarChartGroupData(
+              x: 6 - i,
+              barRods: [
+                BarChartRodData(
+                  toY: intake.toDouble(),
+                  width: 18,
+                  color: theme.primaryColor,
+                  borderRadius: BorderRadius.circular(6),
+                  backDrawRodData: BackgroundBarChartRodData(
+                    show: true,
+                    toY: waterGoal.toDouble(), // ✅ Use goal here
+                    color: theme.colorScheme.primary.withOpacity(0.1),
+                  ),
+                ),
+              ],
+            ),
           );
-        }),
-      ),
+        }
+
+        return BarChart(
+          BarChartData(
+            barGroups: barGroups,
+            borderData: FlBorderData(show: false),
+            gridData: FlGridData(show: false),
+            alignment: BarChartAlignment.spaceAround,
+            titlesData: FlTitlesData(
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 32,
+                  getTitlesWidget: (value, _) {
+                    final date = today.subtract(
+                      Duration(days: 6 - value.toInt()),
+                    );
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        DateFormat('E').format(date),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+          ),
+        );
+      },
     );
   }
 }

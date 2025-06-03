@@ -7,7 +7,7 @@ import 'package:thryv/services/api%20services/search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../../../models/food_item.dart';
+import '../../../models/food_model.dart/food_item.dart';
 
 class FoodSearchPage extends StatefulWidget {
   final MealType mealType;

@@ -2,7 +2,7 @@ import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart'
 import 'package:thryv/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import '../home/navigation_screen.dart';
-import 'sleep.dart';
+import 'sleep_tracking/sleep.dart';
 import 'steps.dart';
 import 'water.dart';
 import 'weight.dart';
@@ -61,7 +61,7 @@ void showTrackOptions(BuildContext context) {
               Icons.directions_walk,
               "Steps",
               Colors.deepPurple,
-              StepsScreen(),
+              StepCounterScreen(),
             ),
             _trackItem(
               context,

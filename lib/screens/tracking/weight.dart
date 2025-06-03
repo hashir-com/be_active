@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, duplicate_ignore
+
 import 'dart:math';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -201,6 +203,7 @@ class _WeightScreenState extends State<WeightScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: themeColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),

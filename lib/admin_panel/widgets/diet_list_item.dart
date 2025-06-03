@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:thryv/admin_panel/edit_diet_screen.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/screens/explore screen/diet_detail_screen.dart';
 

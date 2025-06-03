@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 
 class DietDetailScreen extends StatelessWidget {
   final DietPlan diet;

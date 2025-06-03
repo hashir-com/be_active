@@ -1,4 +1,4 @@
-import 'package:thryv/models/food_item.dart';
+import 'package:thryv/models/food_model.dart/food_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

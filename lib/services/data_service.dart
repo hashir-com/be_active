@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:thryv/models/diet_model.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 
