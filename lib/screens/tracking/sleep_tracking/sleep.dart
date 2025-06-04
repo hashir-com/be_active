@@ -56,12 +56,12 @@ class _SleepScreenState extends State<SleepScreen> {
       final wakeUpTime = result['wakeUpTime']!;
 
       // Handle sleep crossing over midnight
-      final duration =
-          wakeUpTime.isAfter(bedTime)
-              ? wakeUpTime.difference(bedTime)
-              : wakeUpTime.add(const Duration(days: 1)).difference(bedTime);
+      // final duration =
+      //     wakeUpTime.isAfter(bedTime)
+      //         ? wakeUpTime.difference(bedTime)
+      //         : wakeUpTime.add(const Duration(days: 1)).difference(bedTime);
 
-      final sleepHours = duration.inMinutes / 60.0;
+      // final sleepHours = duration.inMinutes / 60.0;
 
       final newEntry = SleepEntry(
         date: DateTime(now.year, now.month, now.day),

@@ -67,10 +67,9 @@ class AppInitializer extends StatelessWidget {
             ),
           ),
 
-          home: hasUserData ? const NavigationScreen() : const SplashScreen(),
+          home: const SplashScreen(),
         );
       },
     );
   }
 }
- 

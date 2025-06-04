@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:thryv/helpers/hive_setup_registration.dart';
+import 'package:thryv/models/user_model.dart';
+import 'package:thryv/screens/home/navigation_screen.dart';
 
 import 'onboarding_screen.dart';
 
@@ -15,12 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    final userBox = Hive.box<UserModel>('userBox');
+    final bool hasUserData = userBox.get('user') != null;
 
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (_) => OnboardingScreen()),
+        MaterialPageRoute(builder: (_) => hasUserData ? const NavigationScreen() :OnboardingScreen()),
       );
     });
   }

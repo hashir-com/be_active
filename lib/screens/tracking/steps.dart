@@ -206,6 +206,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     int todaySteps = last7Days.last.steps;
     double burnedToday = (todaySteps / 1000) * 40;
     double goalBurn = (dailyGoal / 1000) * 40;
+    var theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -226,7 +227,8 @@ class StepCounterScreenState extends State<StepCounterScreen> {
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD2C9FF),
+                  color: theme.colorScheme.primaryContainer,
+
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -266,7 +268,6 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             // Calories Card
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: Colors.grey.shade300),
               ),
@@ -309,7 +310,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFD2C9FF),
+                color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -323,7 +324,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                   Text(
                     "Weight it. Weighted vests can be worn to bump up the intensity of your walk. "
                     "Wear one that's no more than 5–10% of your body weight for comfort and safety.",
-                    style: TextStyle(fontSize: 13, color: Colors.grey[800]),
+                    style: TextStyle(fontSize: 13),
                   ),
                 ],
               ),
