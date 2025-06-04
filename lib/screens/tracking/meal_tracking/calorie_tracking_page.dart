@@ -134,9 +134,15 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   void _addFood(MealType meal) async {
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => FoodSearchPage(mealType: meal)),
+      MaterialPageRoute(
+        builder:
+            (_) => FoodSearchPage(
+              mealType: meal,
+              selectedDate: selectedDate, // ✅ pass selected date
+            ),
+      ),
     );
-    _loadSavedMeals();
+    _loadSavedMeals(); // reload to reflect new items
   }
 
   void _showEditGoalDialog(MealType selectedMeal) {

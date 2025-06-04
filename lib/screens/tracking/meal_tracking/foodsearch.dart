@@ -11,8 +11,13 @@ import '../../../models/food_model.dart/food_item.dart';
 
 class FoodSearchPage extends StatefulWidget {
   final MealType mealType;
+  final DateTime selectedDate;
 
-  const FoodSearchPage({super.key, required this.mealType});
+  const FoodSearchPage({
+    super.key,
+    required this.mealType,
+    required this.selectedDate,
+  });
 
   @override
   _FoodSearchPageState createState() => _FoodSearchPageState();
@@ -131,8 +136,9 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       fat: fat,
       carbs: carbs,
       fiber: fiber,
+
       mealType: mealTypeToKey(widget.mealType),
-      date: DateTime.now(),
+      date: widget.selectedDate,
     );
 
     await box.add(newFood);
@@ -173,7 +179,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
       carbs: item.carbs,
       mealType: mealTypeToKey(widget.mealType),
       fiber: item.fiber,
-      date: DateTime.now(),
+      date: widget.selectedDate,
     );
 
     await box.add(newFood);

@@ -162,41 +162,78 @@ class _WeightScreenState extends State<WeightScreen> {
           const SizedBox(height: 24),
           Text("Weight Graph", style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 12),
-          if (spots.length <= 1)
+          if (spots.isEmpty)
             const Center(child: Text("Not enough data to show chart."))
           else
-            SizedBox(
-              height: 240,
-              child: LineChart(
-                LineChartData(
-                  minY: spots.map((e) => e.y).reduce(min) - 2,
-                  maxY: spots.map((e) => e.y).reduce(max) + 2,
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  gridData: FlGridData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: spots,
-                      isCurved: true,
-                      barWidth: 4,
-                      color: themeColor,
-                      belowBarData: BarAreaData(
-                        show: true,
-                        gradient: LinearGradient(
-                          colors: [
-                            themeColor.withOpacity(0.4),
-                            themeColor.withOpacity(0.1),
-                          ],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 250,
+                child: LineChart(
+                  LineChartData(
+                    minY: spots.map((e) => e.y).reduce(min) - 2,
+                    maxY: spots.map((e) => e.y).reduce(max) + 2,
+                    titlesData: FlTitlesData(
+                      leftTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 1, // or calculate dynamically
+                          getTitlesWidget: (value, meta) {
+                            if (value == 0) {
+                              return const SizedBox.shrink(); // hide 0
+                            }
+                            return Text(
+                              value.toStringAsFixed(0),
+                              style: const TextStyle(fontSize: 12),
+                            );
+                          },
+                          reservedSize: 40,
                         ),
                       ),
-                      dotData: FlDotData(show: true),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 1,
+                          reservedSize: 50,
+                        ),
+                      ),
+                      bottomTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: false,
+                        ), // Optional: for X-axis
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(
+                          showTitles: false,
+                        ), // Optional: for X-axis
+                      ),
                     ),
-                  ],
+                    borderData: FlBorderData(show: false),
+                    gridData: FlGridData(show: true),
+                    lineBarsData: [
+                      LineChartBarData(
+                        spots: spots,
+                        isCurved: true,
+                        barWidth: 5,
+                        color: themeColor,
+                        belowBarData: BarAreaData(
+                          show: true,
+                          gradient: LinearGradient(
+                            colors: [
+                              themeColor.withOpacity(0.4),
+                              themeColor.withOpacity(0.1),
+                            ],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          ),
+                        ),
+                        dotData: FlDotData(show: true),
+                      ),
+                    ],
+                  ),
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeOut,
                 ),
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeOut,
               ),
             ),
           const SizedBox(height: 24),
