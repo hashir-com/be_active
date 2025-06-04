@@ -14,6 +14,7 @@ import 'package:thryv/admin_panel/controllers/diet_form_controller.dart';
 import 'package:thryv/admin_panel/widgets/workout_list_item.dart'; // Import new list item widgets
 import 'package:thryv/admin_panel/widgets/diet_list_item.dart';
 import 'package:thryv/services/hive_service.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -29,6 +30,7 @@ class AdminScreenState extends State<AdminScreen> {
   // Use ChangeNotifiers for form state management
   late WorkoutFormController _workoutFormController;
   late DietFormController _dietFormController;
+  TextEditingController videoController = TextEditingController();
 
   @override
   void initState() {
@@ -188,6 +190,77 @@ class AdminScreenState extends State<AdminScreen> {
                             }).toList(),
                       ),
                       SizedBox(height: 10),
+
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Add YouTube Video",
+                            style: TextStyle(
+                              color: Theme.of(context).highlightColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: videoController,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter YouTube video URL",
+                                    hintStyle: TextStyle(
+                                      fontSize: 12,
+                                      color: Theme.of(context).highlightColor,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(26),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              ElevatedButton(
+                                onPressed: () {
+                                  final videoId = YoutubePlayer.convertUrlToId(
+                                    videoController.text.trim(),
+                                  );
+
+                                  if (videoId != null) {
+                                    final userGoalBox = Hive.box<UserGoalModel>(
+                                      'userGoalBox',
+                                    );
+                                    final userGoal = userGoalBox.get(
+                                      'usergoal',
+                                    );
+
+                                    if (userGoal != null) {
+                                      final videoList = userGoal.videoIds ?? [];
+                                      if (!videoList.contains(videoId)) {
+                                        videoList.add(videoId);
+                                        userGoal.videoIds = videoList;
+                                        userGoal.save();
+                                      }
+                                      videoController.clear();
+                                      setState(() {}); // refresh UI
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text("Invalid YouTube URL"),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Text("Add"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 10),
+
                       _buildAddWorkoutSection(context),
                       _buildAddDietSection(context),
                       _buildSavedWorkoutsList(),

@@ -8,10 +8,13 @@ import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/food_model.dart/food_item.dart';
+import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/models/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
+import 'package:thryv/models/water/user_settings_model.dart';
+import 'package:thryv/models/water/water_intake_model.dart';
 import 'package:thryv/models/weight_entry.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
@@ -49,8 +52,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   await Hive.box<DietPlan>('dietPlans').clear();
                   await Hive.box<WorkoutPlan>('workoutBox').clear();
                   await Hive.box<FoodItem>('foodBox').clear();
-                  await Hive.box<StepEntry>('stepsBox').clear();
+                  await Hive.box<StepEntry>('step_entries').clear();
                   await Hive.box<WeightEntry>('weightHistoryBox').clear();
+                  await Hive.box<SleepEntry>('sleep_entries').clear();
+                  await Hive.box<SleepGoal>('sleep_goal').clear();
+                  await Hive.box<WaterIntakeModel>('water_intake').clear();
+                  await Hive.box<UserSettingsModel>('user_settings').clear();
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => SplashScreen()),
                     (route) => false,

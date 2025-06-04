@@ -48,19 +48,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
     });
   }
 
-  List<String> getVideosForGoal(UserGoal? goal) {
-    switch (goal) {
-      case UserGoal.weightLoss:
-        return ["ahnl7GaV_rU", "YJcecddIdWo"];
-      case UserGoal.weightGain:
-        return ["S21o1IdwWf8", "KM3ko1Z4amA"];
-      case UserGoal.muscleGain:
-        return ["2tM1LFFxeKg", "M4K0s792wAU"];
-      default:
-        return [];
-    }
-  }
-
   Widget infoRow(IconData icon, String label, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -79,7 +66,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final videoIds = getVideosForGoal(usergoal?.goal);
+    final videoIds = userGoal?.videoIds ?? [];
+
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 

@@ -20,19 +20,22 @@ class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
       goalIndex: fields[0] as int?,
       workoutPlans: (fields[1] as List?)?.cast<WorkoutPlan>(),
       dietPlans: (fields[2] as List?)?.cast<DietPlan>(),
+      videoIds: (fields[3] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserGoalModel obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.goalIndex)
       ..writeByte(1)
       ..write(obj.workoutPlans)
       ..writeByte(2)
-      ..write(obj.dietPlans);
+      ..write(obj.dietPlans)
+      ..writeByte(3)
+      ..write(obj.videoIds);
   }
 
   @override
