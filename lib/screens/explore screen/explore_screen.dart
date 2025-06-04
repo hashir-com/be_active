@@ -303,9 +303,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ...videoIds.map(
                       (id) => Padding(
                         padding: const EdgeInsets.only(bottom: 16),
-                        child: YoutubePlayerWidget(
-                          videoId: id,
-                          onFullScreenChanged: _onFullScreenChanged,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: SizedBox(
+                            height: 200,
+                            child: YoutubePlayerWidget(
+                              videoId: id,
+                              onFullScreenChanged: _onFullScreenChanged,
+                            ),
+                          ),
                         ),
                       ),
                     ),

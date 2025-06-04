@@ -7,6 +7,7 @@ import 'package:thryv/admin_panel/widgets/meal_type_dropdown.dart';
 import 'package:thryv/admin_panel/widgets/inforow_widget.dart';
 import 'package:thryv/admin_panel/widgets/inputfield_widget.dart';
 import 'package:thryv/models/user_goal_model.dart';
+import 'package:thryv/screens/explore%20screen/widgets/youtube_player_widget.dart';
 import 'package:thryv/screens/home/widgets/bmi_card.dart';
 import 'package:thryv/services/data_service.dart'; // Import the new DataService
 import 'package:thryv/admin_panel/controllers/workout_form_controller.dart'; // Import controllers
@@ -31,6 +32,7 @@ class AdminScreenState extends State<AdminScreen> {
   late WorkoutFormController _workoutFormController;
   late DietFormController _dietFormController;
   TextEditingController videoController = TextEditingController();
+  UserGoalModel? userGoal;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class AdminScreenState extends State<AdminScreen> {
     // Initialize DataService and load data
     _dataService.init().then((_) {
       setState(() {
+        userGoal = _dataService.currentUserGoal;
         // Force a rebuild after data is loaded
       });
     });
@@ -77,6 +80,14 @@ class AdminScreenState extends State<AdminScreen> {
     }
   }
 
+  void _onFullScreenChanged(bool isFullScreen) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
   void _saveGoal(UserGoal goal) {
     HiveService().saveUserGoal(goal);
     setState(() {
@@ -90,6 +101,7 @@ class AdminScreenState extends State<AdminScreen> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+    final videoIds = userGoal?.videoIds ?? [];
 
     // It's safer to check if user and userGoal are loaded before accessing their properties
     if (_dataService.currentUser == null ||
@@ -256,6 +268,153 @@ class AdminScreenState extends State<AdminScreen> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 24),
+                          Text(
+                            "Recommended Videos",
+                            style: TextStyle(
+                              color: Theme.of(context).highlightColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ...videoIds.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final id = entry.value;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      height: 200,
+                                      child: YoutubePlayerWidget(
+                                        videoId: id,
+                                        onFullScreenChanged:
+                                            _onFullScreenChanged,
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.edit,
+                                          color: Colors.amber,
+                                        ),
+                                        onPressed: () async {
+                                          final newUrl = await showDialog<
+                                            String
+                                          >(
+                                            context: context,
+                                            builder: (context) {
+                                              final controller =
+                                                  TextEditingController(
+                                                    text:
+                                                        "https://www.youtube.com/watch?v=$id",
+                                                  );
+                                              return AlertDialog(
+                                                title: const Text(
+                                                  "Edit Video URL",
+                                                ),
+                                                content: TextField(
+                                                  controller: controller,
+                                                  decoration:
+                                                      const InputDecoration(
+                                                        labelText:
+                                                            "New YouTube URL",
+                                                      ),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed:
+                                                        () => Navigator.pop(
+                                                          context,
+                                                        ),
+                                                    child: const Text("Cancel"),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed:
+                                                        () => Navigator.pop(
+                                                          context,
+                                                          controller.text,
+                                                        ),
+                                                    child: const Text("Update"),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+
+                                          if (newUrl != null) {
+                                            final newId =
+                                                YoutubePlayer.convertUrlToId(
+                                                  newUrl.trim(),
+                                                );
+                                            if (newId != null) {
+                                              final userGoalBox =
+                                                  Hive.box<UserGoalModel>(
+                                                    'userGoalBox',
+                                                  );
+                                              final userGoal = userGoalBox.get(
+                                                'usergoal',
+                                              );
+                                              if (userGoal != null &&
+                                                  userGoal.videoIds != null &&
+                                                  index <
+                                                      userGoal
+                                                          .videoIds!
+                                                          .length) {
+                                                userGoal.videoIds![index] =
+                                                    newId;
+                                                userGoal.save();
+                                                setState(() {});
+                                              }
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    "Invalid YouTube URL",
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          }
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.delete,
+                                          color: Colors.redAccent,
+                                        ),
+                                        onPressed: () {
+                                          final userGoalBox =
+                                              Hive.box<UserGoalModel>(
+                                                'userGoalBox',
+                                              );
+                                          final userGoal = userGoalBox.get(
+                                            'usergoal',
+                                          );
+                                          if (userGoal != null &&
+                                              userGoal.videoIds != null &&
+                                              index <
+                                                  userGoal.videoIds!.length) {
+                                            userGoal.videoIds!.removeAt(index);
+                                            userGoal.save();
+                                            setState(() {});
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
                         ],
                       ),
 

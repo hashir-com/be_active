@@ -4,12 +4,12 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class YoutubePlayerWidget extends StatefulWidget {
   final String videoId;
-  final ValueChanged<bool> onFullScreenChanged;
+  final Function(bool)? onFullScreenChanged;
 
   const YoutubePlayerWidget({
-    super.key,
     required this.videoId,
-    required this.onFullScreenChanged,
+    this.onFullScreenChanged,
+    super.key,
   });
 
   @override
@@ -24,54 +24,28 @@ class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
     super.initState();
     _controller = YoutubePlayerController(
       initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: false,
-        mute: false,
-        enableCaption: true,
-        isLive: false,
-        controlsVisibleAtStart: true,
-      ),
+      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return YoutubePlayer(
+      controller: _controller,
+      showVideoProgressIndicator: true,
+      onReady: () {
+        if (widget.onFullScreenChanged != null) {
+          _controller.addListener(() {
+            widget.onFullScreenChanged!(_controller.value.isFullScreen);
+          });
+        }
+      },
     );
   }
 
   @override
   void dispose() {
-    if (mounted) {
-      try {
-        _controller.pause();
-        _controller.dispose();
-      } catch (e) {
-        debugPrint("Controller dispose error: $e");
-      }
-
-      // Reset system UI if it was changed
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-
-      // Notify fullscreen exit safely
-      widget.onFullScreenChanged(false);
-    }
+    _controller.dispose();
     super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return YoutubePlayerBuilder(
-      onEnterFullScreen: () {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-        widget.onFullScreenChanged(true);
-      },
-      onExitFullScreen: () {
-        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-        widget.onFullScreenChanged(false);
-      },
-      player: YoutubePlayer(
-        controller: _controller,
-        showVideoProgressIndicator: true,
-        progressIndicatorColor: Theme.of(context).colorScheme.primary,
-      ),
-      builder: (context, player) {
-        return AspectRatio(aspectRatio: 16 / 9, child: player);
-      },
-    );
   }
 }
