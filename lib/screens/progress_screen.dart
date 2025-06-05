@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/daily_progress.dart';
 
@@ -14,12 +15,28 @@ class ProgressHeatmapScreen extends StatefulWidget {
 class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
   late Box<DailyProgress> progressBox;
   late Map<DateTime, int> data;
+  late VoidCallback _boxListener;
 
   @override
   void initState() {
     super.initState();
     progressBox = Hive.box<DailyProgress>('dailyProgressBox');
     data = _generateProgressHeatmapData(progressBox);
+
+    // Add listener to update UI on box changes
+    _boxListener = () {
+      setState(() {
+        data = _generateProgressHeatmapData(progressBox);
+      });
+    };
+
+    progressBox.listenable().addListener(_boxListener);
+  }
+
+  @override
+  void dispose() {
+    progressBox.listenable().removeListener(_boxListener);
+    super.dispose();
   }
 
   @override
@@ -53,8 +70,9 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
         padding: const EdgeInsets.all(16.0),
         child: HeatMapCalendar(
           initDate: DateTime.now(),
+          colorMode: ColorMode.color,
           datasets: data,
-          colorsets:  progressColors,
+          colorsets: progressColors,
           size: 46,
           showColorTip: true,
           colorTipCount: 5,
