@@ -9,16 +9,16 @@ class DailyProgress extends HiveObject {
   final DateTime date;
 
   @HiveField(1)
-   bool foodLogged;
+  bool foodLogged;
 
   @HiveField(2)
-   bool waterLogged;
+  bool waterLogged;
 
   @HiveField(3)
-   bool sleepLogged;
+  bool sleepLogged;
 
   @HiveField(4)
-   bool stepsLogged;
+  bool stepsLogged;
 
   DailyProgress({
     required this.date,
@@ -28,12 +28,9 @@ class DailyProgress extends HiveObject {
     this.stepsLogged = false,
   });
 
-  int get completionScore {
-    return [
-      foodLogged,
-      waterLogged,
-      sleepLogged,
-      stepsLogged,
-    ].where((e) => e).length;
-  }
+  int get completionScore =>
+      (foodLogged ? 1 : 0) +
+      (waterLogged ? 1 : 0) +
+      (sleepLogged ? 1 : 0) +
+      (stepsLogged ? 1 : 0);
 }

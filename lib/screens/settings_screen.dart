@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:thryv/models/daily_progress.dart';
 import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/food_model.dart/food_item.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
@@ -31,6 +32,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final progressBox = Hive.box<DailyProgress>('dailyProgressBox');
+
+  Map<DateTime, int> data = {};
+
   Future<bool?> _showDeleteConfirmationDialog() {
     return showDialog<bool>(
       context: context,
@@ -47,22 +52,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               TextButton(
                 onPressed: () async {
-                  await Hive.box<UserModel>('userBox').clear();
-                  await Hive.box<UserGoalModel>('userGoalBox').clear();
-                  await Hive.box<DietPlan>('dietPlans').clear();
-                  await Hive.box<WorkoutPlan>('workoutBox').clear();
-                  await Hive.box<FoodItem>('foodBox').clear();
-                  await Hive.box<StepEntry>('step_entries').clear();
-                  await Hive.box<WeightEntry>('weightHistoryBox').clear();
-                  await Hive.box<SleepEntry>('sleep_entries').clear();
-                  await Hive.box<SleepGoal>('sleep_goal').clear();
-                  await Hive.box<WaterIntakeModel>('water_intake').clear();
-                  await Hive.box<UserSettingsModel>('user_settings').clear();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => SplashScreen()),
-                    (route) => false,
-                  );
-                }, // Confirm delete
+                  try {
+                    print('Starting Hive data clear...');
+
+                    await progressBox.clear();
+                    await Hive.box('settings').clear();
+                    await Hive.box<StepEntry>('step_entries').clear();
+                    await Hive.box<SleepEntry>('sleep_entries').clear();
+                    await Hive.box<SleepGoal>('sleep_goal').clear();
+                    await Hive.box<WaterIntakeModel>('water_intake').clear();
+                    await Hive.box<UserSettingsModel>('user_settings').clear();
+                    await Hive.box<WeightEntry>('weightHistoryBox').clear();
+                    await Hive.box<UserModel>('userBox').clear();
+                    await Hive.box<UserGoalModel>('userGoalBox').clear();
+                    await Hive.box<DietPlan>('dietPlans').clear();
+                    await Hive.box<WorkoutPlan>('workoutBox').clear();
+                    await Hive.box<FoodItem>('foodBox').clear();
+
+                    print('Hive data cleared successfully.');
+
+                    setState(() {
+                      data = {};
+                    });
+                    // Optional: Restart entire app
+                    // Restart.restartApp();
+
+                    // Or navigate back to splash screen
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => SplashScreen()),
+                      (route) => false,
+                    );
+                  } catch (e, stackTrace) {
+                    print('Error clearing data: $e');
+                    print('Stack trace: $stackTrace');
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to clear data: $e')),
+                    );
+                  }
+                },
+                // Confirm delete
                 child: const Text(
                   'Delete',
                   style: TextStyle(color: AppColors.errorRed),
@@ -233,9 +262,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     if (confirmed == true) {
                       // Restart app state (wipe userGoal or any model variables)
                       setState(() {
-                        userGoalBox = null;
+                        data = {};
                       });
-
                       // Optional: Restart the whole app screen
                     }
                   },

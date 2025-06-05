@@ -109,11 +109,9 @@ class MealTrackerPageState extends State<MealTrackerPage> {
             ],
           ),
     );
-
-    await updateDailyProgress(date: DateTime.now(), type: 'food');
   }
 
-  void _loadSavedMeals() {
+  void _loadSavedMeals() async {
     final box = Hive.box<FoodItem>('foodBox');
     final allItems = box.values.toList();
 
@@ -137,6 +135,8 @@ class MealTrackerPageState extends State<MealTrackerPage> {
         Duration.zero,
         _onGoalCompleted,
       ); // ⚠️ avoid setState during build
+
+      await updateDailyProgress(date: DateTime.now(), type: 'food');
     }
 
     setState(() {});

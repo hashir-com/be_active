@@ -23,8 +23,7 @@ class _NavigationScreen extends State<NavigationScreen> {
     HomeScreen(),
     ExploreScreen(),
     SizedBox.shrink(), // Placeholder for track (not a real screen)
-    HeatMapChart(year: 2025, month: 5),
-
+    ProgressHeatmapScreen(),
     SettingsScreen(),
   ];
 

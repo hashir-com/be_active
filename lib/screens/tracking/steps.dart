@@ -107,10 +107,11 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   steps = int.tryParse(controller.text) ?? 0;
                   StepEntry entry = StepEntry(date: date, steps: steps);
                   stepBox.put(date.toIso8601String(), entry);
+
                   setState(() {});
                   Navigator.pop(context);
                 },
@@ -123,6 +124,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     // Check after dialog closes
     if (steps >= dailyGoal) {
       Future.delayed(Duration.zero, _onGoalCompleted);
+      await updateDailyProgress(date: DateTime.now(), type: 'step');
     }
   }
 
@@ -141,8 +143,6 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             ],
           ),
     );
-
-    await updateDailyProgress(date: DateTime.now(), type: 'steps');
   }
 
   Widget buildBarChart(List<StepEntry> entries) {

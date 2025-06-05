@@ -27,6 +27,7 @@ Future<void> initHive() async {
   Hive.registerAdapter(SleepGoalAdapter());
   Hive.registerAdapter(DailyProgressAdapter());
 
+  await Hive.openBox<DailyProgress>('dailyProgressBox');
   await Hive.openBox('settings');
   await Hive.openBox<StepEntry>('step_entries');
   await Hive.openBox<SleepEntry>('sleep_entries');
@@ -39,5 +40,4 @@ Future<void> initHive() async {
   await Hive.openBox<DietPlan>('dietPlans');
   await Hive.openBox<WorkoutPlan>('workoutBox');
   await Hive.openBox<FoodItem>('foodBox');
-  await Hive.openBox<DailyProgress>('dailyProgressBox');
 }

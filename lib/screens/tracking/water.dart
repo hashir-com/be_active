@@ -60,7 +60,7 @@ class _WaterScreenState extends State<WaterScreen> {
     });
   }
 
-  void _updateIntake(int change) {
+  void _updateIntake(int change) async {
     setState(() {
       glassesDrunk += change;
       glassesDrunk = glassesDrunk.clamp(0, waterGoal);
@@ -76,6 +76,7 @@ class _WaterScreenState extends State<WaterScreen> {
     if (glassesDrunk >= waterGoal && !_goalDialogShown) {
       _goalDialogShown = true;
       _onGoalCompleted();
+      await updateDailyProgress(date: DateTime.now(), type: 'water');
     }
   }
 
@@ -96,8 +97,6 @@ class _WaterScreenState extends State<WaterScreen> {
             ],
           ),
     );
-
-    await updateDailyProgress(date: DateTime.now(), type: 'water');
   }
 
   void _changeGoal() async {

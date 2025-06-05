@@ -1,191 +1,139 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:thryv/models/daily_progress.dart'; // adjust path as needed
+import 'package:intl/intl.dart';
+import 'package:thryv/models/daily_progress.dart';
 
-class HeatMapChart extends StatefulWidget {
-  final int year;
-  final int month;
-
-  const HeatMapChart({super.key, required this.year, required this.month});
+class ProgressHeatmapScreen extends StatefulWidget {
+  const ProgressHeatmapScreen({super.key});
 
   @override
-  State<HeatMapChart> createState() => _HeatMapChartState();
+  State<ProgressHeatmapScreen> createState() => _ProgressHeatmapScreenState();
 }
 
-class _HeatMapChartState extends State<HeatMapChart> {
-  Map<DateTime, int> progressData = {};
+class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
+  late Box<DailyProgress> progressBox;
+  late Map<DateTime, int> data;
 
   @override
   void initState() {
     super.initState();
-    loadProgressData();
-
-    // Listen to changes in the Hive box to reload data dynamically
-    Hive.box<DailyProgress>('dailyProgressBox').listenable().addListener(() {
-      loadProgressData();
-    });
-  }
-
-  Future<void> loadProgressData() async {
-    final Box<DailyProgress> box = Hive.box<DailyProgress>('dailyProgressBox');
-
-    final Map<DateTime, int> temp = {};
-
-    for (var item in box.values) {
-      if (item.date.year == widget.year && item.date.month == widget.month) {
-        final day = DateTime(item.date.year, item.date.month, item.date.day);
-        temp[day] = item.completionScore;
-      }
-    }
-
-    setState(() {
-      progressData = temp;
-    });
-  }
-
-  List<Widget> buildCalendarCells() {
-    int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
-    List<Widget> cells = [];
-
-    for (int i = 1; i <= daysInMonth; i++) {
-      DateTime day = DateTime(widget.year, widget.month, i);
-      final status = progressData[day] ?? 0;
-
-      Color getColor(int status) {
-        switch (status) {
-          case 1:
-            return Colors.green.shade200;
-          case 2:
-            return Colors.green.shade400;
-          case 3:
-            return Colors.green.shade600;
-          case 4:
-            return Colors.green.shade800;
-          default:
-            return Colors.grey.shade300;
-        }
-      }
-
-      cells.add(
-        Container(
-          margin: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: getColor(status),
-            borderRadius: BorderRadius.circular(18),
-          ),
-          child: Center(
-            child: Text(
-              '$i',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      );
-    }
-
-    return cells;
-  }
-
-  Widget buildChart() {
-    Map<int, int> weekdayCounts = {};
-    progressData.forEach((date, score) {
-      if (score > 0) {
-        int weekday = date.weekday % 7; // Sunday = 0
-        weekdayCounts[weekday] = (weekdayCounts[weekday] ?? 0) + 1;
-      }
-    });
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(7, (index) {
-        return Expanded(
-          child: Column(
-            children: [
-              Container(
-                height: (weekdayCounts[index] ?? 0) * 10.0,
-                width: 8,
-                color: Colors.blue,
-              ),
-              if ((weekdayCounts[index] ?? 0) > 0)
-                const Icon(Icons.check, color: Colors.green, size: 16),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-
-  String _monthName(int month) {
-    const names = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    return names[month - 1];
+    progressBox = Hive.box<DailyProgress>('dailyProgressBox');
+    data = _generateProgressHeatmapData(progressBox);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    final Map<int, Color> progressColors = {
+      0: const Color.fromARGB(255, 255, 255, 255), // gray for 0 tasks
+      1: const Color(0xFFA5D6A7), // light green for 1 task
+      2: const Color(0xFF81C784), // green for 2 tasks
+      3: const Color(0xFF4CAF50), // medium green for 3 tasks
+      4: const Color(0xFF2E7D32), // dark green for 4 tasks
+    };
+
+    final todayFormatted = DateFormat("EEEE, MMM d, y").format(DateTime.now());
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.12),
-        child: Container(
-          color: theme.primaryColor,
-          padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SafeArea(
-                child: Text(
-                  "Progress",
-                  style: GoogleFonts.roboto(
-                    fontSize: width * 0.1,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text("Daily Progress Heatmap"),
+            Text(
+              todayFormatted,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+            ),
+          ],
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          Text(
-            '${_monthName(widget.month)} ${widget.year}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.count(
-              crossAxisCount: 7,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              children: buildCalendarCells(),
-            ),
-          ),
-          const SizedBox(height: 20),
-          buildChart(),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: HeatMapCalendar(
+          initDate: DateTime.now(),
+          datasets: data,
+          colorsets:  progressColors,
+          size: 46,
+          showColorTip: true,
+          colorTipCount: 5,
+          colorTipSize: 12,
+          monthFontSize: 14,
+          textColor: const Color.fromARGB(255, 0, 0, 0),
+          onClick: (date) {
+            final key = _dateToKey(date);
+            final progress = progressBox.get(key);
+
+            if (progress != null) {
+              showDialog(
+                context: context,
+                builder:
+                    (_) => AlertDialog(
+                      title: Text(DateFormat.yMMMd().format(date)),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildCheckTile("Food Logged", progress.foodLogged),
+                          _buildCheckTile("Water Logged", progress.waterLogged),
+                          _buildCheckTile("Sleep Logged", progress.sleepLogged),
+                          _buildCheckTile("Steps Logged", progress.stepsLogged),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              data = _generateProgressHeatmapData(progressBox);
+                            });
+                          },
+                          child: const Text("Close"),
+                        ),
+                      ],
+                    ),
+              );
+            }
+          },
+        ),
       ),
     );
+  }
+
+  Widget _buildCheckTile(String label, bool done) {
+    return ListTile(
+      leading: Icon(
+        done ? Icons.check_circle : Icons.cancel,
+        color: done ? Colors.green : Colors.red,
+      ),
+      title: Text(label),
+    );
+  }
+
+  String _dateToKey(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  DateTime _keyToDate(String key) {
+    return DateTime.parse(key);
+  }
+
+  Map<DateTime, int> _generateProgressHeatmapData(Box<DailyProgress> box) {
+    final Map<DateTime, int> data = {};
+
+    for (var key in box.keys) {
+      final progress = box.get(key);
+      if (progress != null) {
+        final date = _keyToDate(key);
+        int completed = 0;
+        if (progress.foodLogged == true) completed++;
+        if (progress.waterLogged == true) completed++;
+        if (progress.sleepLogged == true) completed++;
+        if (progress.stepsLogged == true) completed++;
+        data[date] = completed;
+      }
+    }
+
+    return data;
   }
 }
