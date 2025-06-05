@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thryv/models/daily_progress.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/models/water/user_settings_model.dart';
 import 'package:thryv/models/water/water_intake_model.dart';
@@ -24,6 +25,7 @@ Future<void> initHive() async {
   Hive.registerAdapter(UserSettingsModelAdapter());
   Hive.registerAdapter(SleepEntryAdapter());
   Hive.registerAdapter(SleepGoalAdapter());
+  Hive.registerAdapter(DailyProgressAdapter());
 
   await Hive.openBox('settings');
   await Hive.openBox<StepEntry>('step_entries');
@@ -37,4 +39,5 @@ Future<void> initHive() async {
   await Hive.openBox<DietPlan>('dietPlans');
   await Hive.openBox<WorkoutPlan>('workoutBox');
   await Hive.openBox<FoodItem>('foodBox');
+  await Hive.openBox<DailyProgress>('dailyProgressBox');
 }

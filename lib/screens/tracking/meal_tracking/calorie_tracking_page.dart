@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/screens/tracking/meal_tracking/nutrition_details.dart';
+import 'package:thryv/util/progress_utils.dart';
 import '../../../models/food_model.dart/food_item.dart';
 import 'foodsearch.dart';
 import 'package:thryv/models/user_model.dart';
@@ -93,6 +94,25 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     });
   }
 
+  void _onGoalCompleted() async {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Goal Achieved! 🎉'),
+            content: const Text('You have reached your daily calorie goal!'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Nice!'),
+              ),
+            ],
+          ),
+    );
+
+    await updateDailyProgress(date: DateTime.now(), type: 'food');
+  }
+
   void _loadSavedMeals() {
     final box = Hive.box<FoodItem>('foodBox');
     final allItems = box.values.toList();
@@ -106,6 +126,17 @@ class MealTrackerPageState extends State<MealTrackerPage> {
       if (meal != null && isSameDate(item.date, selectedDate)) {
         meals[meal]!.add(item);
       }
+    }
+
+    final total = meals.values
+        .expand((e) => e)
+        .fold(0, (sum, item) => sum + item.calories.toInt());
+
+    if (total >= totalCalorieGoal) {
+      Future.delayed(
+        Duration.zero,
+        _onGoalCompleted,
+      ); // ⚠️ avoid setState during build
     }
 
     setState(() {});
@@ -475,6 +506,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
+
                     IconButton(
                       icon: Icon(
                         Icons.edit,

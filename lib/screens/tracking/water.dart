@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/water/water_intake_model.dart';
 import 'package:thryv/models/water/user_settings_model.dart';
+import 'package:thryv/util/progress_utils.dart';
 
 class WaterScreen extends StatefulWidget {
   const WaterScreen({super.key});
@@ -20,6 +21,7 @@ class _WaterScreenState extends State<WaterScreen> {
 
   int waterGoal = 8;
   int glassesDrunk = 0;
+  bool _goalDialogShown = false;
 
   @override
   void initState() {
@@ -28,12 +30,27 @@ class _WaterScreenState extends State<WaterScreen> {
     _loadUserGoal();
   }
 
+  DateTime? _lastCheckedDate;
+
   void _loadTodayIntake() {
-    final todayKey = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final todayDate = DateTime.now();
+    final todayKey = DateFormat('yyyy-MM-dd').format(todayDate);
     final today = waterBox.get(todayKey);
+
+    if (_lastCheckedDate == null || !_isSameDay(_lastCheckedDate!, todayDate)) {
+      _goalDialogShown = false; // reset flag if new day
+      _lastCheckedDate = todayDate;
+    }
+
+    final currentGlasses = today?.glassesDrunk ?? 0;
+
     setState(() {
-      glassesDrunk = today?.glassesDrunk ?? 0;
+      glassesDrunk = currentGlasses;
     });
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   void _loadUserGoal() {
@@ -55,6 +72,32 @@ class _WaterScreenState extends State<WaterScreen> {
       glassesDrunk: glassesDrunk,
     );
     waterBox.put(todayKey, todayModel);
+
+    if (glassesDrunk >= waterGoal && !_goalDialogShown) {
+      _goalDialogShown = true;
+      _onGoalCompleted();
+    }
+  }
+
+  void _onGoalCompleted() async {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Goal Achieved! 🎉'),
+            content: const Text(
+              'You have reached your daily Water intake goal!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Nice!'),
+              ),
+            ],
+          ),
+    );
+
+    await updateDailyProgress(date: DateTime.now(), type: 'water');
   }
 
   void _changeGoal() async {

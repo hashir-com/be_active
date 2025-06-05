@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/steps_model.dart';
 import 'package:thryv/theme/app_colors.dart';
+import 'package:thryv/util/progress_utils.dart';
 
 class StepCounterScreen extends StatefulWidget {
   const StepCounterScreen({super.key});
@@ -79,9 +80,12 @@ class StepCounterScreenState extends State<StepCounterScreen> {
   void _addOrEditEntry(DateTime date) async {
     TextEditingController controller = TextEditingController();
     StepEntry? existingEntry = stepBox.get(date.toIso8601String());
+
     if (existingEntry != null) {
       controller.text = existingEntry.steps.toString();
     }
+
+    int steps = 0; // Declare here
 
     await showDialog(
       context: context,
@@ -104,7 +108,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  int steps = int.tryParse(controller.text) ?? 0;
+                  steps = int.tryParse(controller.text) ?? 0;
                   StepEntry entry = StepEntry(date: date, steps: steps);
                   stepBox.put(date.toIso8601String(), entry);
                   setState(() {});
@@ -115,6 +119,30 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             ],
           ),
     );
+
+    // Check after dialog closes
+    if (steps >= dailyGoal) {
+      Future.delayed(Duration.zero, _onGoalCompleted);
+    }
+  }
+
+  void _onGoalCompleted() async {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Goal Achieved! 🎉'),
+            content: const Text('You have reached your Steps goal!'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Nice!'),
+              ),
+            ],
+          ),
+    );
+
+    await updateDailyProgress(date: DateTime.now(), type: 'steps');
   }
 
   Widget buildBarChart(List<StepEntry> entries) {

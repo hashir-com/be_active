@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_dialogs.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_functions.dart';
+import 'package:thryv/util/progress_utils.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -38,6 +39,34 @@ class _SleepScreenState extends State<SleepScreen> {
       _goal = _repo.getGoal();
       _entries = _repo.getEntries();
     });
+
+    if (_entries.isNotEmpty) {
+      final latestSleepHours = _entries.first.sleepHours;
+      if (latestSleepHours >= _goal.hours) {
+        Future.delayed(Duration.zero, _onGoalCompleted);
+      }
+    }
+  }
+
+  void _onGoalCompleted() async {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Goal Achieved! 🎉'),
+            content: const Text(
+              'You have reached your daily Sleep Hours goal!',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Nice!'),
+              ),
+            ],
+          ),
+    );
+
+    await updateDailyProgress(date: DateTime.now(), type: 'sleep');
   }
 
   Future<void> _onSetGoal() async {

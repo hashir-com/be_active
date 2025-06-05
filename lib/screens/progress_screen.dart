@@ -1,35 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:thryv/models/daily_progress.dart'; // adjust path as needed
 
-class HeatMapChart extends StatelessWidget {
+class HeatMapChart extends StatefulWidget {
   final int year;
   final int month;
-  final Map<DateTime, int> progressData;
 
-  const HeatMapChart({super.key, 
-    required this.year,
-    required this.month,
-    required this.progressData,
-  });
+  const HeatMapChart({super.key, required this.year, required this.month});
+
+  @override
+  State<HeatMapChart> createState() => _HeatMapChartState();
+}
+
+class _HeatMapChartState extends State<HeatMapChart> {
+  Map<DateTime, int> progressData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadProgressData();
+
+    // Listen to changes in the Hive box to reload data dynamically
+    Hive.box<DailyProgress>('dailyProgressBox').listenable().addListener(() {
+      loadProgressData();
+    });
+  }
+
+  Future<void> loadProgressData() async {
+    final Box<DailyProgress> box = Hive.box<DailyProgress>('dailyProgressBox');
+
+    final Map<DateTime, int> temp = {};
+
+    for (var item in box.values) {
+      if (item.date.year == widget.year && item.date.month == widget.month) {
+        final day = DateTime(item.date.year, item.date.month, item.date.day);
+        temp[day] = item.completionScore;
+      }
+    }
+
+    setState(() {
+      progressData = temp;
+    });
+  }
 
   List<Widget> buildCalendarCells() {
-    int daysInMonth = DateUtils.getDaysInMonth(year, month);
+    int daysInMonth = DateUtils.getDaysInMonth(widget.year, widget.month);
     List<Widget> cells = [];
 
     for (int i = 1; i <= daysInMonth; i++) {
-      DateTime day = DateTime(year, month, i);
+      DateTime day = DateTime(widget.year, widget.month, i);
       final status = progressData[day] ?? 0;
 
       Color getColor(int status) {
         switch (status) {
           case 1:
-            return Colors.green.shade100;
+            return Colors.green.shade200;
           case 2:
-            return Colors.green.shade300;
+            return Colors.green.shade400;
           case 3:
-            return Colors.green.shade500;
+            return Colors.green.shade600;
           case 4:
-            return Colors.green.shade700;
+            return Colors.green.shade800;
           default:
             return Colors.grey.shade300;
         }
@@ -37,12 +70,17 @@ class HeatMapChart extends StatelessWidget {
 
       cells.add(
         Container(
-          margin: EdgeInsets.all(4),
+          margin: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: getColor(status),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(18),
           ),
-          child: Center(child: Text('$i')),
+          child: Center(
+            child: Text(
+              '$i',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
       );
     }
@@ -52,9 +90,9 @@ class HeatMapChart extends StatelessWidget {
 
   Widget buildChart() {
     Map<int, int> weekdayCounts = {};
-    progressData.forEach((date, status) {
-      if (status > 0) {
-        int weekday = date.weekday % 7; // Sunday=0 to Saturday=6
+    progressData.forEach((date, score) {
+      if (score > 0) {
+        int weekday = date.weekday % 7; // Sunday = 0
         weekdayCounts[weekday] = (weekdayCounts[weekday] ?? 0) + 1;
       }
     });
@@ -71,64 +109,11 @@ class HeatMapChart extends StatelessWidget {
                 color: Colors.blue,
               ),
               if ((weekdayCounts[index] ?? 0) > 0)
-                Icon(Icons.check, color: Colors.green, size: 16),
+                const Icon(Icons.check, color: Colors.green, size: 16),
             ],
           ),
         );
       }),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
-
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.12),
-        child: Container(
-          color: theme.primaryColor, // dynamic appbar bg
-          padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
-          alignment: Alignment.centerLeft,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SafeArea(
-                child: Text(
-                  "Progress",
-                  style: GoogleFonts.roboto(
-                    fontSize: width * 0.1,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // dynamic color
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Text(
-            '${_monthName(month)} $year',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: GridView.count(
-              crossAxisCount: 7,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: buildCalendarCells(),
-            ),
-          ),
-          SizedBox(height: 20),
-          buildChart(),
-        ],
-      ),
     );
   }
 
@@ -148,5 +133,59 @@ class HeatMapChart extends StatelessWidget {
       "December",
     ];
     return names[month - 1];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(height * 0.12),
+        child: Container(
+          color: theme.primaryColor,
+          padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SafeArea(
+                child: Text(
+                  "Progress",
+                  style: GoogleFonts.roboto(
+                    fontSize: width * 0.1,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            '${_monthName(widget.month)} ${widget.year}',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 30),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: GridView.count(
+              crossAxisCount: 7,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              children: buildCalendarCells(),
+            ),
+          ),
+          const SizedBox(height: 20),
+          buildChart(),
+        ],
+      ),
+    );
   }
 }
