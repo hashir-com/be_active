@@ -69,6 +69,7 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: HeatMapCalendar(
+          defaultColor: Theme.of(context).cardColor,
           initDate: DateTime.now(),
           colorMode: ColorMode.color,
           datasets: data,
@@ -78,7 +79,7 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
           colorTipCount: 5,
           colorTipSize: 12,
           monthFontSize: 14,
-          textColor: const Color.fromARGB(255, 0, 0, 0),
+          textColor: Theme.of(context).colorScheme.onBackground,
           onClick: (date) {
             final key = _dateToKey(date);
             final progress = progressBox.get(key);
