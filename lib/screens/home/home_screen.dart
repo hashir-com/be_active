@@ -1,10 +1,16 @@
 // ignore_for_file: unused_element
 
+import 'package:thryv/screens/home/widgets/tracker_card.dart';
 import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
+import 'package:thryv/screens/tracking/steps.dart';
+import 'package:thryv/screens/tracking/water.dart';
 import 'package:thryv/services/hive_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
+import 'package:thryv/util/meal_tracking_util.dart';
+import 'package:thryv/util/steps_tracking.util.dart';
+import 'package:thryv/util/water_tracking_util.dart';
 import '../explore screen/explore_screen.dart';
 import '../settings_screen.dart';
 import '../progress_screen.dart';
@@ -143,84 +149,96 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               BmiCard(),
               const SizedBox(height: 10),
-              Text(
-                "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.textTheme.bodyMedium!.color,
-                ),
-              ),
+              // Text(
+              //   "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     color: theme.textTheme.bodyMedium!.color,
+              //   ),
+              // ),
               const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MealTrackerPage()),
+
+              FutureBuilder<Map<String, num>>(
+                future: getTodayCaloriesAndGoal(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.hasError || !snapshot.hasData) {
+                    return const Text('Error loading data');
+                  }
+
+                  final data = snapshot.data!;
+                  final cal = data['calories'] ?? 0;
+                  final goal = data['goal'] ?? 1750;
+
+                  return TrackerCard(
+                    label: "Cal",
+                    icon: Icons.local_dining,
+                    value: cal.toInt(),
+                    goal: goal.toInt(),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MealTrackerPage(),
+                        ),
+                      );
+                    },
                   );
                 },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+              ),
+              const SizedBox(height: 10),
 
-                    borderRadius: BorderRadius.circular(26),
-                    boxShadow: [
-                      BoxShadow(
-                        // ignore: deprecated_member_use
-                        color: Theme.of(context).shadowColor.withOpacity(0.12),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          SizedBox(
-                            height: 45,
-                            width: 45,
-                            child: CircularProgressIndicator(
-                              value: 10 / 100,
-                              strokeWidth: 5,
-                              backgroundColor:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.surfaceContainerHighest,
-                              valueColor: AlwaysStoppedAnimation(
-                                Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
-                          Icon(
-                            Icons.local_dining,
-                            size: 24,
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(width: 16),
-                      Row(
-                        children: [
-                          Text(
-                            '10 of  100Cal',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                        ],
-                      ),
-                      const Spacer(),
-                      Icon(
-                        Icons.bar_chart,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ],
-                  ),
-                ),
+              FutureBuilder<Map<String, int>>(
+                future: getTodayWaterIntakeAndGoal(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator(); // or a placeholder card
+                  }
+
+                  final data = snapshot.data!;
+                  final waterIntake = data['intake']!;
+                  final waterGoal = data['goal']!;
+
+                  return TrackerCard(
+                    label: "Water",
+                    icon: Icons.water_drop_outlined,
+                    value: waterIntake,
+                    goal: waterGoal,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WaterScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              FutureBuilder<Map<String, int>>(
+                future:
+                    getTodayStepsAndGoal(), // call the steps utility function
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const CircularProgressIndicator(); // or a placeholder card
+                  }
+
+                  final data = snapshot.data!;
+                  final stepsToday = data['steps']!;
+                  final dailyGoal = data['goal']!;
+                  return TrackerCard(
+                    label: "steps",
+                    icon: Icons.directions_walk,
+                    value: stepsToday,
+                    goal: dailyGoal,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => StepCounterScreen()),
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),
