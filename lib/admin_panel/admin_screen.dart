@@ -220,6 +220,7 @@ class AdminScreenState extends State<AdminScreen> {
                             children: [
                               Expanded(
                                 child: TextField(
+                                  style: TextStyle(color: Colors.white),
                                   controller: videoController,
                                   decoration: InputDecoration(
                                     hintText: "Enter YouTube video URL",
@@ -233,7 +234,7 @@ class AdminScreenState extends State<AdminScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 10),
                               ElevatedButton(
                                 onPressed: () {
                                   final videoId = YoutubePlayer.convertUrlToId(

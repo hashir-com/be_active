@@ -160,10 +160,12 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     setState(() => _loading = true);
     try {
       final results = await searchFood(query);
+      if (!mounted) return; 
       setState(() => _foods = results);
     } catch (e) {
       if (kDebugMode) print("Error: $e");
     } finally {
+      if (!mounted) return;
       setState(() => _loading = false);
     }
   }

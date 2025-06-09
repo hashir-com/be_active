@@ -52,6 +52,8 @@ class AppInitializer extends StatelessWidget {
             highlightColor: AppColors.white,
             primaryColor: AppColors.primary,
             primaryColorLight: AppColors.accent,
+            primaryColorDark: const Color(0xFF020770),
+          
             scaffoldBackgroundColor: AppColors.backgroundLight,
             appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
           ),
@@ -60,10 +62,12 @@ class AppInitializer extends StatelessWidget {
             highlightColor: AppColors.white,
             primaryColor: AppColors.primary,
             primaryColorLight: AppColors.accent,
+            primaryColorDark: const Color(0xFF555EFF),
             scaffoldBackgroundColor: AppColors.backgroundDark,
             appBarTheme: const AppBarTheme(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              
             ),
           ),
 

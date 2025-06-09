@@ -291,6 +291,9 @@ class MealTrackerPageState extends State<MealTrackerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -437,14 +440,14 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                               context,
                             ).colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation(
-                          Theme.of(context).primaryColor,
+                          theme.primaryColorDark,
                         ),
                       ),
                     ),
                     Icon(
                       Icons.local_dining,
                       size: 24,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).primaryColorDark,
                     ),
                   ],
                 ),
@@ -471,7 +474,10 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   ],
                 ),
                 const Spacer(),
-                Icon(Icons.bar_chart, color: Theme.of(context).primaryColor),
+                Icon(
+                  Icons.bar_chart,
+                  color: Theme.of(context).primaryColorDark,
+                ),
               ],
             ),
           ),
@@ -518,7 +524,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                     IconButton(
                       icon: Icon(
                         Icons.add_circle,
-                        color: Theme.of(context).primaryColor,
+                        color: Theme.of(context).primaryColorDark,
                       ),
                       onPressed: () => _addFood(meal),
                     ),
@@ -597,12 +603,14 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                       ),
                                       IconButton(
                                         icon: Icon(
-                                          Icons.delete,
+                                          Icons.delete_outline_rounded,
                                           size: 20,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.error,
+                                          color: const Color.fromARGB(
+                                            255,
+                                            255,
+                                            17,
+                                            0,
+                                          ),
                                         ),
                                         onPressed: () {
                                           Hive.box<FoodItem>(

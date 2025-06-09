@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/daily_progress.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ProgressHeatmapScreen extends StatefulWidget {
   const ProgressHeatmapScreen({super.key});
@@ -41,6 +42,9 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     final Map<int, Color> progressColors = {
       0: const Color.fromARGB(255, 255, 255, 255), // gray for 0 tasks
       1: const Color(0xFFA5D6A7), // light green for 1 task
@@ -52,68 +56,94 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
     final todayFormatted = DateFormat("EEEE, MMM d, y").format(DateTime.now());
 
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Daily Progress Heatmap"),
-            Text(
-              todayFormatted,
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
+      appBar: PreferredSize(
+        preferredSize: Size(1000, 100),
+        child: AppBar(
+          title: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  "Daily Progress Heatmap",
+                  style: GoogleFonts.roboto(
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 26,
+                  ),
+                ),
+                Text(
+                  todayFormatted,
+                  style: TextStyle(color: theme.primaryColorDark, fontSize: 12),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: HeatMapCalendar(
-          defaultColor: Theme.of(context).cardColor,
-          initDate: DateTime.now(),
-          colorMode: ColorMode.color,
-          datasets: data,
-          colorsets: progressColors,
-          size: 46,
-          showColorTip: true,
-          colorTipCount: 5,
-          colorTipSize: 12,
-          monthFontSize: 14,
-          textColor: Theme.of(context).colorScheme.onBackground,
-          onClick: (date) {
-            final key = _dateToKey(date);
-            final progress = progressBox.get(key);
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: HeatMapCalendar(
+            defaultColor: Theme.of(context).cardColor,
+            initDate: DateTime.now(),
+            colorMode: ColorMode.color,
+            datasets: data,
+            colorsets: progressColors,
+            size: 50,
+            weekFontSize: 12,
+            showColorTip: true,
+            colorTipCount: 5,
+            colorTipSize: 12,
+            monthFontSize: 20,
+            weekTextColor: Theme.of(context).primaryColorDark,
+            textColor: Theme.of(context).colorScheme.onBackground,
+            onClick: (date) {
+              final key = _dateToKey(date);
+              final progress = progressBox.get(key);
 
-            if (progress != null) {
-              showDialog(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
-                      title: Text(DateFormat.yMMMd().format(date)),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildCheckTile("Food Logged", progress.foodLogged),
-                          _buildCheckTile("Water Logged", progress.waterLogged),
-                          _buildCheckTile("Sleep Logged", progress.sleepLogged),
-                          _buildCheckTile("Steps Logged", progress.stepsLogged),
+              if (progress != null) {
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: Text(DateFormat.yMMMd().format(date)),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildCheckTile("Food Logged", progress.foodLogged),
+                            _buildCheckTile(
+                              "Water Logged",
+                              progress.waterLogged,
+                            ),
+                            _buildCheckTile(
+                              "Sleep Logged",
+                              progress.sleepLogged,
+                            ),
+                            _buildCheckTile(
+                              "Steps Logged",
+                              progress.stepsLogged,
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                data = _generateProgressHeatmapData(
+                                  progressBox,
+                                );
+                              });
+                            },
+                            child: const Text("Close"),
+                          ),
                         ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                            setState(() {
-                              data = _generateProgressHeatmapData(progressBox);
-                            });
-                          },
-                          child: const Text("Close"),
-                        ),
-                      ],
-                    ),
-              );
-            }
-          },
+                );
+              }
+            },
+          ),
         ),
       ),
     );
