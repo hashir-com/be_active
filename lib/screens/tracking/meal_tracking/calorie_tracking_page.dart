@@ -292,8 +292,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -374,7 +372,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         ),
                         textButtonTheme: TextButtonThemeData(
                           style: TextButton.styleFrom(
-                            foregroundColor:
+                            foregroundColor:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
                                 Theme.of(
                                   context,
                                 ).colorScheme.primary, // button text color

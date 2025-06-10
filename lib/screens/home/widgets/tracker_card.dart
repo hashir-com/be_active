@@ -31,6 +31,7 @@ class TrackerCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(26),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Theme.of(context).shadowColor.withOpacity(0.12),
               blurRadius: 6,
             ),

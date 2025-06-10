@@ -151,7 +151,7 @@ class _WaterScreenState extends State<WaterScreen> {
         children: [
           Card(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(26),
             ),
             elevation: 4,
             color: theme.colorScheme.surface,
@@ -184,7 +184,7 @@ class _WaterScreenState extends State<WaterScreen> {
                         value: progress,
                         minHeight: 18,
                         borderRadius: BorderRadius.circular(10),
-                        color: theme.primaryColor,
+                        color: theme.primaryColorDark,
                         backgroundColor: theme.colorScheme.primary.withOpacity(
                           0.2,
                         ),
@@ -226,7 +226,7 @@ class _WaterScreenState extends State<WaterScreen> {
                     value: glassesDrunk / waterGoal,
                     strokeWidth: 20,
                     backgroundColor: theme.primaryColorLight.withOpacity(0.15),
-                    valueColor: AlwaysStoppedAnimation(theme.primaryColor),
+                    valueColor: AlwaysStoppedAnimation(theme.primaryColorDark),
                   ),
                 ),
                 // Icon in the center
@@ -266,6 +266,31 @@ class _WaterScreenState extends State<WaterScreen> {
                 tooltip: 'Add Glass',
               ),
             ],
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColorLight,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "General Tip",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  "Drinking water before meals can help with portion control. Stay hydrated to support your metabolism!",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 30),
           Text(
@@ -311,7 +336,7 @@ class WaterBarChart extends StatelessWidget {
                 BarChartRodData(
                   toY: intake.toDouble(),
                   width: 18,
-                  color: theme.primaryColor,
+                  color: theme.primaryColorDark,
                   borderRadius: BorderRadius.circular(6),
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,

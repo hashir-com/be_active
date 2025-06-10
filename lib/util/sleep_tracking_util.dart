@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
@@ -28,7 +29,9 @@ Future<Map<String, double>> getTodaySleepAndGoal() async {
       return {'sleep': 0.0, 'goal': goal};
     }
   } catch (e) {
-    print('Error fetching sleep data: $e');
+    if (kDebugMode) {
+      print('Error fetching sleep data: $e');
+    }
     return {'sleep': 0.0, 'goal': 8.0};
   }
 }

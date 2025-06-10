@@ -1,6 +1,7 @@
 // ignore: file_names
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -19,6 +20,7 @@ import 'package:thryv/models/water/water_intake_model.dart';
 import 'package:thryv/models/weight_entry.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/screens/boarding/splash_screen.dart';
+import 'package:thryv/screens/helper_screen.dart';
 import 'package:thryv/theme/app_colors.dart';
 import '../providers/theme_provider.dart'; // adjust path if needed
 import 'aboutus.dart';
@@ -53,7 +55,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               TextButton(
                 onPressed: () async {
                   try {
-                    print('Starting Hive data clear...');
+                    if (kDebugMode) {
+                      print('Starting Hive data clear...');
+                    }
 
                     await progressBox.clear();
                     await Hive.box('settings').clear();
@@ -69,7 +73,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     await Hive.box<WorkoutPlan>('workoutBox').clear();
                     await Hive.box<FoodItem>('foodBox').clear();
 
-                    print('Hive data cleared successfully.');
+                    if (kDebugMode) {
+                      print('Hive data cleared successfully.');
+                    }
 
                     setState(() {
                       data = {};
@@ -83,8 +89,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       (route) => false,
                     );
                   } catch (e, stackTrace) {
-                    print('Error clearing data: $e');
-                    print('Stack trace: $stackTrace');
+                    if (kDebugMode) {
+                      print('Error clearing data: $e');
+                    }
+                    if (kDebugMode) {
+                      print('Stack trace: $stackTrace');
+                    }
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to clear data: $e')),
@@ -180,8 +190,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-                // _buildDivider(theme),
-                // _buildListTile('Unit Measures', Icons.language, theme),
+                _buildDivider(theme),
+                _buildListTile(
+                  'Help',
+                  Icons.help_outline,
+                  theme,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HelperScreen()),
+                    );
+                  },
+                ),
               ]),
               const SizedBox(height: 24),
               Text(

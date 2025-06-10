@@ -150,109 +150,109 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               BmiCard(),
               const SizedBox(height: 10),
-              // Text(
-              //   "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
-              //   style: TextStyle(
-              //     fontSize: 16,
-              //     color: theme.textTheme.bodyMedium!.color,
-              //   ),
-              // ),
+              Text(
+                "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: theme.textTheme.bodyMedium!.color,
+                ),
+              ),
               const SizedBox(height: 10),
 
-              // FutureBuilder<Map<String, num>>(
-              //   future: getTodayCaloriesAndGoal(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return CircularProgressIndicator(
-              //         // track color
-              //         valueColor: AlwaysStoppedAnimation(
-              //           theme.primaryColorDark,
-              //         ), // spinner color
-              //       );
-              //     } else if (snapshot.hasError || !snapshot.hasData) {
-              //       return const Text('Error loading data');
-              //     }
+              FutureBuilder<Map<String, num>>(
+                future: getTodayCaloriesAndGoal(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(
+                      // track color
+                      valueColor: AlwaysStoppedAnimation(
+                        theme.primaryColorDark,
+                      ), // spinner color
+                    );
+                  } else if (snapshot.hasError || !snapshot.hasData) {
+                    return const Text('Error loading data');
+                  }
 
-              //     final data = snapshot.data!;
-              //     final cal = data['calories'] ?? 0;
-              //     final goal = data['goal'] ?? 1750;
+                  final data = snapshot.data!;
+                  final cal = data['calories'] ?? 0;
+                  final goal = data['goal'] ?? 1750;
 
-              //     return TrackerCard(
-              //       label: "Cal",
-              //       icon: Icons.local_dining,
-              //       value: cal.toInt(),
-              //       goal: goal.toInt(),
-              //       iconColor: theme.primaryColorDark,
-              //       onTap: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //             builder: (_) => const MealTrackerPage(),
-              //           ),
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
-              // const SizedBox(height: 10),
+                  return TrackerCard(
+                    label: "Cal",
+                    icon: Icons.local_dining,
+                    value: cal.toInt(),
+                    goal: goal.toInt(),
+                    iconColor: theme.primaryColorDark,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MealTrackerPage(),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
 
-              // FutureBuilder<Map<String, int>>(
-              //   future: getTodayWaterIntakeAndGoal(),
-              //   builder: (context, snapshot) {
-              //     if (!snapshot.hasData) {
-              //       return CircularProgressIndicator(
-              //         color: theme.primaryColorDark,
-              //       ); // or a placeholder card
-              //     }
+              FutureBuilder<Map<String, int>>(
+                future: getTodayWaterIntakeAndGoal(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator(
+                      color: theme.primaryColorDark,
+                    ); // or a placeholder card
+                  }
 
-              //     final data = snapshot.data!;
-              //     final waterIntake = data['intake']!;
-              //     final waterGoal = data['goal']!;
+                  final data = snapshot.data!;
+                  final waterIntake = data['intake']!;
+                  final waterGoal = data['goal']!;
 
-              //     return TrackerCard(
-              //       label: "Water",
-              //       icon: Icons.water_drop_outlined,
-              //       value: waterIntake,
-              //       goal: waterGoal,
-              //       iconColor: theme.primaryColorDark,
-              //       onTap: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(builder: (_) => const WaterScreen()),
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
-              // const SizedBox(height: 10),
-              // FutureBuilder<Map<String, int>>(
-              //   future:
-              //       getTodayStepsAndGoal(), // call the steps utility function
-              //   builder: (context, snapshot) {
-              //     if (!snapshot.hasData) {
-              //       return CircularProgressIndicator(
-              //         color: theme.primaryColorDark,
-              //       ); // or a placeholder card
-              //     }
+                  return TrackerCard(
+                    label: "Water",
+                    icon: Icons.water_drop_outlined,
+                    value: waterIntake,
+                    goal: waterGoal,
+                    iconColor: theme.primaryColorDark,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const WaterScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              FutureBuilder<Map<String, int>>(
+                future:
+                    getTodayStepsAndGoal(), // call the steps utility function
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return CircularProgressIndicator(
+                      color: theme.primaryColorDark,
+                    ); // or a placeholder card
+                  }
 
-              //     final data = snapshot.data!;
-              //     final stepsToday = data['steps']!;
-              //     final dailyGoal = data['goal']!;
-              //     return TrackerCard(
-              //       label: "steps",
-              //       icon: Icons.directions_walk,
-              //       value: stepsToday,
-              //       goal: dailyGoal,
-              //       iconColor: theme.primaryColorDark,
-              //       onTap: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(builder: (_) => StepCounterScreen()),
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
+                  final data = snapshot.data!;
+                  final stepsToday = data['steps']!;
+                  final dailyGoal = data['goal']!;
+                  return TrackerCard(
+                    label: "steps",
+                    icon: Icons.directions_walk,
+                    value: stepsToday,
+                    goal: dailyGoal,
+                    iconColor: theme.primaryColorDark,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => StepCounterScreen()),
+                      );
+                    },
+                  );
+                },
+              ),
             ],
           ),
         ),

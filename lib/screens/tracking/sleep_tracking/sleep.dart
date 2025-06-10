@@ -39,13 +39,6 @@ class _SleepScreenState extends State<SleepScreen> {
       _goal = _repo.getGoal();
       _entries = _repo.getEntries();
     });
-
-    if (_entries.isNotEmpty) {
-      final latestSleepHours = _entries.first.sleepHours;
-      if (latestSleepHours >= _goal.hours) {
-        Future.delayed(Duration.zero, _onGoalCompleted);
-      }
-    }
   }
 
   void _onGoalCompleted() async {
@@ -101,6 +94,12 @@ class _SleepScreenState extends State<SleepScreen> {
 
       await _repo.addEntry(newEntry);
       _loadData();
+      if (_entries.isNotEmpty) {
+        final latestSleepHours = _entries.first.sleepHours;
+        if (latestSleepHours >= _goal.hours) {
+          Future.delayed(Duration.zero, _onGoalCompleted);
+        }
+      }
     }
   }
 

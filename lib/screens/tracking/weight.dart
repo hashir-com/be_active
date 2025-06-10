@@ -248,7 +248,7 @@ class _WeightScreenState extends State<WeightScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Today's Tip",
+                  "General Tip",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 6),

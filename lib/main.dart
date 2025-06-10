@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:thryv/helpers/hive_setup_registration.dart';
 import 'package:thryv/screens/home/home_screen.dart';
 import 'package:thryv/screens/home/navigation_screen.dart';
@@ -28,7 +29,6 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
-
       child: AppInitializer(hasUserData: hasUserData),
     ),
   );
@@ -43,35 +43,39 @@ class AppInitializer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'thryv',
-          debugShowCheckedModeBanner: false,
-          themeMode: themeProvider.currentTheme,
-          theme: ThemeData(
-            brightness: Brightness.light,
-            highlightColor: AppColors.white,
-            primaryColor: AppColors.primary,
-            primaryColorLight: AppColors.accent,
-            primaryColorDark: const Color(0xFF020770),
-          
-            scaffoldBackgroundColor: AppColors.backgroundLight,
-            appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
-          ),
-          darkTheme: ThemeData(
-            brightness: Brightness.dark,
-            highlightColor: AppColors.white,
-            primaryColor: AppColors.primary,
-            primaryColorLight: AppColors.accent,
-            primaryColorDark: const Color(0xFF555EFF),
-            scaffoldBackgroundColor: AppColors.backgroundDark,
-            appBarTheme: const AppBarTheme(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              
-            ),
-          ),
-
-          home: const SplashScreen(),
+        return ScreenUtilInit(
+          designSize: const Size(375, 812), // Match your Figma or design
+          minTextAdapt: true,
+          splitScreenMode: true,
+          builder: (context, child) {
+            return MaterialApp(
+              title: 'thryv',
+              debugShowCheckedModeBanner: false,
+              themeMode: themeProvider.currentTheme,
+              theme: ThemeData(
+                brightness: Brightness.light,
+                highlightColor: AppColors.white,
+                primaryColor: AppColors.primary,
+                primaryColorLight: AppColors.accent,
+                primaryColorDark: const Color(0xFF020770),
+                scaffoldBackgroundColor: AppColors.backgroundLight,
+                appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+              ),
+              darkTheme: ThemeData(
+                brightness: Brightness.dark,
+                highlightColor: AppColors.white,
+                primaryColor: AppColors.primary,
+                primaryColorLight: AppColors.accent,
+                primaryColorDark: const Color(0xFF555EFF),
+                scaffoldBackgroundColor: AppColors.backgroundDark,
+                appBarTheme: const AppBarTheme(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              home: const SplashScreen(),
+            );
+          },
         );
       },
     );

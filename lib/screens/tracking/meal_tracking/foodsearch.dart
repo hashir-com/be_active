@@ -165,6 +165,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     } catch (e) {
       if (kDebugMode) print("Error: $e");
     } finally {
+      // ignore: control_flow_in_finally
       if (!mounted) return;
       setState(() => _loading = false);
     }

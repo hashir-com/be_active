@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
-import 'package:hive/hive.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/daily_progress.dart';
@@ -24,7 +24,6 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
     progressBox = Hive.box<DailyProgress>('dailyProgressBox');
     data = _generateProgressHeatmapData(progressBox);
 
-    // Add listener to update UI on box changes
     _boxListener = () {
       setState(() {
         data = _generateProgressHeatmapData(progressBox);
@@ -43,25 +42,22 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     final Map<int, Color> progressColors = {
-      0: const Color.fromARGB(255, 255, 255, 255), // gray for 0 tasks
-      1: const Color(0xFFA5D6A7), // light green for 1 task
-      2: const Color(0xFF81C784), // green for 2 tasks
-      3: const Color(0xFF4CAF50), // medium green for 3 tasks
-      4: const Color(0xFF2E7D32), // dark green for 4 tasks
+      0: const Color.fromARGB(255, 255, 255, 255),
+      1: const Color(0xFFA5D6A7),
+      2: const Color(0xFF81C784),
+      3: const Color(0xFF4CAF50),
+      4: const Color(0xFF2E7D32),
     };
 
     final todayFormatted = DateFormat("EEEE, MMM d, y").format(DateTime.now());
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(1000, 100),
+        preferredSize: Size.fromHeight(100.h),
         child: AppBar(
           title: Center(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
@@ -69,12 +65,15 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
                   style: GoogleFonts.roboto(
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.bold,
-                    fontSize: 26,
+                    fontSize: 26.sp,
                   ),
                 ),
                 Text(
                   todayFormatted,
-                  style: TextStyle(color: theme.primaryColorDark, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.primaryColorDark,
+                    fontSize: 12.sp,
+                  ),
                 ),
               ],
             ),
@@ -83,21 +82,21 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.r),
           child: HeatMapCalendar(
             defaultColor: Theme.of(context).cardColor,
             initDate: DateTime.now(),
             colorMode: ColorMode.color,
             datasets: data,
             colorsets: progressColors,
-            size: 50,
-            weekFontSize: 12,
-            showColorTip: true,
+            size: 55.r,
+            weekFontSize: 12.sp,
+            showColorTip: false,
             colorTipCount: 5,
-            colorTipSize: 12,
-            monthFontSize: 20,
-            weekTextColor: Theme.of(context).primaryColorDark,
-            textColor: Theme.of(context).colorScheme.onBackground,
+            colorTipSize: 12.r,
+            monthFontSize: 20.sp,
+            weekTextColor: theme.primaryColorDark,
+            textColor: theme.colorScheme.onSurface,
             onClick: (date) {
               final key = _dateToKey(date);
               final progress = progressBox.get(key);
@@ -136,7 +135,10 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
                                 );
                               });
                             },
-                            child: const Text("Close"),
+                            child: Text(
+                              "Close",
+                              style: TextStyle(fontSize: 14.sp),
+                            ),
                           ),
                         ],
                       ),
@@ -154,8 +156,9 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
       leading: Icon(
         done ? Icons.check_circle : Icons.cancel,
         color: done ? Colors.green : Colors.red,
+        size: 24.r,
       ),
-      title: Text(label),
+      title: Text(label, style: TextStyle(fontSize: 16.sp)),
     );
   }
 
@@ -163,9 +166,7 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  DateTime _keyToDate(String key) {
-    return DateTime.parse(key);
-  }
+  DateTime _keyToDate(String key) => DateTime.parse(key);
 
   Map<DateTime, int> _generateProgressHeatmapData(Box<DailyProgress> box) {
     final Map<DateTime, int> data = {};
@@ -175,14 +176,13 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
       if (progress != null) {
         final date = _keyToDate(key);
         int completed = 0;
-        if (progress.foodLogged == true) completed++;
-        if (progress.waterLogged == true) completed++;
-        if (progress.sleepLogged == true) completed++;
-        if (progress.stepsLogged == true) completed++;
+        if (progress.foodLogged) completed++;
+        if (progress.waterLogged) completed++;
+        if (progress.sleepLogged) completed++;
+        if (progress.stepsLogged) completed++;
         data[date] = completed;
       }
     }
-
     return data;
   }
 }
