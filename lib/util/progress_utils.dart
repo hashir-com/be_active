@@ -1,37 +1,30 @@
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:thryv/models/daily_progress.dart';
 
 Future<void> updateDailyProgress({
   required DateTime date,
-  required String type, // 'food', 'water', 'sleep', 'step'
+  required String type,
+  bool completed = true,
 }) async {
-  final box = Hive.box<DailyProgress>('dailyProgressBox');
-  final key = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-
-  DailyProgress? progress = box.get(key);
-
-  progress ??= DailyProgress(
-      date: DateTime(date.year, date.month, date.day),
-      foodLogged: false,
-      waterLogged: false,
-      sleepLogged: false,
-      stepsLogged: false,
-    );
+  final progressBox = Hive.box<DailyProgress>('dailyProgressBox');
+  final key = DateFormat('yyyy-MM-dd').format(date);
+  final existing = progressBox.get(key) ?? DailyProgress(date: date);
 
   switch (type) {
     case 'food':
-      progress.foodLogged = true;
+      existing.foodLogged = completed;
       break;
     case 'water':
-      progress.waterLogged = true;
+      existing.waterLogged = completed;
       break;
     case 'sleep':
-      progress.sleepLogged = true;
+      existing.sleepLogged = completed;
       break;
-    case 'step':
-      progress.stepsLogged = true;
+    case 'steps':
+      existing.stepsLogged = completed;
       break;
   }
 
-  await box.put(key, progress);
+  await progressBox.put(key, existing);
 }

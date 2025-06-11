@@ -54,32 +54,26 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100.h),
-        child: AppBar(
-          title: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  "Daily Progress Heatmap",
-                  style: GoogleFonts.roboto(
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 26.sp,
-                  ),
-                ),
-                Text(
-                  todayFormatted,
-                  style: TextStyle(
-                    color: theme.primaryColorDark,
-                    fontSize: 12.sp,
-                  ),
-                ),
-              ],
+        preferredSize: Size.fromHeight(0.2.sh),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Daily Progress Heatmap",
+              style: GoogleFonts.roboto(
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontSize: 26.sp,
+              ),
             ),
-          ),
+            Text(
+              todayFormatted,
+              style: TextStyle(color: theme.primaryColorDark, fontSize: 12.sp),
+            ),
+          ],
         ),
       ),
+
       body: Center(
         child: Padding(
           padding: EdgeInsets.all(16.r),
@@ -91,9 +85,9 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
             colorsets: progressColors,
             size: 55.r,
             weekFontSize: 12.sp,
-            showColorTip: false,
+            showColorTip: true,
             colorTipCount: 5,
-            colorTipSize: 12.r,
+            colorTipSize: 10.r,
             monthFontSize: 20.sp,
             weekTextColor: theme.primaryColorDark,
             textColor: theme.colorScheme.onSurface,

@@ -73,10 +73,17 @@ class _WaterScreenState extends State<WaterScreen> {
     );
     waterBox.put(todayKey, todayModel);
 
-    if (glassesDrunk >= waterGoal && !_goalDialogShown) {
+    final completed = glassesDrunk >= waterGoal;
+
+    await updateDailyProgress(
+      date: DateTime.now(),
+      type: 'water',
+      completed: completed,
+    );
+
+    if (completed && !_goalDialogShown) {
       _goalDialogShown = true;
       _onGoalCompleted();
-      await updateDailyProgress(date: DateTime.now(), type: 'water');
     }
   }
 

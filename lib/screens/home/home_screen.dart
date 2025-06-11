@@ -2,6 +2,7 @@
 
 import 'package:thryv/screens/home/widgets/tracker_card.dart';
 import 'package:thryv/screens/tracking/meal_tracking/calorie_tracking_page.dart';
+import 'package:thryv/screens/tracking/sleep_tracking/sleep.dart';
 import 'package:thryv/screens/tracking/steps.dart';
 import 'package:thryv/screens/tracking/water.dart';
 import 'package:thryv/services/hive_service.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/util/meal_tracking_util.dart';
+import 'package:thryv/util/sleep_tracking_util.dart';
 import 'package:thryv/util/steps_tracking.util.dart';
 import 'package:thryv/util/water_tracking_util.dart';
 import '../explore screen/explore_screen.dart';
@@ -18,6 +20,7 @@ import 'package:thryv/widgets/date_horizontal.dart';
 import 'package:hive/hive.dart';
 import 'package:thryv/screens/home/widgets/bmi_card.dart';
 import 'package:thryv/models/user_goal_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   UserGoal? selectedGoal;
+
   @override
   void initState() {
     super.initState();
@@ -61,35 +65,30 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.2),
+        preferredSize: Size.fromHeight(0.2.sh),
         child: Container(
           color: theme.primaryColor,
-          padding: EdgeInsets.only(top: height * 0.07, left: width * 0.05),
+          padding: EdgeInsets.only(top: 0.07.sh, left: 0.05.sw),
           alignment: Alignment.centerLeft,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SafeArea(
-                child: Text(
-                  "hi, $name",
-                  style: GoogleFonts.gochiHand(
-                    fontSize: width * 0.08,
-                    color: theme.highlightColor,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Text(
+                "Hi, $name",
+                style: GoogleFonts.gochiHand(
+                  fontSize: 40.sp,
+                  color: theme.highlightColor,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
-                "Let’s make habit together!",
+                "Let’s make habits together!",
                 style: GoogleFonts.roboto(
-                  fontSize: width * 0.035,
+                  fontSize: 14.sp,
                   color: theme.highlightColor,
                 ),
               ),
@@ -100,159 +99,224 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            horizontal: width * 0.05,
-            vertical: height * 0.03,
+            horizontal: 0.05.sw,
+            vertical: 0.025.sh,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               HorizontalDateList(),
-              const SizedBox(height: 20),
+              SizedBox(height: 18.h),
+
+              // Section: Suggested Goal
               Text(
-                "Suggested",
-                style: TextStyle(
-                  fontSize: 22,
+                "Your Goal",
+                style: GoogleFonts.averiaLibre(
+                  fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
                   color: theme.textTheme.bodyLarge!.color,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               Wrap(
-                spacing: 5,
+                spacing: 5.w,
+                runSpacing: 0.h,
                 children:
                     UserGoal.values.map((goal) {
                       final isSelected = goal == selectedGoal;
-                      return SizedBox(
-                        width: width * 0.29,
-                        child: ChoiceChip(
-                          checkmarkColor: theme.highlightColor,
-                          label: Text(userGoalToString(goal)),
-                          selected: isSelected,
-                          selectedColor: theme.primaryColor,
-                          labelStyle: TextStyle(
-                            color:
-                                isSelected
-                                    ? theme.highlightColor
-                                    : Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium!.color,
-                            fontSize: isSelected ? width * 0.028 : width * 0.03,
-                          ),
-                          onSelected: (selected) {
-                            // if (selected) {
-                            //   _saveGoal(goal);
-                            // }
-                          },
+                      return ChoiceChip(
+                        labelPadding: EdgeInsets.symmetric(horizontal: 10.w),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
                         ),
+                        checkmarkColor: theme.highlightColor,
+                        label: Text(userGoalToString(goal)),
+                        selected: isSelected,
+                        selectedColor: theme.primaryColor,
+                        backgroundColor: theme.cardColor,
+                        labelStyle: TextStyle(
+                          fontSize: 12.sp,
+                          color:
+                              isSelected
+                                  ? theme.highlightColor
+                                  : theme.textTheme.bodyMedium!.color,
+                        ),
+                        onSelected: (selected) {
+                          // if (selected) _saveGoal(goal);
+                        },
                       );
                     }).toList(),
               ),
-              const SizedBox(height: 20),
+
+              SizedBox(height: 20.h),
               BmiCard(),
-              const SizedBox(height: 10),
+
+              SizedBox(height: 25.h),
               Text(
-                "You have selected: ${selectedGoal != null ? userGoalToString(selectedGoal!) : 'N/A'}",
-                style: TextStyle(
-                  fontSize: 16,
+                "Today’s Trackers",
+                style: GoogleFonts.averiaLibre(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18.sp,
                   color: theme.textTheme.bodyMedium!.color,
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 12.h),
 
-              FutureBuilder<Map<String, num>>(
-                future: getTodayCaloriesAndGoal(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator(
-                      // track color
-                      valueColor: AlwaysStoppedAnimation(
-                        theme.primaryColorDark,
-                      ), // spinner color
-                    );
-                  } else if (snapshot.hasError || !snapshot.hasData) {
-                    return const Text('Error loading data');
-                  }
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(18.w),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(32.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Calories Tracker
+                    FutureBuilder<Map<String, num>>(
+                      future: getTodayCaloriesAndGoal(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                              theme.primaryColorDark,
+                            ),
+                          );
+                        } else if (snapshot.hasError || !snapshot.hasData) {
+                          return const Text('Error loading data');
+                        }
 
-                  final data = snapshot.data!;
-                  final cal = data['calories'] ?? 0;
-                  final goal = data['goal'] ?? 1750;
+                        final data = snapshot.data!;
+                        final cal = data['calories'] ?? 0;
+                        final goal = data['goal'] ?? 1750;
 
-                  return TrackerCard(
-                    label: "Cal",
-                    icon: Icons.local_dining,
-                    value: cal.toInt(),
-                    goal: goal.toInt(),
-                    iconColor: theme.primaryColorDark,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const MealTrackerPage(),
-                        ),
-                      );
-                    },
-                  );
-                },
+                        return TrackerCard(
+                          label: "Calories",
+                          icon: Icons.local_dining,
+                          value: cal.toInt(),
+                          goal: goal.toInt(),
+                          iconColor: Colors.orange,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MealTrackerPage(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 18.h),
+
+                    // Water Tracker
+                    FutureBuilder<Map<String, int>>(
+                      future: getTodayWaterIntakeAndGoal(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return CircularProgressIndicator(
+                            color: theme.primaryColorDark,
+                          );
+                        }
+
+                        final data = snapshot.data!;
+                        final intake = data['intake'] ?? 0;
+                        final goal = data['goal'] ?? 8; // fallback value
+
+                        return TrackerCard(
+                          label: "Water",
+                          icon: Icons.water_drop_outlined,
+                          value: intake,
+                          goal: goal,
+                          iconColor: Colors.blue,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const WaterScreen(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 18.h),
+
+                    // Steps Tracker
+                    FutureBuilder<Map<String, int>>(
+                      future: getTodayStepsAndGoal(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return CircularProgressIndicator(
+                            color: theme.primaryColorDark,
+                          );
+                        }
+
+                        final data = snapshot.data!;
+                        final steps = data['steps'] ?? 0;
+                        final goal = data['goal'] ?? 10000;
+
+                        return TrackerCard(
+                          label: "Steps",
+                          icon: Icons.directions_walk,
+                          value: steps,
+                          goal: goal,
+                          iconColor: const Color.fromARGB(255, 0, 186, 6),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => StepCounterScreen(),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    FutureBuilder<Map<String, double>>(
+                      future: getTodaySleepAndGoal(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return CircularProgressIndicator(
+                            color: Theme.of(context).primaryColorDark,
+                          );
+                        }
+
+                        final data = snapshot.data!;
+                        final sleep = data['sleep'] ?? 0.0;
+                        final goal = data['goal'] ?? 8.0;
+
+                        return TrackerCard(
+                          label: "Sleep",
+                          icon: Icons.nightlight_round,
+                          value: sleep.toInt(),
+                          goal: goal.toInt(),
+                          iconColor: Colors.blueAccent,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) =>
+                                        SleepScreen(), // replace with your screen class
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-
-              FutureBuilder<Map<String, int>>(
-                future: getTodayWaterIntakeAndGoal(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator(
-                      color: theme.primaryColorDark,
-                    ); // or a placeholder card
-                  }
-
-                  final data = snapshot.data!;
-                  final waterIntake = data['intake']!;
-                  final waterGoal = data['goal']!;
-
-                  return TrackerCard(
-                    label: "Water",
-                    icon: Icons.water_drop_outlined,
-                    value: waterIntake,
-                    goal: waterGoal,
-                    iconColor: theme.primaryColorDark,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const WaterScreen()),
-                      );
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              FutureBuilder<Map<String, int>>(
-                future:
-                    getTodayStepsAndGoal(), // call the steps utility function
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return CircularProgressIndicator(
-                      color: theme.primaryColorDark,
-                    ); // or a placeholder card
-                  }
-
-                  final data = snapshot.data!;
-                  final stepsToday = data['steps']!;
-                  final dailyGoal = data['goal']!;
-                  return TrackerCard(
-                    label: "steps",
-                    icon: Icons.directions_walk,
-                    value: stepsToday,
-                    goal: dailyGoal,
-                    iconColor: theme.primaryColorDark,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => StepCounterScreen()),
-                      );
-                    },
-                  );
-                },
-              ),
+              SizedBox(height: 40.h),
             ],
           ),
         ),

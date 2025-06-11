@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:thryv/screens/tracking/meal_tracking/foodgraph.dart';
 import 'package:thryv/screens/tracking/meal_tracking/nutrition_details.dart';
 import 'package:thryv/util/progress_utils.dart';
 import '../../../models/food_model.dart/food_item.dart';
@@ -130,13 +131,25 @@ class MealTrackerPageState extends State<MealTrackerPage> {
         .expand((e) => e)
         .fold(0, (sum, item) => sum + item.calories.toInt());
 
-    if (total >= totalCalorieGoal) {
-      Future.delayed(
-        Duration.zero,
-        _onGoalCompleted,
-      ); // ⚠️ avoid setState during build
+    // if (total >= totalCalorieGoal) {
+    //   Future.delayed(
+    //     Duration.zero,
+    //     _onGoalCompleted,
+    //   ); // ⚠️ avoid setState during build
 
-      await updateDailyProgress(date: DateTime.now(), type: 'food');
+    //   await updateDailyProgress(date: DateTime.now(), type: 'food');
+    // }
+
+    final completed = total >= totalCalorieGoal;
+
+    await updateDailyProgress(
+      date: DateTime.now(),
+      type: 'food',
+      completed: completed,
+    );
+
+    if (completed) {
+      _onGoalCompleted();
     }
 
     setState(() {});
@@ -372,7 +385,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         ),
                         textButtonTheme: TextButtonThemeData(
                           style: TextButton.styleFrom(
-                            foregroundColor:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                            foregroundColor:
                                 Theme.of(
                                   context,
                                 ).colorScheme.primary, // button text color
@@ -472,9 +485,22 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   ],
                 ),
                 const Spacer(),
-                Icon(
-                  Icons.bar_chart,
-                  color: Theme.of(context).primaryColorDark,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (_) => WeeklyCalorieChartScreen(
+                              weeklyData: _getLast7DaysCalories(),
+                            ),
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    Icons.bar_chart,
+                    color: Theme.of(context).primaryColorDark,
+                  ),
                 ),
               ],
             ),
@@ -504,11 +530,38 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       ),
                     ),
                     const Spacer(),
-                    Text(
-                      '$calories of $goal Cal',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '$calories of $goal Cal',
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (calories > goal)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.warning_amber_rounded,
+                                color: Colors.red,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Over limit!',
+                                style: TextStyle(
+                                  color: Colors.red.shade600,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
 
                     IconButton(
@@ -611,10 +664,46 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                           ),
                                         ),
                                         onPressed: () {
-                                          Hive.box<FoodItem>(
-                                            'foodBox',
-                                          ).delete(food.key);
-                                          _loadSavedMeals();
+                                          showDialog(
+                                            context: context,
+                                            builder:
+                                                (context) => AlertDialog(
+                                                  title: const Text(
+                                                    'Delete Food Item',
+                                                  ),
+                                                  content: Text(
+                                                    'Are you sure you want to delete "${food.name}"?',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed:
+                                                          () => Navigator.pop(
+                                                            context,
+                                                          ), // Cancel
+                                                      child: const Text(
+                                                        'Cancel',
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Hive.box<FoodItem>(
+                                                          'foodBox',
+                                                        ).delete(food.key);
+                                                        Navigator.pop(
+                                                          context,
+                                                        ); // Close dialog
+                                                        _loadSavedMeals();
+                                                      },
+                                                      child: const Text(
+                                                        'Delete',
+                                                        style: TextStyle(
+                                                          color: Colors.red,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                          );
                                         },
                                       ),
                                     ],
@@ -636,6 +725,20 @@ class MealTrackerPageState extends State<MealTrackerPage> {
     return Text(
       'Add Your Food for ${mealTypeToString(meal)} to Track your Calorie intake🔥😋',
       style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+    );
+  }
+
+  Map<DateTime, double> _getLast7DaysCalories() {
+    final now = DateTime.now();
+    return Map.fromEntries(
+      List.generate(7, (i) {
+        final day = now.subtract(Duration(days: 6 - i));
+        final total = meals.values
+            .expand((list) => list)
+            .where((f) => isSameDate(f.date, day))
+            .fold(0.0, (s, f) => s + f.calories);
+        return MapEntry(DateTime(day.year, day.month, day.day), total);
+      }),
     );
   }
 }

@@ -18,13 +18,37 @@ class StepCounterScreenState extends State<StepCounterScreen> {
   late Box settingsBox;
 
   int dailyGoal = 10000;
+  bool _isMounted = false;
 
   @override
   void initState() {
     super.initState();
+    _isMounted = true;
     stepBox = Hive.box<StepEntry>('step_entries');
     settingsBox = Hive.box('settings');
     dailyGoal = settingsBox.get('step_goal', defaultValue: 10000);
+  }
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
+  }
+
+  Color getStepColor(int step, int dailyGoal, BuildContext context) {
+    final ratio = step / dailyGoal;
+
+    if (ratio >= 1.0) {
+      return Colors.green; // goal met or exceeded
+    } else if (ratio >= 0.75) {
+      return Colors.lightGreen;
+    } else if (ratio >= 0.5) {
+      return Colors.orange;
+    } else if (ratio >= 0.25) {
+      return Colors.deepOrange;
+    } else {
+      return Colors.red; // very low progress
+    }
   }
 
   List<StepEntry> getLast7DaysEntries() {
@@ -64,10 +88,12 @@ class StepCounterScreenState extends State<StepCounterScreen> {
               TextButton(
                 onPressed: () {
                   int newGoal = int.tryParse(controller.text) ?? dailyGoal;
-                  setState(() {
-                    dailyGoal = newGoal;
-                    settingsBox.put('step_goal', newGoal);
-                  });
+                  if (_isMounted) {
+                    setState(() {
+                      dailyGoal = newGoal;
+                      settingsBox.put('step_goal', newGoal);
+                    });
+                  }
                   Navigator.pop(context);
                 },
                 child: Text("Save"),
@@ -85,7 +111,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       controller.text = existingEntry.steps.toString();
     }
 
-    int steps = 0; // Declare here
+    int steps = 0;
 
     await showDialog(
       context: context,
@@ -112,7 +138,10 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                   StepEntry entry = StepEntry(date: date, steps: steps);
                   stepBox.put(date.toIso8601String(), entry);
 
-                  setState(() {});
+                  if (_isMounted) {
+                    setState(() {});
+                  }
+
                   Navigator.pop(context);
                 },
                 child: Text("Save"),
@@ -121,14 +150,16 @@ class StepCounterScreenState extends State<StepCounterScreen> {
           ),
     );
 
-    // Check after dialog closes
-    if (steps >= dailyGoal) {
-      Future.delayed(Duration.zero, _onGoalCompleted);
-      await updateDailyProgress(date: DateTime.now(), type: 'step');
+    if (_isMounted && steps >= dailyGoal) {
+      Future.delayed(Duration.zero, () {
+        if (_isMounted) _onGoalCompleted();
+      });
+      await updateDailyProgress(date: DateTime.now(), type: 'steps');
     }
   }
 
-  void _onGoalCompleted() async {
+  void _onGoalCompleted() {
+    if (!_isMounted) return;
     showDialog(
       context: context,
       builder:
@@ -157,7 +188,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
         height: 250,
         child: BarChart(
           BarChartData(
-            maxY: (dailyGoal).toDouble(),
+            maxY: dailyGoal.toDouble(),
             barGroups:
                 entries.asMap().entries.map((e) {
                   final step = e.value.steps.toDouble();
@@ -167,10 +198,8 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                       BarChartRodData(
                         toY: step.clamp(0, dailyGoal.toDouble()),
                         width: 16,
-                        color:
-                            step >= dailyGoal
-                                ? Colors.green
-                                : Theme.of(context).primaryColor,
+                        color: getStepColor(step.toInt(), dailyGoal, context),
+
                         borderRadius: BorderRadius.circular(8),
                         backDrawRodData: BackgroundBarChartRodData(
                           show: true,
@@ -242,21 +271,18 @@ class StepCounterScreenState extends State<StepCounterScreen> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        actions: [],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Goal Progress
             GestureDetector(
               onTap: _editGoal,
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primaryContainer,
-
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -292,8 +318,6 @@ class StepCounterScreenState extends State<StepCounterScreen> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Calories Card
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -333,8 +357,6 @@ class StepCounterScreenState extends State<StepCounterScreen> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Tip
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -358,15 +380,11 @@ class StepCounterScreenState extends State<StepCounterScreen> {
               ),
             ),
             SizedBox(height: 16),
-
-            // Chart Title
             Text(
               'Daily Steps Trend',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(height: 12),
-
-            // Chart
             buildBarChart(last7Days),
             SizedBox(height: 100),
           ],
