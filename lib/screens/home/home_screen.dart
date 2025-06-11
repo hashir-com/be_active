@@ -186,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ConnectionState.waiting) {
                           return CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation(
-                              theme.primaryColorDark,
+                              theme.primaryColor,
                             ),
                           );
                         } else if (snapshot.hasError || !snapshot.hasData) {
@@ -222,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           return CircularProgressIndicator(
-                            color: theme.primaryColorDark,
+                            color: theme.primaryColorLight,
                           );
                         }
 

@@ -67,7 +67,7 @@ class WeeklyCalorieChartScreen extends StatelessWidget {
                                 BarChartRodData(
                                   toY: y,
                                   width: 20,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).primaryColorDark,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ],

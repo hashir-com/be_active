@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use, duplicate_ignore
-
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -38,8 +36,10 @@ class MealTrackerPage extends StatefulWidget {
   MealTrackerPageState createState() => MealTrackerPageState();
 }
 
-class MealTrackerPageState extends State<MealTrackerPage> {
+class MealTrackerPageState extends State<MealTrackerPage>
+    with WidgetsBindingObserver {
   DateTime selectedDate = DateTime.now();
+  String dropdownValue = "Today"; // Default dropdown value
 
   UserModel? user;
   UserGoalModel? usergoal;
@@ -72,20 +72,36 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   @override
   void initState() {
     super.initState();
-
-    final userBox = Hive.box<UserModel>('userBox');
-    final userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
-    user = userBox.get('user');
-    usergoal = userGoalBox.get('usergoal');
-
-    if (user?.bmi != null && usergoal?.goal != null) {
-      totalCalorieGoal = suggestInitialCalorieGoal(user!.bmi!, usergoal!.goal!);
-    } else {
-      totalCalorieGoal = 1750;
+    WidgetsBinding.instance.addObserver(this);
+    try {
+      final userBox = Hive.box<UserModel>('userBox');
+      final userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
+      user = userBox.get('user');
+      usergoal = userGoalBox.get('usergoal');
+      if (user?.bmi != null && usergoal?.goal != null) {
+        totalCalorieGoal = suggestInitialCalorieGoal(
+          user!.bmi!,
+          usergoal!.goal!,
+        );
+      }
+    } catch (e) {
+      debugPrint("Hive initialization error: $e");
     }
-
     _applyMealCalorieGoals();
     _loadSavedMeals();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadSavedMeals();
+    }
   }
 
   void _applyMealCalorieGoals() {
@@ -96,6 +112,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   }
 
   void _onGoalCompleted() async {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder:
@@ -113,46 +130,39 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   }
 
   void _loadSavedMeals() async {
-    final box = Hive.box<FoodItem>('foodBox');
-    final allItems = box.values.toList();
+    try {
+      final box = Hive.box<FoodItem>('foodBox');
+      final allItems = box.values.toList();
 
-    for (var meal in meals.keys) {
-      meals[meal]!.clear();
-    }
-
-    for (var item in allItems) {
-      final meal = _stringToMealType(item.mealType);
-      if (meal != null && isSameDate(item.date, selectedDate)) {
-        meals[meal]!.add(item);
+      for (var meal in meals.keys) {
+        meals[meal]!.clear();
       }
+
+      for (var item in allItems) {
+        final meal = _stringToMealType(item.mealType);
+        if (meal != null && isSameDate(item.date, selectedDate)) {
+          meals[meal]!.add(item);
+        }
+      }
+
+      final total = meals.values
+          .expand((e) => e)
+          .fold(0, (sum, item) => sum + item.calories.toInt());
+
+      final completed = total >= totalCalorieGoal;
+
+      await updateDailyProgress(
+        date: DateTime.now(),
+        type: 'food',
+        completed: completed,
+      );
+
+      if (!mounted) return;
+      if (completed) _onGoalCompleted();
+      setState(() {});
+    } catch (e, st) {
+      debugPrint("Error loading meals: $e\n$st");
     }
-
-    final total = meals.values
-        .expand((e) => e)
-        .fold(0, (sum, item) => sum + item.calories.toInt());
-
-    // if (total >= totalCalorieGoal) {
-    //   Future.delayed(
-    //     Duration.zero,
-    //     _onGoalCompleted,
-    //   ); // ⚠️ avoid setState during build
-
-    //   await updateDailyProgress(date: DateTime.now(), type: 'food');
-    // }
-
-    final completed = total >= totalCalorieGoal;
-
-    await updateDailyProgress(
-      date: DateTime.now(),
-      type: 'food',
-      completed: completed,
-    );
-
-    if (completed) {
-      _onGoalCompleted();
-    }
-
-    setState(() {});
   }
 
   bool isSameDate(DateTime a, DateTime b) =>
@@ -176,24 +186,25 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   }
 
   void _addFood(MealType meal) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (_) => FoodSearchPage(
-              mealType: meal,
-              selectedDate: selectedDate, // ✅ pass selected date
-            ),
-      ),
-    );
-    _loadSavedMeals(); // reload to reflect new items
+    try {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder:
+              (_) => FoodSearchPage(mealType: meal, selectedDate: selectedDate),
+        ),
+      );
+      if (!mounted) return;
+      _loadSavedMeals();
+    } catch (e) {
+      debugPrint("Navigation or add error: $e");
+    }
   }
 
   void _showEditGoalDialog(MealType selectedMeal) {
     final controller = TextEditingController(
       text: calorieGoals[selectedMeal]!.toString(),
     );
-
     showDialog(
       context: context,
       builder: (context) {
@@ -218,7 +229,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   Navigator.pop(context);
                   return;
                 }
-
                 setState(() {
                   final totalOldGoal = calorieGoals.values.reduce(
                     (a, b) => a + b,
@@ -227,27 +237,20 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       calorieGoals.keys
                           .where((m) => m != selectedMeal)
                           .toList();
-
-                  // Update selected meal goal
                   calorieGoals[selectedMeal] = newGoal;
-
                   final otherMealDistributionSum = otherMeals
                       .map((m) => mealDistribution[m]!)
                       .reduce((a, b) => a + b);
-
                   for (var meal in otherMeals) {
                     final ratio =
                         mealDistribution[meal]! / otherMealDistributionSum;
-                    final newMealGoal =
+                    calorieGoals[meal] =
                         ((totalOldGoal - newGoal) * ratio).round();
-                    calorieGoals[meal] = newMealGoal;
                   }
-
                   totalCalorieGoal = calorieGoals.values.reduce(
                     (a, b) => a + b,
                   );
                 });
-
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -260,7 +263,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
 
   void _showEditTotalGoalDialog() {
     final controller = TextEditingController(text: totalCalorieGoal.toString());
-
     showDialog(
       context: context,
       builder: (context) {
@@ -300,38 +302,50 @@ class MealTrackerPageState extends State<MealTrackerPage> {
   int get totalCalories => meals.values
       .expand((e) => e)
       .fold(0, (sum, item) => sum + item.calories.toInt());
-  String dropdownValue = "Today"; // Default dropdown value
+
+  Map<DateTime, double> _getLast7DaysCalories() {
+    final now = DateTime.now();
+    return Map.fromEntries(
+      List.generate(7, (i) {
+        final day = now.subtract(Duration(days: 6 - i));
+        final total = meals.values
+            .expand((list) => list)
+            .where((f) => isSameDate(f.date, day))
+            .fold(0.0, (s, f) => s + f.calories);
+        return MapEntry(DateTime(day.year, day.month, day.day), total);
+      }),
+    );
+  }
+
+  Widget _buildEmptyText(MealType meal) {
+    return Text(
+      'Add Your Food for ${mealTypeToString(meal)} to Track your Calorie intake🔥😋',
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: theme.primaryColor,
         foregroundColor: Colors.white,
         title: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: theme.primaryColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color:
-                  Theme.of(
-                    context,
-                  ).primaryColor, // Border color matching primary to effectively hide it
-            ),
+            border: Border.all(color: theme.primaryColor),
           ),
           child: DropdownButton<String>(
             value: dropdownValue,
-            dropdownColor: Theme.of(context).primaryColor,
+            dropdownColor: theme.primaryColor,
             underline: const SizedBox(),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.white),
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface,
-              fontSize: 20,
-            ),
+            icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+            style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 20),
             borderRadius: BorderRadius.circular(50),
-            items: [
+            items: const [
               DropdownMenuItem(
                 value: "Today",
                 child: Text("Today", style: TextStyle(color: Colors.white)),
@@ -368,27 +382,15 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   lastDate: DateTime.now(),
                   builder: (context, child) {
                     return Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: Theme.of(context).colorScheme.copyWith(
-                          primary:
-                              Theme.of(
-                                context,
-                              ).colorScheme.primary, // header background color
-                          onPrimary:
-                              Theme.of(
-                                context,
-                              ).primaryColor, // header text color
-                          onSurface:
-                              Theme.of(
-                                context,
-                              ).colorScheme.onSurface, // body text color
+                      data: theme.copyWith(
+                        colorScheme: theme.colorScheme.copyWith(
+                          primary: theme.colorScheme.primary,
+                          onPrimary: theme.primaryColor,
+                          onSurface: theme.colorScheme.onSurface,
                         ),
                         textButtonTheme: TextButtonThemeData(
                           style: TextButton.styleFrom(
-                            foregroundColor:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.primary, // button text color
+                            foregroundColor: theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -402,8 +404,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                     dropdownValue = "Pick Date";
                     _loadSavedMeals();
                   });
-                } else {
-                  // User canceled, keep previous dropdownValue
                 }
               }
             },
@@ -418,19 +418,18 @@ class MealTrackerPageState extends State<MealTrackerPage> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: theme.colorScheme.onSurface,
             ),
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  // ignore: deprecated_member_use
-                  color: Theme.of(context).shadowColor.withOpacity(0.12),
+                  color: theme.shadowColor.withOpacity(0.12),
                   blurRadius: 6,
                 ),
               ],
@@ -447,9 +446,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         value: totalCalories / totalCalorieGoal,
                         strokeWidth: 5,
                         backgroundColor:
-                            Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
+                            theme.colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation(
                           theme.primaryColorDark,
                         ),
@@ -458,7 +455,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                     Icon(
                       Icons.local_dining,
                       size: 24,
-                      color: Theme.of(context).primaryColorDark,
+                      color: theme.primaryColorDark,
                     ),
                   ],
                 ),
@@ -470,7 +467,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -479,7 +476,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       child: Icon(
                         Icons.edit,
                         size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -497,17 +494,12 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       ),
                     );
                   },
-                  child: Icon(
-                    Icons.bar_chart,
-                    color: Theme.of(context).primaryColorDark,
-                  ),
+                  child: Icon(Icons.bar_chart, color: theme.primaryColorDark),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-
-          // Meals list
           ...MealType.values.map((meal) {
             final foods = meals[meal]!;
             final calories = foods.fold(
@@ -515,7 +507,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
               (sum, f) => sum + f.calories.toInt(),
             );
             final goal = calorieGoals[meal]!;
-
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -526,7 +517,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                     const Spacer(),
@@ -536,8 +527,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                         Text(
                           '$calories of $goal Cal',
                           style: TextStyle(
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -563,19 +553,18 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                           ),
                       ],
                     ),
-
                     IconButton(
                       icon: Icon(
                         Icons.edit,
                         size: 18,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: theme.colorScheme.onSurface,
                       ),
                       onPressed: () => _showEditGoalDialog(meal),
                     ),
                     IconButton(
                       icon: Icon(
                         Icons.add_circle,
-                        color: Theme.of(context).primaryColorDark,
+                        color: theme.primaryColorDark,
                       ),
                       onPressed: () => _addFood(meal),
                     ),
@@ -585,11 +574,11 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
+                    color: theme.colorScheme.surface,
                     borderRadius: BorderRadius.circular(26),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).shadowColor.withOpacity(0.42),
+                        color: theme.shadowColor.withOpacity(0.42),
                         blurRadius: 10,
                       ),
                     ],
@@ -636,9 +625,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                             food.name,
                                             style: TextStyle(
                                               color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.onSurface,
+                                                  theme.colorScheme.onSurface,
                                             ),
                                           ),
                                         ),
@@ -646,17 +633,14 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                       Text(
                                         '${food.calories.toStringAsFixed(1)} Cal',
                                         style: TextStyle(
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurface,
+                                          color: theme.colorScheme.onSurface,
                                         ),
                                       ),
                                       IconButton(
-                                        icon: Icon(
+                                        icon: const Icon(
                                           Icons.delete_outline_rounded,
                                           size: 20,
-                                          color: const Color.fromARGB(
+                                          color: Color.fromARGB(
                                             255,
                                             255,
                                             17,
@@ -679,7 +663,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                                       onPressed:
                                                           () => Navigator.pop(
                                                             context,
-                                                          ), // Cancel
+                                                          ),
                                                       child: const Text(
                                                         'Cancel',
                                                       ),
@@ -689,9 +673,7 @@ class MealTrackerPageState extends State<MealTrackerPage> {
                                                         Hive.box<FoodItem>(
                                                           'foodBox',
                                                         ).delete(food.key);
-                                                        Navigator.pop(
-                                                          context,
-                                                        ); // Close dialog
+                                                        Navigator.pop(context);
                                                         _loadSavedMeals();
                                                       },
                                                       child: const Text(
@@ -718,27 +700,6 @@ class MealTrackerPageState extends State<MealTrackerPage> {
           }),
         ],
       ),
-    );
-  }
-
-  Widget _buildEmptyText(MealType meal) {
-    return Text(
-      'Add Your Food for ${mealTypeToString(meal)} to Track your Calorie intake🔥😋',
-      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-    );
-  }
-
-  Map<DateTime, double> _getLast7DaysCalories() {
-    final now = DateTime.now();
-    return Map.fromEntries(
-      List.generate(7, (i) {
-        final day = now.subtract(Duration(days: 6 - i));
-        final total = meals.values
-            .expand((list) => list)
-            .where((f) => isSameDate(f.date, day))
-            .fold(0.0, (s, f) => s + f.calories);
-        return MapEntry(DateTime(day.year, day.month, day.day), total);
-      }),
     );
   }
 }
