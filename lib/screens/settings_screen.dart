@@ -135,9 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       backgroundColor: theme.scaffoldBackgroundColor, // dynamic bg color
       extendBody: true,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.12),
+        preferredSize: Size.fromHeight(height * 0.15),
         child: Container(
-          color: theme.primaryColor, // dynamic appbar bg
+          color: theme.primaryColor,
           padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
           alignment: Alignment.centerLeft,
           child: Column(
@@ -147,10 +147,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Text(
                   "Settings",
                   style: GoogleFonts.roboto(
-                    fontSize: width * 0.1,
+                    fontSize: height * 0.05,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.white, // instead of Colors.white
-                    // dynamic color
+                    color: Colors.white,
                   ),
                 ),
               ),

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/screens/home/navigation_screen.dart';
 import 'package:thryv/services/hive_service.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class FormWidget extends StatefulWidget {
   const FormWidget({super.key, required this.gender});
@@ -149,8 +150,8 @@ class _FormWidgetState extends State<FormWidget> {
 
   Widget _buildContinueButton(double screenWidth, double screenHeight) {
     return SizedBox(
-      width: screenWidth * 0.6,
-      height: screenHeight * 0.05,
+      width: 260.w,
+      height: 50.h,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,

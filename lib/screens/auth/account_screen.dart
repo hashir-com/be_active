@@ -96,11 +96,14 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final width = MediaQuery.of(context).size.width;
+    final isTablet = width > 600;
+    final isDesktop = width > 1000;
 
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(120.h),
+        preferredSize: Size.fromHeight(100.h),
         child: Container(
           color: Colors.black,
           padding: EdgeInsets.only(top: 16.h, left: 24.w),
@@ -112,7 +115,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Text(
                   "Account Details",
                   style: GoogleFonts.roboto(
-                    fontSize: 28.sp,
+                    fontSize: isDesktop ? 48 : 44,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),

@@ -57,107 +57,131 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
 
     final todayFormatted = DateFormat("EEEE, MMM d, y").format(DateTime.now());
 
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0.2.sh),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Daily Progress Heatmap",
-              style: GoogleFonts.roboto(
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
-                fontSize: 26.sp,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isDesktop = constraints.maxWidth > 800;
+        final horizontalPadding = isDesktop ? 40.0.w : 16.0.w;
+        final calendarSize = isDesktop ? 55.0.r : 55.0.r;
+
+        return Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(0.2.sh),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Daily Progress Heatmap",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold,
+                      fontSize: isDesktop ? 12.sp : 26.sp,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    todayFormatted,
+                    style: TextStyle(
+                      color: theme.primaryColorDark,
+                      fontSize: isDesktop ? 8.sp : 12.sp,
+                    ),
+                  ),
+                ],
               ),
             ),
-            Text(
-              todayFormatted,
-              style: TextStyle(color: theme.primaryColorDark, fontSize: 12.sp),
-            ),
-          ],
-        ),
-      ),
-
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.r),
-          child: HeatMapCalendar(
-            defaultColor: Theme.of(context).cardColor,
-            initDate: DateTime.now(),
-            colorMode: ColorMode.color,
-            datasets: data,
-            colorsets: progressColors,
-            size: 55.r,
-            weekFontSize: 12.sp,
-            showColorTip: true,
-            colorTipCount: 5,
-            colorTipSize: 10.r,
-            monthFontSize: 20.sp,
-            weekTextColor: theme.primaryColorDark,
-            textColor: theme.colorScheme.onSurface,
-            onClick: (date) {
-              final key = _dateToKey(date);
-              final progress = progressBox.get(key);
-
-              if (progress != null) {
-                showDialog(
-                  context: context,
-                  builder:
-                      (_) => AlertDialog(
-                        title: Text(DateFormat.yMMMd().format(date)),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildCheckTile("Food Logged", progress.foodLogged),
-                            _buildCheckTile(
-                              "Water Logged",
-                              progress.waterLogged,
-                            ),
-                            _buildCheckTile(
-                              "Sleep Logged",
-                              progress.sleepLogged,
-                            ),
-                            _buildCheckTile(
-                              "Steps Logged",
-                              progress.stepsLogged,
-                            ),
-                          ],
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              setState(() {
-                                data = _generateProgressHeatmapData(
-                                  progressBox,
-                                );
-                              });
-                            },
-                            child: Text(
-                              "Close",
-                              style: TextStyle(fontSize: 14.sp),
-                            ),
-                          ),
-                        ],
-                      ),
-                );
-              }
-            },
           ),
-        ),
-      ),
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+              child: HeatMapCalendar(
+                defaultColor: theme.cardColor,
+                initDate: DateTime.now(),
+                colorMode: ColorMode.color,
+                datasets: data,
+                colorsets: progressColors,
+                size: calendarSize,
+                weekFontSize: isDesktop ? 3.sp : 12.sp,
+                showColorTip: true,
+                colorTipCount: 5,
+                colorTipSize: isDesktop ? 6.r : 10.r,
+                monthFontSize: isDesktop ? 10.sp : 20.sp,
+                weekTextColor: theme.primaryColorDark,
+                textColor: theme.colorScheme.onSurface,
+                onClick: (date) {
+                  final key = _dateToKey(date);
+                  final progress = progressBox.get(key);
+
+                  if (progress != null) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (_) => AlertDialog(
+                            title: Text(DateFormat.yMMMd().format(date)),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _buildCheckTile(
+                                  "Food Logged",
+                                  progress.foodLogged,
+                                  isDesktop,
+                                ),
+                                _buildCheckTile(
+                                  "Water Logged",
+                                  progress.waterLogged,
+                                  isDesktop,
+                                ),
+                                _buildCheckTile(
+                                  "Sleep Logged",
+                                  progress.sleepLogged,
+                                  isDesktop,
+                                ),
+                                _buildCheckTile(
+                                  "Steps Logged",
+                                  progress.stepsLogged,
+                                  isDesktop,
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  setState(() {
+                                    data = _generateProgressHeatmapData(
+                                      progressBox,
+                                    );
+                                  });
+                                },
+                                child: Text(
+                                  "Close",
+                                  style: TextStyle(
+                                    fontSize: isDesktop ? 8.sp : 14.sp,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildCheckTile(String label, bool done) {
+  Widget _buildCheckTile(String label, bool done, bool isDesktop) {
     return ListTile(
       leading: Icon(
         done ? Icons.check_circle : Icons.cancel,
         color: done ? Colors.green : Colors.red,
-        size: 24.r,
+        size: isDesktop ? 24.r : 24.r,
       ),
-      title: Text(label, style: TextStyle(fontSize: 16.sp)),
+      title: Text(label, style: TextStyle(fontSize: isDesktop ? 9.sp : 16.sp)),
     );
   }
 

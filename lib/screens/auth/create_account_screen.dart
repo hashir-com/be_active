@@ -7,6 +7,7 @@ import 'package:thryv/models/user_model.dart';
 import '../home/navigation_screen.dart';
 import 'package:thryv/screens/auth/widgets/gender_selection_widget.dart';
 import 'package:thryv/screens/auth/widgets/form_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CreateAccountScreen extends StatefulWidget {
   const CreateAccountScreen({super.key});
@@ -36,7 +37,7 @@ class _LoginScreenState extends State<CreateAccountScreen> {
                   child: Text(
                     "Create Account",
                     style: GoogleFonts.righteous(
-                      fontSize: screenWidth * 0.09,
+                      fontSize: 38.r,
                       color: Colors.white,
                     ),
                   ),
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<CreateAccountScreen> {
                         },
                       ),
                       SizedBox(height: screenHeight * 0.03),
-                      FormWidget(gender: selectedGender,),
+                      FormWidget(gender: selectedGender),
                     ],
                   ),
                 ),

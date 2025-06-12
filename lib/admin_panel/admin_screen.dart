@@ -102,8 +102,11 @@ class AdminScreenState extends State<AdminScreen> {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     final height = size.height;
-    final width = size.width;
+
     final videoIds = userGoal?.videoIds ?? [];
+    final width = MediaQuery.of(context).size.width;
+    final isTablet = width > 600;
+    final isDesktop = width > 1000;
 
     // It's safer to check if user and userGoal are loaded before accessing their properties
     if (_dataService.currentUser == null ||
@@ -162,7 +165,7 @@ class AdminScreenState extends State<AdminScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildUserDetailsSection(theme),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       Text(
                         "Suggest User Goal",
                         style: TextStyle(
@@ -170,40 +173,46 @@ class AdminScreenState extends State<AdminScreen> {
                           fontSize: 16,
                         ),
                       ),
-                      Wrap(
-                        spacing: 4,
-                        children:
-                            UserGoal.values.map((goal) {
-                              final isSelected = goal == selectedGoal;
-                              return SizedBox(
-                                width: width * 0.29,
-                                child: ChoiceChip(
-                                  checkmarkColor: theme.highlightColor,
-                                  label: Text(userGoalToString(goal)),
-                                  selected: isSelected,
-                                  selectedColor: theme.primaryColorLight,
-                                  labelStyle: TextStyle(
-                                    color:
-                                        isSelected
-                                            ? theme.highlightColor
-                                            : Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium!.color,
-                                    fontSize:
-                                        isSelected
-                                            ? width * 0.028
-                                            : width * 0.03,
+                      Center(
+                        child: Wrap(
+                          spacing: isDesktop ? 20 : 4,
+                          children:
+                              UserGoal.values.map((goal) {
+                                final isSelected = goal == selectedGoal;
+                                return SizedBox(
+                                  width: isDesktop ? 220 : 120,
+                                  child: ChoiceChip(
+                                    checkmarkColor: theme.highlightColor,
+                                    label: Text(userGoalToString(goal)),
+                                    selected: isSelected,
+                                    selectedColor: theme.primaryColorLight,
+                                    labelStyle: TextStyle(
+                                      color:
+                                          isSelected
+                                              ? theme.highlightColor
+                                              : Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium!.color,
+                                      fontSize:
+                                          isSelected
+                                              ? isDesktop
+                                                  ? 20
+                                                  : 12
+                                              : isDesktop
+                                              ? 15
+                                              : 10,
+                                    ),
+                                    onSelected: (selected) {
+                                      if (selected) {
+                                        _saveGoal(goal);
+                                      }
+                                    },
                                   ),
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      _saveGoal(goal);
-                                    }
-                                  },
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                        ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
 
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +224,7 @@ class AdminScreenState extends State<AdminScreen> {
                               fontSize: 16,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 18),
                           Row(
                             children: [
                               Expanded(
@@ -234,7 +243,7 @@ class AdminScreenState extends State<AdminScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 20),
                               ElevatedButton(
                                 onPressed: () {
                                   final videoId = YoutubePlayer.convertUrlToId(
@@ -271,7 +280,7 @@ class AdminScreenState extends State<AdminScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 34),
                           Text(
                             "Recommended Videos",
                             style: TextStyle(
@@ -279,7 +288,7 @@ class AdminScreenState extends State<AdminScreen> {
                               fontSize: 16,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 22),
                           ...videoIds.asMap().entries.map((entry) {
                             final index = entry.key;
                             final id = entry.value;
@@ -421,10 +430,42 @@ class AdminScreenState extends State<AdminScreen> {
                         ],
                       ),
 
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
 
-                      _buildAddWorkoutSection(context),
-                      _buildAddDietSection(context),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: _buildAddWorkoutSection(context),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(32),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 10,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: _buildAddDietSection(context),
+                      ),
+                      SizedBox(height: 20),
                       _buildSavedWorkoutsList(),
                       const SizedBox(height: 24),
                       _buildSavedDietItemsList(),

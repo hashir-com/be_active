@@ -17,7 +17,6 @@ class StepCounterScreen extends StatefulWidget {
 class StepCounterScreenState extends State<StepCounterScreen> {
   late Box<StepEntry> stepBox;
   late Box settingsBox;
-
   int dailyGoal = 10000;
   bool _isMounted = false;
 
@@ -36,19 +35,13 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     super.dispose();
   }
 
-  Color getStepColor(int step, int dailyGoal, BuildContext context) {
-    final ratio = step / dailyGoal;
-    if (ratio >= 1.0) {
-      return Colors.green;
-    } else if (ratio >= 0.75) {
-      return Colors.lightGreen;
-    } else if (ratio >= 0.5) {
-      return Colors.orange;
-    } else if (ratio >= 0.25) {
-      return Colors.deepOrange;
-    } else {
-      return Colors.red;
-    }
+  Color getStepColor(int step, int goal, BuildContext context) {
+    final ratio = step / goal;
+    if (ratio >= 1.0) return Colors.green;
+    if (ratio >= 0.75) return Colors.lightGreen;
+    if (ratio >= 0.5) return Colors.orange;
+    if (ratio >= 0.25) return Colors.deepOrange;
+    return Colors.red;
   }
 
   List<StepEntry> getLast7DaysEntries() {
@@ -69,28 +62,26 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       builder:
           (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(16),
             ),
             title: const Text("Set Step Goal"),
             content: TextField(
               controller: controller,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: 'Enter step goal',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-              ),
+              decoration: const InputDecoration(hintText: 'Enter step goal'),
             ),
             actions: [
               TextButton(
                 onPressed: () {
                   int newGoal = int.tryParse(controller.text) ?? dailyGoal;
-                  if (_isMounted) {
+                  if (_isMounted && newGoal > 0) {
                     setState(() {
                       dailyGoal = newGoal;
                       settingsBox.put('step_goal', newGoal);
                     });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Goal updated to $newGoal steps")),
+                    );
                   }
                   Navigator.pop(context);
                 },
@@ -104,9 +95,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
   void _addOrEditEntry(DateTime date) async {
     final controller = TextEditingController();
     final existingEntry = stepBox.get(date.toIso8601String());
-    if (existingEntry != null) {
-      controller.text = existingEntry.steps.toString();
-    }
+    if (existingEntry != null) controller.text = existingEntry.steps.toString();
 
     int steps = 0;
     await showDialog(
@@ -114,26 +103,22 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       builder:
           (_) => AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.r),
+              borderRadius: BorderRadius.circular(16),
             ),
-            title: Text('Enter steps for ${DateFormat.yMMMd().format(date)}'),
+            title: Text('Steps for ${DateFormat.yMMMd().format(date)}'),
             content: TextField(
               controller: controller,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                hintText: 'Steps walked',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-              ),
+              decoration: const InputDecoration(hintText: 'Enter steps'),
             ),
             actions: [
               TextButton(
                 onPressed: () async {
                   steps = int.tryParse(controller.text) ?? 0;
-                  final entry = StepEntry(date: date, steps: steps);
-                  stepBox.put(date.toIso8601String(), entry);
-
+                  stepBox.put(
+                    date.toIso8601String(),
+                    StepEntry(date: date, steps: steps),
+                  );
                   if (_isMounted) setState(() {});
                   Navigator.pop(context);
                 },
@@ -144,21 +129,18 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     );
 
     if (_isMounted && steps >= dailyGoal) {
-      Future.delayed(Duration.zero, () {
-        if (_isMounted) _onGoalCompleted();
-      });
-      await updateDailyProgress(date: DateTime.now(), type: 'steps');
+      _onGoalCompleted();
+      await updateDailyProgress(date: date, type: 'steps');
     }
   }
 
   void _onGoalCompleted() {
-    if (!_isMounted) return;
     showDialog(
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: const Text('Goal Achieved! 🎉'),
-            content: const Text('You have reached your Steps goal!'),
+            title: const Text('Goal Achieved 🎉'),
+            content: const Text('You have reached your step goal!'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
@@ -169,16 +151,16 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     );
   }
 
-  Widget buildBarChart(List<StepEntry> entries) {
+  Widget buildBarChart(List<StepEntry> entries, bool isDesktop) {
     return Container(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(isDesktop ? 24 : 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20.r),
+        borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
       ),
       child: SizedBox(
-        height: 250.h,
+        height: isDesktop ? 300 : 200,
         child: BarChart(
           BarChartData(
             maxY: dailyGoal.toDouble(),
@@ -190,13 +172,16 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                     barRods: [
                       BarChartRodData(
                         toY: step.clamp(0, dailyGoal.toDouble()),
-                        width: 16.w,
+                        width: isDesktop ? 20 : 12,
                         color: getStepColor(step.toInt(), dailyGoal, context),
-                        borderRadius: BorderRadius.circular(8.r),
+                        borderRadius: BorderRadius.circular(isDesktop ? 10 : 6),
                         backDrawRodData: BackgroundBarChartRodData(
                           show: true,
                           toY: dailyGoal.toDouble(),
-                          color: Colors.grey[300]!,
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.grey[800]
+                                  : Colors.grey[300],
                         ),
                       ),
                     ],
@@ -210,13 +195,10 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                   getTitlesWidget: (value, _) {
                     DateTime date = entries[value.toInt()].date;
                     return Padding(
-                      padding: EdgeInsets.only(top: 8.h),
+                      padding: EdgeInsets.only(top: 8),
                       child: Text(
                         DateFormat.E().format(date),
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(fontSize: isDesktop ? 14 : 10),
                       ),
                     );
                   },
@@ -226,7 +208,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                 sideTitles: SideTitles(
                   showTitles: true,
                   interval: 5000,
-                  reservedSize: 40.w,
+                  reservedSize: 40,
                 ),
               ),
               topTitles: AxisTitles(),
@@ -235,11 +217,14 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             barTouchData: BarTouchData(
               enabled: true,
               touchTooltipData: BarTouchTooltipData(
-                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                getTooltipItem: (group, _, rod, __) {
                   final steps = entries[group.x.toInt()].steps;
                   return BarTooltipItem(
-                    '$steps steps',
-                    TextStyle(color: Colors.white, fontSize: 12.sp),
+                    '$steps 👟',
+                    TextStyle(
+                      color: Colors.white,
+                      fontSize: isDesktop ? 8 : 10,
+                    ),
                   );
                 },
               ),
@@ -254,6 +239,9 @@ class StepCounterScreenState extends State<StepCounterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 600;
+
     final last7Days = getLast7DaysEntries();
     final todaySteps = last7Days.last.steps;
     final burnedToday = (todaySteps / 1000) * 40;
@@ -261,140 +249,54 @@ class StepCounterScreenState extends State<StepCounterScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Step Counter', style: TextStyle(fontSize: 18.sp)),
+        title: Text(
+          'Step Counter',
+          style: TextStyle(fontSize: isDesktop ? 20 : 16),
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onTap: _editGoal,
-              child: Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                child: Column(
+        padding: EdgeInsets.all(isDesktop ? 24 : 16),
+        child:
+            isDesktop
+                ? Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          '$todaySteps of $dailyGoal steps walked',
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    Expanded(
+                      child: Column(
+                        children: _buildLeftColumn(
+                          todaySteps,
+                          burnedToday,
+                          goalBurn,
+                          isDesktop,
                         ),
-                        IconButton(
-                          onPressed: _editGoal,
-                          icon: Icon(Icons.edit, size: 24.sp),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8.h),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10.r),
-                      child: LinearProgressIndicator(
-                        value: todaySteps / dailyGoal,
-                        color: Theme.of(context).primaryColor,
-                        backgroundColor: Colors.grey[300],
-                        minHeight: 10.h,
                       ),
                     ),
+                    SizedBox(width: isDesktop ? 20 : 10),
+                    Expanded(child: buildBarChart(last7Days, isDesktop)),
+                  ],
+                )
+                : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ..._buildLeftColumn(
+                      todaySteps,
+                      burnedToday,
+                      goalBurn,
+                      isDesktop,
+                    ),
+                    SizedBox(height: isDesktop ? 24 : 16),
+                    Text(
+                      'Steps Trend',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    SizedBox(height: 12),
+                    buildBarChart(last7Days, isDesktop),
+                    SizedBox(height: 60),
                   ],
                 ),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              padding: EdgeInsets.all(16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Calories Burned',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Your Goal:', style: TextStyle(fontSize: 14.sp)),
-                      Text(
-                        '${goalBurn.toInt()} Cal 🔥',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 4.h),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Today\'s Burn:', style: TextStyle(fontSize: 14.sp)),
-                      Text(
-                        '${burnedToday.toInt()} Cal 🔥',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14.sp,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Today’s Tip",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16.sp,
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    "Weight it. Weighted vests can be worn to bump up the intensity of your walk. "
-                    "Wear one that's no more than 5–10% of your body weight for comfort and safety.",
-                    style: TextStyle(fontSize: 13.sp),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Daily Steps Trend',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            SizedBox(height: 12.h),
-            buildBarChart(last7Days),
-            SizedBox(height: 100.h),
-          ],
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
@@ -403,10 +305,150 @@ class StepCounterScreenState extends State<StepCounterScreen> {
           _addOrEditEntry(DateTime(today.year, today.month, today.day));
         },
         child: Icon(
-          Icons.run_circle_outlined,
+          Icons.directions_walk_rounded,
+          size: isDesktop ? 28 : 22,
           color: Theme.of(context).highlightColor,
-          size: 24.sp,
         ),
+      ),
+    );
+  }
+
+  List<Widget> _buildLeftColumn(
+    int todaySteps,
+    double burnedToday,
+    double goalBurn,
+    bool isDesktop,
+  ) {
+    return [
+      GestureDetector(
+        onTap: _editGoal,
+        child: Container(
+          padding: EdgeInsets.all(isDesktop ? 20 : 14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(isDesktop ? 20 : 14),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '$todaySteps of $dailyGoal steps walked',
+                      style: TextStyle(
+                        fontSize: isDesktop ? 18 : 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.edit, size: isDesktop ? 22 : 18),
+                ],
+              ),
+              SizedBox(height: isDesktop ? 12 : 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: LinearProgressIndicator(
+                  value: todaySteps / dailyGoal,
+                  color: Theme.of(context).primaryColor,
+                  backgroundColor: Colors.grey[300],
+                  minHeight: isDesktop ? 12 : 8,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      SizedBox(height: isDesktop ? 20 : 14),
+      _buildCaloriesCard(goalBurn, burnedToday, isDesktop),
+      SizedBox(height: isDesktop ? 20 : 14),
+      _buildTipCard(isDesktop),
+    ];
+  }
+
+  Widget _buildCaloriesCard(
+    double goalBurn,
+    double burnedToday,
+    bool isDesktop,
+  ) {
+    return Container(
+      padding: EdgeInsets.all(isDesktop ? 20 : 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(isDesktop ? 18 : 12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Calories Burned',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: isDesktop ? 16 : 14,
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Your Goal:',
+                style: TextStyle(fontSize: isDesktop ? 14 : 12),
+              ),
+              Text(
+                '${goalBurn.toInt()} Cal 🔥',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: isDesktop ? 14 : 12,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Today\'s Burn:',
+                style: TextStyle(fontSize: isDesktop ? 14 : 12),
+              ),
+              Text(
+                '${burnedToday.toInt()} Cal 🔥',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: isDesktop ? 14 : 12,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipCard(bool isDesktop) {
+    return Container(
+      padding: EdgeInsets.all(isDesktop ? 20 : 14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(isDesktop ? 18 : 12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Today’s Tip",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: isDesktop ? 16 : 14,
+            ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            "Weighted vests can make your walks more effective. Use one that’s only 5–10% of your body weight for safety and comfort.",
+            style: TextStyle(fontSize: isDesktop ? 13 : 11),
+          ),
+        ],
       ),
     );
   }

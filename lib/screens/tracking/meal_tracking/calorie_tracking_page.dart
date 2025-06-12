@@ -38,6 +38,12 @@ class MealTrackerPage extends StatefulWidget {
 
 class MealTrackerPageState extends State<MealTrackerPage>
     with WidgetsBindingObserver {
+  String _getShortFoodName(String fullName) {
+    final words = fullName.split(' ');
+    if (words.length <= 5) return fullName;
+    return words.sublist(0, 5).join(' ') + '...';
+  }
+
   DateTime selectedDate = DateTime.now();
   String dropdownValue = "Today"; // Default dropdown value
 
@@ -609,7 +615,10 @@ class MealTrackerPageState extends State<MealTrackerPage>
                                               MaterialPageRoute(
                                                 builder:
                                                     (_) => NutritionDetailsPage(
-                                                      foodName: food.name,
+                                                      foodName:
+                                                          _getShortFoodName(
+                                                            food.name,
+                                                          ),
                                                       calories: food.calories,
                                                       protein: food.protein,
                                                       fat: food.fat,
@@ -622,7 +631,7 @@ class MealTrackerPageState extends State<MealTrackerPage>
                                             );
                                           },
                                           child: Text(
-                                            food.name,
+                                            _getShortFoodName(food.name),
                                             style: TextStyle(
                                               color:
                                                   theme.colorScheme.onSurface,

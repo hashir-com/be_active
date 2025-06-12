@@ -12,23 +12,24 @@ double bmi = 0;
 UserGoal? selectedGoal;
 
 class BmiCard extends StatelessWidget {
-  const BmiCard({super.key});
+  final double bmi;
+
+  const BmiCard({super.key, required this.bmi});
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    return _buildBmiCard(context, width);
-  }
+    final width = MediaQuery.of(context).size.width;
+    final isTablet = width > 600;
+    final isDesktop = width > 1000;
 
-  Widget _buildBmiCard(BuildContext context, double width) {
     String bmiCategory = _getBmiCategory(bmi);
     String bmiCategoryinfo = _getBmiCategoryinfo(bmi);
     Color bmiColor = _getBmiColor(bmi);
 
     return Container(
       width: double.infinity,
-      height: 100,
-      padding: const EdgeInsets.all(10),
+      height: isDesktop ? 150 : isTablet ? 130 : 100,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(44),
@@ -47,7 +48,7 @@ class BmiCard extends StatelessWidget {
             child: Text(
               bmiCategoryinfo,
               style: GoogleFonts.roboto(
-                fontSize: width * 0.035,
+                fontSize: isDesktop ? 24 : 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
@@ -56,8 +57,8 @@ class BmiCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              height: 80,
-              width: 80,
+              height: isDesktop ? 110 : isTablet ? 90 : 70,
+              width: isDesktop ? 110 : isTablet ? 90 : 70,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: bmiColor,
@@ -66,12 +67,11 @@ class BmiCard extends StatelessWidget {
                 child: Text(
                   bmi.toStringAsFixed(1),
                   style: GoogleFonts.roboto(
-                    fontSize: width * 0.07,
+                    fontSize: isDesktop ? 32 : 24,
                     fontWeight: FontWeight.bold,
-                    color:
-                        bmi < 18.5
-                            ? Theme.of(context).primaryColor
-                            : Colors.white,
+                    color: bmi < 18.5
+                        ? Theme.of(context).primaryColor
+                        : Colors.white,
                   ),
                 ),
               ),
@@ -81,9 +81,9 @@ class BmiCard extends StatelessWidget {
             right: 10,
             bottom: 0,
             child: Text(
-              bmiCategory,
+              _getBmiCategory(bmi),
               style: GoogleFonts.roboto(
-                fontSize: width * 0.05,
+                fontSize: isDesktop ? 22 : 18,
                 color: bmiColor,
                 fontWeight: FontWeight.bold,
               ),
@@ -94,6 +94,7 @@ class BmiCard extends StatelessWidget {
     );
   }
 }
+
 
 String _getBmiCategory(double bmi) {
   if (bmi < 18.5) return "Underweight";

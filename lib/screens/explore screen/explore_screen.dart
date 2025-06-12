@@ -196,6 +196,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemCount: userGoal!.workoutPlans!.length,
                         itemBuilder: (context, index) {
                           final workout = userGoal!.workoutPlans![index];
+                          
                           return Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(42),
@@ -219,16 +220,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                   workout.imageUrl != null
                                       ? ClipRRect(
                                         borderRadius: BorderRadius.circular(18),
-                                        child: Image.file(
-                                          File(workout.imageUrl!),
-                                          width: 50,
-                                          height: 50,
-                                          fit: BoxFit.fill,
-                                          errorBuilder:
-                                              (_, __, ___) => const Icon(
-                                                Icons.broken_image,
-                                                color: Colors.grey,
-                                              ),
+                                        child: Hero(
+                                          tag: 'image',
+                                          child: Image.file(
+                                            File(workout.imageUrl!),
+                                            width: 50,
+                                            height: 50,
+                                            fit: BoxFit.fill,
+                                            errorBuilder:
+                                                (_, __, ___) => const Icon(
+                                                  Icons.broken_image,
+                                                  color: Colors.grey,
+                                                ),
+                                          ),
                                         ),
                                       )
                                       : const Icon(

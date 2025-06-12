@@ -10,6 +10,7 @@ class WorkoutDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(workout.workoutName ?? 'Workout Detail'),
@@ -43,14 +44,17 @@ class WorkoutDetailScreen extends StatelessWidget {
                     if (workout.imageUrl != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(46),
-                        child: Image.file(
-                          File(workout.imageUrl!),
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.fill,
-                          errorBuilder:
-                              (_, __, ___) =>
-                                  const Icon(Icons.broken_image, size: 60),
+                        child: Hero(
+                          tag: 'image',
+                          child: Image.file(
+                            File(workout.imageUrl!),
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.fill,
+                            errorBuilder:
+                                (_, __, ___) =>
+                                    const Icon(Icons.broken_image, size: 60),
+                          ),
                         ),
                       ),
                     const SizedBox(height: 16),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:thryv/theme/app_colors.dart';
 
 class HelperScreen extends StatelessWidget {
   const HelperScreen({super.key});
@@ -9,6 +8,12 @@ class HelperScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDesktop = MediaQuery.of(context).size.width > 800;
+
+    final padding = EdgeInsets.symmetric(
+      horizontal: isDesktop ? 20.w : 16.w,
+      vertical: isDesktop ? 14.h : 12.h,
+    );
 
     final sections = [
       {
@@ -66,7 +71,7 @@ class HelperScreen extends StatelessWidget {
         title: Text(
           'How to Use the App',
           style: GoogleFonts.roboto(
-            fontSize: 22.sp,
+            fontSize: isDesktop ? 12.sp : 22.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -75,44 +80,47 @@ class HelperScreen extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.r),
+        padding: padding,
         child: ListView.builder(
           itemCount: sections.length,
           itemBuilder: (context, index) {
             final section = sections[index];
-            return Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.r),
-              ),
-              margin: EdgeInsets.only(bottom: 12.h),
-              child: ExpansionTile(
-                leading: Icon(
-                  section['icon'] as IconData,
-                  color: theme.primaryColorDark,
+            return Padding(
+              padding: EdgeInsets.only(bottom: isDesktop ? 6.h : 10.h),
+              child: Card(
+                elevation: isDesktop ? 4 : 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(isDesktop ? 20.r : 14.r),
                 ),
-                title: Text(
-                  section['title']!.toString(),
-                  style: GoogleFonts.roboto(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16.sp,
+                child: ExpansionTile(
+                  leading: Icon(
+                    section['icon'] as IconData,
+                    color: theme.primaryColorDark,
+                    size: isDesktop ? 10.sp : 26.sp,
                   ),
-                ),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 8.h,
+                  title: Text(
+                    section['title']!.toString(),
+                    style: GoogleFonts.roboto(
+                      fontWeight: FontWeight.w600,
+                      fontSize: isDesktop ? 5.sp : 16.sp,
                     ),
-                    child: Text(
-                      section['description']!.toString(),
-                      style: GoogleFonts.roboto(
-                        fontSize: 14.sp,
-                        color: Colors.grey[700],
+                  ),
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isDesktop ? 14.w : 16.w,
+                        vertical: isDesktop ? 8.h : 8.h,
+                      ),
+                      child: Text(
+                        section['description']!.toString(),
+                        style: GoogleFonts.roboto(
+                          fontSize: isDesktop ? 5.sp : 14.sp,
+                          color: Colors.grey[700],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

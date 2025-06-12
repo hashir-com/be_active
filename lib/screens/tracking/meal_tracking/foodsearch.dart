@@ -24,6 +24,8 @@ class FoodSearchPage extends StatefulWidget {
 }
 
 class _FoodSearchPageState extends State<FoodSearchPage> {
+
+
   Timer? _debounce;
 
   void _showManualAddDialog() {
