@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../../models/user_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:thryv/screens/auth/widgets/form_widget.dart';
 import 'package:thryv/screens/auth/widgets/textfield_widget.dart';
+import 'package:thryv/models/user_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -16,9 +17,7 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   final _formKey = GlobalKey<FormState>();
-
   late Box<UserModel> userBox;
-
   UserModel? user;
 
   late TextEditingController nameController;
@@ -31,9 +30,7 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
-
     userBox = Hive.box<UserModel>('userBox');
-
     user = userBox.isNotEmpty ? userBox.getAt(0) : null;
 
     nameController = TextEditingController(text: user?.name ?? '');
@@ -91,7 +88,6 @@ class _AccountScreenState extends State<AccountScreen> {
       });
 
       ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(const SnackBar(content: Text('User details updated')));
     }
@@ -100,17 +96,14 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
-    final height = size.height;
-    final width = size.width;
 
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(height * 0.15),
+        preferredSize: Size.fromHeight(120.h),
         child: Container(
           color: Colors.black,
-          padding: EdgeInsets.only(top: height * 0.02, left: width * 0.07),
+          padding: EdgeInsets.only(top: 16.h, left: 24.w),
           alignment: Alignment.centerLeft,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +112,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 child: Text(
                   "Account Details",
                   style: GoogleFonts.roboto(
-                    fontSize: height * 0.05,
+                    fontSize: 28.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -144,18 +137,17 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Center(
           child: SingleChildScrollView(
             child: Container(
-              width: size.width < 500 ? double.infinity : 500,
-              margin: const EdgeInsets.all(26),
-              padding: const EdgeInsets.all(20),
+              width: 1.sw < 500.w ? double.infinity : 500.w,
+              margin: EdgeInsets.all(26.w),
+              padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: const Color.fromARGB(0, 164, 101, 101),
+                    color: Color.fromARGB(0, 164, 101, 101),
                     blurRadius: 15,
-                    offset: const Offset(0, 6),
+                    offset: Offset(0, 6),
                   ),
                 ],
               ),
@@ -187,7 +179,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.only(bottom: 16.h),
                       child: DropdownButtonFormField2<String>(
                         value: selectedGender,
                         isExpanded: true,
@@ -198,15 +190,12 @@ class _AccountScreenState extends State<AccountScreen> {
                                     : null,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor:
-                              Colors.transparent, // transparent background
+                          fillColor: Colors.transparent,
                           labelText: 'Gender',
-                          labelStyle: const TextStyle(
-                            color: Colors.white,
-                          ), // white label text
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 16,
+                          labelStyle: const TextStyle(color: Colors.white),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 16.h,
+                            horizontal: 16.w,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -223,16 +212,10 @@ class _AccountScreenState extends State<AccountScreen> {
                         dropdownStyleData: DropdownStyleData(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(26),
-                            color:
-                                Theme.of(
-                                  context,
-                                ).primaryColor, // dropdown list background
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
-
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ), // selected item text color
+                        style: const TextStyle(color: Colors.white),
                         items:
                             ['Male', 'Female']
                                 .map(
@@ -241,13 +224,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                     child: Text(
                                       gender,
                                       style: const TextStyle(
-                                        color: Color.fromARGB(
-                                          255,
-                                          255,
-                                          255,
-                                          255,
-                                        ),
-                                      ), // dropdown list items text color
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 )
@@ -259,7 +237,6 @@ class _AccountScreenState extends State<AccountScreen> {
                         },
                       ),
                     ),
-
                     TextfieldWidget(
                       label: 'Height (cm)',
                       controller: heightController,
@@ -284,7 +261,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
@@ -294,7 +271,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: theme.primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

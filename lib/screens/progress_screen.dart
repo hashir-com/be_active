@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,24 +19,28 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
   late Map<DateTime, int> data;
   late VoidCallback _boxListener;
 
+  late ValueListenable<Box<DailyProgress>> _progressListenable;
+
   @override
   void initState() {
     super.initState();
     progressBox = Hive.box<DailyProgress>('dailyProgressBox');
     data = _generateProgressHeatmapData(progressBox);
 
+    _progressListenable = progressBox.listenable();
     _boxListener = () {
-      setState(() {
-        data = _generateProgressHeatmapData(progressBox);
-      });
+      if (mounted) {
+        setState(() {
+          data = _generateProgressHeatmapData(progressBox);
+        });
+      }
     };
-
-    progressBox.listenable().addListener(_boxListener);
+    _progressListenable.addListener(_boxListener);
   }
 
   @override
   void dispose() {
-    progressBox.listenable().removeListener(_boxListener);
+    _progressListenable.removeListener(_boxListener);
     super.dispose();
   }
 

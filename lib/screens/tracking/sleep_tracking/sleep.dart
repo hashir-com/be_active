@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -7,6 +5,7 @@ import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_dialogs.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_functions.dart';
 import 'package:thryv/util/progress_utils.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SleepScreen extends StatefulWidget {
   const SleepScreen({super.key});
@@ -25,7 +24,6 @@ class _SleepScreenState extends State<SleepScreen> {
   void initState() {
     super.initState();
     _loadData();
-    // Listen to box changes to auto-update UI
     Hive.box<SleepEntry>(
       SleepRepository.sleepBoxName,
     ).listenable().addListener(_loadData);
@@ -58,7 +56,6 @@ class _SleepScreenState extends State<SleepScreen> {
             ],
           ),
     );
-
     await updateDailyProgress(date: DateTime.now(), type: 'sleep');
   }
 
@@ -74,31 +71,16 @@ class _SleepScreenState extends State<SleepScreen> {
     final result = await showAddEntryDialog(context);
     if (result != null) {
       final now = DateTime.now();
-      final bedTime = result['bedTime']!;
-      final wakeUpTime = result['wakeUpTime']!;
-
-      // Handle sleep crossing over midnight
-      // final duration =
-      //     wakeUpTime.isAfter(bedTime)
-      //         ? wakeUpTime.difference(bedTime)
-      //         : wakeUpTime.add(const Duration(days: 1)).difference(bedTime);
-
-      // final sleepHours = duration.inMinutes / 60.0;
-
       final newEntry = SleepEntry(
         date: DateTime(now.year, now.month, now.day),
-        bedTime: bedTime,
-        wakeUpTime: wakeUpTime,
-        // sleepHours: sleepHours.toInt(), // ✅ required field
+        bedTime: result['bedTime']!,
+        wakeUpTime: result['wakeUpTime']!,
       );
-
       await _repo.addEntry(newEntry);
       _loadData();
-      if (_entries.isNotEmpty) {
-        final latestSleepHours = _entries.first.sleepHours;
-        if (latestSleepHours >= _goal.hours) {
-          Future.delayed(Duration.zero, _onGoalCompleted);
-        }
+
+      if (_entries.isNotEmpty && _entries.first.sleepHours >= _goal.hours) {
+        Future.delayed(Duration.zero, _onGoalCompleted);
       }
     }
   }
@@ -110,7 +92,6 @@ class _SleepScreenState extends State<SleepScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-
     final sleepPercent = (_latestSleepHours / _goal.hours).clamp(0, 1);
 
     return Scaffold(
@@ -125,121 +106,113 @@ class _SleepScreenState extends State<SleepScreen> {
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder:
-            (context, constraints) => SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            '${_latestSleepHours.toStringAsFixed(1)}h of ${_goal.hours.toStringAsFixed(1)}h',
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: _onSetGoal,
-                            tooltip: 'Set Sleep Goal',
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 8),
-                      LinearProgressIndicator(
-                        borderRadius: BorderRadius.circular(25),
-                        minHeight: 10,
-                        value: sleepPercent.toDouble(),
-                        color: theme.colorScheme.primary,
-                        backgroundColor: theme.colorScheme.primary.withOpacity(
-                          0.2,
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-                      Text(
-                        'Sleep Time',
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      if (_entries.isNotEmpty)
-                        _buildTimeCard(
-                          context,
-                          'Bed Time',
-                          _formatTime(_entries.first.bedTime),
-                        ),
-                      if (_entries.isNotEmpty)
-                        _buildTimeCard(
-                          context,
-                          'Wake Up Time',
-                          _formatTime(_entries.first.wakeUpTime),
-                        ),
-                      const SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Tips to Sleep Better',
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'To improve your sleep quality, exercise daily. Vigorous exercise is best, but even light exercise is better than no activity.',
-                              style: textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Sleep Analysis',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 66),
-                      SizedBox(
-                        height: 220,
-                        child: SleepBarChart(entries: _entries, goal: _goal),
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  '${_latestSleepHours.toStringAsFixed(1)}h of ${_goal.hours.toStringAsFixed(1)}h',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.sp,
                   ),
                 ),
+                SizedBox(width: 8.w),
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: _onSetGoal,
+                  tooltip: 'Set Sleep Goal',
+                ),
+              ],
+            ),
+            SizedBox(height: 8.h),
+            LinearProgressIndicator(
+              borderRadius: BorderRadius.circular(25),
+              value: sleepPercent.toDouble(),
+              minHeight: 10.h,
+              color: theme.colorScheme.primary,
+              backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              'Sleep Time',
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.sp,
               ),
             ),
+            SizedBox(height: 8.h),
+            if (_entries.isNotEmpty)
+              _buildTimeCard(
+                context,
+                'Bed Time',
+                _formatTime(_entries.first.bedTime),
+              ),
+            if (_entries.isNotEmpty)
+              _buildTimeCard(
+                context,
+                'Wake Up Time',
+                _formatTime(_entries.first.wakeUpTime),
+              ),
+            SizedBox(height: 20.h),
+            Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tips to Sleep Better',
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.sp,
+                    ),
+                  ),
+                  SizedBox(height: 6.h),
+                  Text(
+                    'To improve your sleep quality, exercise daily. Vigorous exercise is best, but even light exercise is better than no activity.',
+                    style: textTheme.bodyMedium?.copyWith(fontSize: 14.sp),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              'Sleep Analysis',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+              ),
+            ),
+            SizedBox(height: 66.h),
+            SizedBox(
+              height: 220.h,
+              child: SleepBarChart(entries: _entries, goal: _goal),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildTimeCard(BuildContext context, String title, String time) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: ListTile(
         onTap: _onAddEntry,
-        title: Text(title),
+        title: Text(title, style: TextStyle(fontSize: 16.sp)),
         trailing: Text(
           time,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 16.sp,
+          ),
         ),
       ),
     );
@@ -262,76 +235,61 @@ class SleepBarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final spots = <BarChartGroupData>[];
-
-    // Show last 7 days (including today if present)
     final last7 = entries.take(7).toList().reversed.toList();
 
-    for (var i = 0; i < 7; i++) {
+    final spots = List.generate(7, (i) {
       final entry = i < last7.length ? last7[i] : null;
       final value = entry?.sleepHours ?? 0;
-
       final cappedValue = value.clamp(0, goal.hours).toDouble();
-
       final barColor =
           value >= goal.hours ? theme.primaryColor : theme.primaryColorLight;
 
-      spots.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: cappedValue,
-              color: barColor,
-              width: 20,
-              borderRadius: BorderRadius.circular(6),
-              backDrawRodData: BackgroundBarChartRodData(
-                show: true,
-                toY: goal.hours,
-                color: theme.colorScheme.primary.withOpacity(0.2),
-              ),
+      return BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY: cappedValue,
+            color: barColor,
+            width: 20.w,
+            borderRadius: BorderRadius.circular(6.r),
+            backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              toY: goal.hours,
+              color: theme.colorScheme.primary.withOpacity(0.2),
             ),
-          ],
-          showingTooltipIndicators: value > 0 ? [0] : [],
-        ),
+          ),
+        ],
+        showingTooltipIndicators: value > 0 ? [0] : [],
       );
-    }
+    });
 
     return BarChart(
       BarChartData(
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
-            tooltipBorderRadius: BorderRadius.circular(26),
-            tooltipPadding: EdgeInsets.all(5),
-            // tooltipBgColor: Colors.black87,
-            getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              final entry =
-                  groupIndex < last7.length ? last7[groupIndex] : null;
-              final actualValue = entry?.sleepHours ?? 0;
-
+            tooltipBorderRadius: BorderRadius.circular(26.r),
+            tooltipPadding: EdgeInsets.all(5.w),
+            getTooltipItem: (group, _, rod, __) {
+              final actualValue = entries.asMap()[group.x]?.sleepHours ?? 0;
               return BarTooltipItem(
                 '${actualValue.toStringAsFixed(1)} hrs',
-                const TextStyle(color: Colors.white),
+                TextStyle(color: Colors.white, fontSize: 12.sp),
               );
             },
           ),
         ),
-
         maxY: goal.hours,
         minY: 0,
         barGroups: spots,
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
-
         titlesData: FlTitlesData(
-          rightTitles: AxisTitles(),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               interval: 2,
-              reservedSize: 30,
+              reservedSize: 30.w,
             ),
           ),
           bottomTitles: AxisTitles(
@@ -351,15 +309,13 @@ class SleepBarChart extends StatelessWidget {
                       'Fri',
                       'Sat',
                     ][day.weekday % 7];
-                return Text(
-                  weekday,
-                  style: Theme.of(context).textTheme.bodySmall,
-                );
+                return Text(weekday, style: TextStyle(fontSize: 14.sp));
               },
-              reservedSize: 48,
+              reservedSize: 30.h,
             ),
           ),
           topTitles: AxisTitles(),
+          rightTitles: AxisTitles(),
         ),
       ),
     );

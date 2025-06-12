@@ -149,7 +149,15 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
 
               SizedBox(height: 20.h),
-              BmiCard(),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ExploreScreen()),
+                  );
+                },
+                child: BmiCard(),
+              ),
 
               SizedBox(height: 25.h),
               Text(
@@ -203,13 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: cal.toInt(),
                           goal: goal.toInt(),
                           iconColor: Colors.orange,
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const MealTrackerPage(),
                               ),
                             );
+                            setState(() {});
                           },
                         );
                       },
@@ -236,13 +245,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: intake,
                           goal: goal,
                           iconColor: Colors.blue,
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => const WaterScreen(),
                               ),
                             );
+                            setState(() {});
                           },
                         );
                       },
@@ -269,13 +279,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: steps,
                           goal: goal,
                           iconColor: const Color.fromARGB(255, 0, 186, 6),
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => StepCounterScreen(),
                               ),
                             );
+                            setState(() {});
                           },
                         );
                       },
@@ -300,8 +311,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           value: sleep.toInt(),
                           goal: goal.toInt(),
                           iconColor: Colors.blueAccent,
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder:
@@ -309,6 +320,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         SleepScreen(), // replace with your screen class
                               ),
                             );
+                            setState(() {});
                           },
                         );
                       },

@@ -9,6 +9,7 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../models/user_model.dart'; // Update path as needed
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/screens/explore screen/widgets/youtube_player_widget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -114,17 +115,34 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("User Details", style: theme.textTheme.headlineSmall),
-                    const SizedBox(height: 16),
                     Card(
-                      elevation: 4,
+                      elevation: 6,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                      color: theme.cardColor,
+                      shadowColor: theme.shadowColor.withOpacity(0.3),
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20.w,
+                          vertical: 24.h,
+                        ),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(
+                              'User Profile',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.sp,
+                                color: theme.primaryColorDark,
+                              ),
+                            ),
+                            Divider(
+                              color: theme.dividerColor.withOpacity(0.5),
+                              thickness: 1,
+                              height: 24.h,
+                            ),
                             infoRow(Icons.person, "Name", user!.name, theme),
                             infoRow(Icons.cake, "Age", "${user!.age}", theme),
                             infoRow(Icons.male, "Gender", user!.gender, theme),
@@ -158,6 +176,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                       ),
                     ),
+
                     // if added
                     const SizedBox(height: 24),
                     // Display Workouts List
