@@ -308,8 +308,8 @@ class AdminScreenState extends State<AdminScreen> {
                             final id = entry.value;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: Stack(
-                                alignment: Alignment.topRight,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(12),
