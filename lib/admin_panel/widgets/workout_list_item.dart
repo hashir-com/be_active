@@ -28,11 +28,11 @@ class WorkoutListItem extends StatelessWidget {
       elevation: 4,
       child: ListTile(
         leading:
-            workout.imageUrl != null
+            workout.dietImageBytes != null
                 ? ClipRRect(
                   borderRadius: BorderRadius.circular(18),
-                  child: Image.file(
-                    File(workout.imageUrl!),
+                  child: Image.memory(
+                    workout.dietImageBytes!,
                     width: 50,
                     fit: BoxFit.cover,
                     errorBuilder:

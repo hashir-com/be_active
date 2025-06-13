@@ -51,7 +51,7 @@ class TrackerCard extends StatelessWidget {
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceContainerHighest,
                     valueColor: AlwaysStoppedAnimation(
-                      Theme.of(context).primaryColor,
+                      Theme.of(context).primaryColorDark,
                     ),
                   ),
                 ),

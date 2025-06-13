@@ -10,7 +10,8 @@ class WorkoutDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+    final isWide = MediaQuery.of(context).size.width > 600;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(workout.workoutName ?? 'Workout Detail'),
@@ -41,16 +42,16 @@ class WorkoutDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (workout.imageUrl != null)
+                    if (workout.dietImageBytes != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(46),
                         child: Hero(
                           tag: 'image',
-                          child: Image.file(
-                            File(workout.imageUrl!),
+                          child: Image.memory(
+                            workout.dietImageBytes!,
                             height: 200,
                             width: double.infinity,
-                            fit: BoxFit.fill,
+                            fit: isWide ? BoxFit.fitHeight : BoxFit.fill,
                             errorBuilder:
                                 (_, __, ___) =>
                                     const Icon(Icons.broken_image, size: 60),

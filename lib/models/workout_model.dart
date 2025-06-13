@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 import 'package:thryv/services/hive_service.dart';
 
@@ -15,7 +17,7 @@ class WorkoutPlan extends HiveObject {
   String? information;
 
   @HiveField(3)
-  String? imageUrl;
+  Uint8List? dietImageBytes;
 
   // New fields
   @HiveField(4)
@@ -31,7 +33,7 @@ class WorkoutPlan extends HiveObject {
     this.workoutName,
     this.instruction,
     this.information,
-    this.imageUrl,
+    this.dietImageBytes,
     this.sets,
     this.unitType,
     this.unitValue,

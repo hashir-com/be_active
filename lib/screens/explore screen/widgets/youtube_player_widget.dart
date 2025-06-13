@@ -1,51 +1,43 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class YoutubePlayerWidget extends StatefulWidget {
+import 'dart:ui' as ui; // for HtmlElementView
+import 'dart:html'; // only used on web
+
+class UniversalYoutubePlayer extends StatelessWidget {
   final String videoId;
-  final Function(bool)? onFullScreenChanged;
 
-  const YoutubePlayerWidget({
-    required this.videoId,
-    this.onFullScreenChanged,
-    super.key,
-  });
-
-  @override
-  State<YoutubePlayerWidget> createState() => _YoutubePlayerWidgetState();
-}
-
-class _YoutubePlayerWidgetState extends State<YoutubePlayerWidget> {
-  late YoutubePlayerController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.videoId,
-      flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
-    );
-  }
+  const UniversalYoutubePlayer({super.key, required this.videoId, required void Function(bool isFullScreen) onFullScreenChanged});
 
   @override
   Widget build(BuildContext context) {
-    return YoutubePlayer(
-      controller: _controller,
-      showVideoProgressIndicator: true,
-      onReady: () {
-        if (widget.onFullScreenChanged != null) {
-          _controller.addListener(() {
-            widget.onFullScreenChanged!(_controller.value.isFullScreen);
-          });
-        }
-      },
-    );
-  }
+    if (kIsWeb) {
+      // Register a unique iframe for this videoId
+      final String viewId = 'youtube-video-$videoId';
+      // ignore: undefined_prefixed_name
+      ui.platformViewRegistry.registerViewFactory(
+        viewId,
+        (int _) =>
+            IFrameElement()
+              ..src = 'https://www.youtube.com/embed/$videoId'
+              ..style.border = 'none'
+              ..allowFullscreen = true,
+      );
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+      return SizedBox(height: 200, child: HtmlElementView(viewType: viewId));
+    } else {
+      // Mobile: Use youtube_player_flutter
+      return SizedBox(
+        height: 200,
+        child: YoutubePlayer(
+          controller: YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(autoPlay: false, mute: false),
+          ),
+          showVideoProgressIndicator: true,
+        ),
+      );
+    }
   }
 }

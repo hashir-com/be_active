@@ -1,9 +1,8 @@
-import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:hive/hive.dart';
+import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 
 class EditDietScreen extends StatefulWidget {
@@ -30,7 +29,7 @@ class _EditDietScreenState extends State<EditDietScreen> {
   late TextEditingController _servingsController;
   late TextEditingController _caloriesController;
 
-  File? _pickedImage;
+  Uint8List? _pickedImage;
 
   @override
   void initState() {
@@ -44,25 +43,23 @@ class _EditDietScreenState extends State<EditDietScreen> {
     _caloriesController = TextEditingController(
       text: widget.diet.calorie?.toString() ?? '',
     );
-    _pickedImage =
-        widget.diet.dietimage != null ? File(widget.diet.dietimage!) : null;
+    _pickedImage = widget.diet.dietImageBytes;
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
       setState(() {
-        _pickedImage = File(pickedFile.path);
+        _pickedImage = bytes;
       });
     }
   }
 
   void loadUserGoal() async {
     final box = await Hive.openBox<UserGoalModel>('userGoalBox');
-    userGoal = box.get('userGoalKey'); // or your Hive key
-    setState(() {}); // refresh UI after loading
+    userGoal = box.get('userGoalKey');
+    setState(() {}); // refresh UI
   }
 
   void _saveChanges() async {
@@ -71,20 +68,17 @@ class _EditDietScreenState extends State<EditDietScreen> {
       mealType: _typeController.text.trim(),
       servings: _servingsController.text.trim(),
       calorie: int.tryParse(_caloriesController.text.trim()) ?? 0,
-      dietimage: _pickedImage?.path,
+      dietImageBytes: _pickedImage,
     );
 
-    // Update the diet in the list
     widget.userGoal.dietPlans![widget.index] = updatedDiet;
 
-    // Open the Hive box where you store userGoal (adjust box name and key)
     final box = await Hive.openBox<UserGoalModel>('userGoalBox');
+    await box.put('userGoalKey', widget.userGoal); // ensure the correct key
 
-    // Save the entire updated userGoal object (assuming it has a key, e.g., 'currentUserGoal')
-    await box.put('usergoal', widget.userGoal);
-
-    // ignore: use_build_context_synchronously
-    Navigator.pop(context, true); // Return true to signal successful edit
+    if (context.mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   @override
@@ -96,77 +90,72 @@ class _EditDietScreenState extends State<EditDietScreen> {
         foregroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              _buildTextField(_typeController, 'Meal Type', Icons.fastfood),
-              const SizedBox(height: 12),
-              _buildTextField(_nameController, 'Diet Name', Icons.fastfood),
-              const SizedBox(height: 12),
-              _buildTextField(
-                _servingsController,
-                'Servings',
-                Icons.restaurant_menu,
-                isNumber: true,
-              ),
-              const SizedBox(height: 12),
-              _buildTextField(
-                _caloriesController,
-                'Calories',
-                Icons.local_fire_department,
-                isNumber: true,
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Diet Image',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.black12),
-                  ),
-                  child:
-                      _pickedImage != null
-                          ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(
-                              _pickedImage!,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            ),
-                          )
-                          : const Center(
-                            child: Icon(
-                              Icons.add_photo_alternate,
-                              size: 40,
-                              color: Colors.grey,
-                            ),
-                          ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildTextField(_typeController, 'Meal Type', Icons.fastfood),
+            const SizedBox(height: 12),
+            _buildTextField(_nameController, 'Diet Name', Icons.fastfood),
+            const SizedBox(height: 12),
+            _buildTextField(
+              _servingsController,
+              'Servings',
+              Icons.restaurant_menu,
+              isNumber: true,
+            ),
+            const SizedBox(height: 12),
+            _buildTextField(
+              _caloriesController,
+              'Calories',
+              Icons.local_fire_department,
+              isNumber: true,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Diet Image',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: _pickImage,
+              child: Container(
+                height: 150,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.black12),
                 ),
+                child: _pickedImage != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.memory(
+                          _pickedImage!,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      )
+                    : const Center(
+                        child: Icon(
+                          Icons.add_photo_alternate,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
               ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _saveChanges,
-                icon: const Icon(Icons.save),
-                label: const Text('Save Changes'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade700,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 12,
-                  ),
-                ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _saveChanges,
+              icon: const Icon(Icons.save),
+              label: const Text('Save Changes'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade700,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

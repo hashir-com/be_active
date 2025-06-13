@@ -24,39 +24,37 @@ class DietListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(42),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(42)),
       elevation: 4,
       child: ListTile(
-        leading: diet.dietimage != null
-            ? ClipRRect(
-                borderRadius: BorderRadius.circular(18),
-                child: Image.file(
-                  File(diet.dietimage!),
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.fill,
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.restaurant_menu_rounded,
-                    color: Colors.grey,
+        leading:
+            diet.dietImageBytes != null
+                ? ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.memory(
+                    diet.dietImageBytes!,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.fill,
+                    errorBuilder:
+                        (_, __, ___) => const Icon(
+                          Icons.restaurant_menu_rounded,
+                          color: Colors.grey,
+                        ),
                   ),
+                )
+                : const Icon(
+                  Icons
+                      .fitness_center, // This icon might be misleading for diet, consider changing
+                  color: Colors.indigo,
                 ),
-              )
-            : const Icon(
-                Icons.fitness_center, // This icon might be misleading for diet, consider changing
-                color: Colors.indigo,
-              ),
         title: Text(diet.mealType ?? ''),
         subtitle: Text(diet.dietName ?? ''),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(
-                Icons.delete_outline,
-                color: Colors.red,
-              ),
+              icon: const Icon(Icons.delete_outline, color: Colors.red),
               onPressed: () => _confirmDelete(context),
             ),
             IconButton(
@@ -70,10 +68,11 @@ class DietListItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => DietDetailScreen(
-                diet: diet,
-                index: index, // Pass index if needed for DietDetailScreen
-              ),
+              builder:
+                  (_) => DietDetailScreen(
+                    diet: diet,
+                    index: index, // Pass index if needed for DietDetailScreen
+                  ),
             ),
           );
         },
@@ -87,7 +86,9 @@ class DietListItem extends StatelessWidget {
       builder: (BuildContext ctx) {
         return AlertDialog(
           title: const Text("Confirm Deletion"),
-          content: const Text("Are you sure you want to delete this diet item?"),
+          content: const Text(
+            "Are you sure you want to delete this diet item?",
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(), // Cancel
@@ -99,10 +100,7 @@ class DietListItem extends StatelessWidget {
                 onDietDeleted(); // Trigger parent rebuild/save
                 Navigator.of(ctx).pop(); // Close the dialog
               },
-              child: const Text(
-                "Delete",
-                style: TextStyle(color: Colors.red),
-              ),
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
             ),
           ],
         );
@@ -113,20 +111,17 @@ class DietListItem extends StatelessWidget {
   Future<void> _navigateToEdit(BuildContext context) async {
     // Validate index before pushing
     if (index < 0 || index >= (userGoal.dietPlans?.length ?? 0)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid diet item index.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Invalid diet item index.')));
       return;
     }
 
     final edited = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => EditDietScreen(
-          diet: diet,
-          index: index,
-          userGoal: userGoal,
-        ),
+        builder:
+            (_) => EditDietScreen(diet: diet, index: index, userGoal: userGoal),
       ),
     );
 

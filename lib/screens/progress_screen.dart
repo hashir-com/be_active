@@ -61,7 +61,7 @@ class _ProgressHeatmapScreenState extends State<ProgressHeatmapScreen> {
       builder: (context, constraints) {
         final isDesktop = constraints.maxWidth > 800;
         final horizontalPadding = isDesktop ? 40.0.w : 16.0.w;
-        final calendarSize = isDesktop ? 55.0.r : 55.0.r;
+        final calendarSize = isDesktop ? 55.0.r : 45.0.r;
 
         return Scaffold(
           appBar: PreferredSize(

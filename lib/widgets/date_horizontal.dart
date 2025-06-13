@@ -93,59 +93,45 @@ class _HorizontalDateListState extends State<HorizontalDateList> {
               DateTime date = weekDates[index];
               bool isSelected = isSameDay(date, selectedDate);
 
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    selectedDate = date;
-                  });
-                },
-                child: Container(
-                  width: itemWidth,
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 10,
+              return Container(
+                width: itemWidth,
+                margin: const EdgeInsets.symmetric(horizontal: 7, vertical: 10),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Theme.of(context).primaryColorDark,
+                    width: 0,
                   ),
-                  decoration: BoxDecoration(
-                    color:
-                        isSelected
-                            ? Theme.of(context).primaryColor
-                            : Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Theme.of(context).primaryColorDark,
-                      width: 0,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      DateFormat.E().format(date),
+                      style: TextStyle(
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : Theme.of(context).textTheme.bodyMedium!.color,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        DateFormat.E().format(date),
-                        style: TextStyle(
-                          color:
-                              isSelected
-                                  ? Colors.white
-                                  : Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium!.color,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat.d().format(date),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color:
+                            isSelected
+                                ? Colors.white
+                                : Theme.of(context).textTheme.bodyMedium!.color,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        DateFormat.d().format(date),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              isSelected
-                                  ? Colors.white
-                                  : Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium!.color,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             },

@@ -91,8 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           return SingleChildScrollView(
             padding: EdgeInsets.symmetric(
-              horizontal: isWide ? 32 : 20,
-              vertical: 20,
+              horizontal: isWide ? 22 : 20,
+              vertical: isWide ? 12 : 20,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,12 +120,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             label: Text(userGoalToString(goal)),
                             selected: isSelected,
                             onSelected: (selected) {
-                              if (selected) {
-                                HiveService().saveUserGoal(goal);
-                                setState(() {
-                                  selectedGoal = goal;
-                                });
-                              }
+                              // if (selected) {
+                              //   HiveService().saveUserGoal(goal);
+                              //   setState(() {
+                              //     selectedGoal = goal;
+                              //   });
+                              // }
                             },
                             labelStyle: TextStyle(
                               fontSize: 12,
@@ -208,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: "Calories",
             icon: Icons.local_dining,
             value: data['calories']!.toInt(),
+
             goal: data['goal']!.toInt(),
             iconColor: Colors.orange,
             onTap: () async {

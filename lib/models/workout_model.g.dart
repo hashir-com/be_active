@@ -20,7 +20,7 @@ class WorkoutPlanAdapter extends TypeAdapter<WorkoutPlan> {
       workoutName: fields[0] as String?,
       instruction: fields[1] as String?,
       information: fields[2] as String?,
-      imageUrl: fields[3] as String?,
+      dietImageBytes: fields[3] as Uint8List?,
       sets: fields[4] as int?,
       unitType: fields[5] as String?,
       unitValue: fields[6] as String?,
@@ -38,7 +38,7 @@ class WorkoutPlanAdapter extends TypeAdapter<WorkoutPlan> {
       ..writeByte(2)
       ..write(obj.information)
       ..writeByte(3)
-      ..write(obj.imageUrl)
+      ..write(obj.dietImageBytes)
       ..writeByte(4)
       ..write(obj.sets)
       ..writeByte(5)

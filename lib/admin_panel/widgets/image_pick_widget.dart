@@ -1,11 +1,12 @@
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 Widget buildImagePickerField(
   String label,
-  File? imageFile,
+  Uint8List? imageBytes,        // Updated from File? to Uint8List?
   VoidCallback onPickImage,
-  VoidCallback onDeleteImage, // new parameter
+  VoidCallback onDeleteImage,
 ) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,27 +32,31 @@ Widget buildImagePickerField(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white24),
               ),
-              child: imageFile != null
+              child: imageBytes != null
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(12),
-                      child: Image.file(
-                        imageFile,
+                      child: Image.memory(
+                        imageBytes,
                         fit: BoxFit.cover,
                         width: double.infinity,
                       ),
                     )
                   : const Center(
-                      child: Icon(Icons.add_photo_alternate, color: Colors.white70, size: 40),
+                      child: Icon(
+                        Icons.add_photo_alternate,
+                        color: Colors.white70,
+                        size: 40,
+                      ),
                     ),
             ),
-            if (imageFile != null)
+            if (imageBytes != null)
               Positioned(
                 top: 8,
                 right: 8,
                 child: GestureDetector(
                   onTap: onDeleteImage,
                   child: Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.black54,
                       shape: BoxShape.circle,
                     ),

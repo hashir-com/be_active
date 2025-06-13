@@ -196,7 +196,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemCount: userGoal!.workoutPlans!.length,
                         itemBuilder: (context, index) {
                           final workout = userGoal!.workoutPlans![index];
-                          
+
                           return Card(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(42),
@@ -217,13 +217,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               },
 
                               leading:
-                                  workout.imageUrl != null
+                                  workout.dietImageBytes != null
                                       ? ClipRRect(
                                         borderRadius: BorderRadius.circular(18),
                                         child: Hero(
                                           tag: 'image',
-                                          child: Image.file(
-                                            File(workout.imageUrl!),
+                                          child: Image.memory(
+                                            workout.dietImageBytes!,
                                             width: 50,
                                             height: 50,
                                             fit: BoxFit.fill,
@@ -277,11 +277,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 6),
                             child: ListTile(
                               leading:
-                                  diet.dietimage != null
+                                  diet.dietImageBytes != null
                                       ? ClipRRect(
                                         borderRadius: BorderRadius.circular(18),
-                                        child: Image.file(
-                                          File(diet.dietimage!),
+                                        child: Image.memory(
+                                          diet.dietImageBytes!,
                                           width: 50,
                                           height: 50,
                                           fit: BoxFit.cover,
@@ -330,7 +330,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           borderRadius: BorderRadius.circular(20),
                           child: SizedBox(
                             height: 200,
-                            child: YoutubePlayerWidget(
+                            child: UniversalYoutubePlayer(
                               videoId: id,
                               onFullScreenChanged: _onFullScreenChanged,
                             ),

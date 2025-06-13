@@ -10,6 +10,7 @@ class DietDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isWide = MediaQuery.of(context).size.width > 600;
     return Scaffold(
       appBar: AppBar(
         title: Text(diet.mealType ?? 'Diet Detail'),
@@ -42,14 +43,14 @@ class DietDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (diet.dietimage != null)
+                    if (diet.dietImageBytes != null)
                       ClipRRect(
                         borderRadius: BorderRadius.circular(46),
-                        child: Image.file(
-                          File(diet.dietimage!),
+                        child: Image.memory(
+                          diet.dietImageBytes!,
                           height: 200,
                           width: double.infinity,
-                          fit: BoxFit.fill,
+                          fit: isWide ? BoxFit.fitHeight : BoxFit.fill,
                           errorBuilder:
                               (_, __, ___) =>
                                   const Icon(Icons.broken_image, size: 60),

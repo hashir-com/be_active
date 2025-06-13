@@ -1,39 +1,46 @@
-import 'dart:io';
+import 'dart:typed_data'; // ⬅️ Instead of dart:io
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart'; // ⬅️ Cross-platform file picker
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/workout_model.dart';
 import 'package:thryv/services/data_service.dart';
-import 'package:thryv/util/image_utility.dart';
 
 class WorkoutFormController extends ChangeNotifier {
   final TextEditingController workoutNameController = TextEditingController();
-  final TextEditingController workoutInstructionController =
-      TextEditingController();
+  final TextEditingController workoutInstructionController = TextEditingController();
   final TextEditingController workoutInfoController = TextEditingController();
   final TextEditingController workoutImageController = TextEditingController();
-  final setsController = TextEditingController(); // e.g., '3'
-  final unitTypeController = TextEditingController(); // 'reps' or 'time'
-  final unitValueController = TextEditingController(); // '15 reps' or '30 min'
+  final TextEditingController setsController = TextEditingController();
+  final TextEditingController unitTypeController = TextEditingController();
+  final TextEditingController unitValueController = TextEditingController();
 
-  File? _pickedImage;
-  File? get pickedImage => _pickedImage;
+  Uint8List? _pickedImage; // ⬅️ Use Uint8List instead of File
+  Uint8List? get pickedImage => _pickedImage;
+
+  String? _imageName; // Optional for future use
+  String? get imageName => _imageName;
 
   final DataService _dataService;
 
   WorkoutFormController(this._dataService);
 
   Future<void> pickImage() async {
-    final path = await ImageUtility.pickImage();
-    if (path != null) {
-      _pickedImage = File(path);
-      workoutImageController.text = path;
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      withData: true,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
+      _pickedImage = result.files.single.bytes!;
+      _imageName = result.files.single.name;
+      workoutImageController.text = _imageName ?? 'Picked Image';
       notifyListeners();
     }
   }
 
   void deleteImage() {
-    ImageUtility.deleteImage(_pickedImage?.path);
     _pickedImage = null;
+    _imageName = null;
     workoutImageController.clear();
     notifyListeners();
   }
@@ -55,8 +62,8 @@ class WorkoutFormController extends ChangeNotifier {
       workoutName: workoutNameController.text,
       instruction: workoutInstructionController.text,
       information: workoutInfoController.text,
-      imageUrl: _pickedImage?.path,
-      sets: int.parse(setsController.text),
+      dietImageBytes: _pickedImage, // Optional: store file name or base64 string
+      sets: int.tryParse(setsController.text) ?? 0,
       unitType: unitTypeController.text,
       unitValue: unitValueController.text,
     );
@@ -88,6 +95,9 @@ class WorkoutFormController extends ChangeNotifier {
     workoutInstructionController.dispose();
     workoutInfoController.dispose();
     workoutImageController.dispose();
+    setsController.dispose();
+    unitTypeController.dispose();
+    unitValueController.dispose();
     super.dispose();
   }
 }

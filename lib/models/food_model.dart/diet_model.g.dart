@@ -21,7 +21,7 @@ class DietPlanAdapter extends TypeAdapter<DietPlan> {
       servings: fields[1] as String?,
       calorie: fields[2] as int?,
       mealType: fields[3] as String?,
-      dietimage: fields[4] as String?,
+      dietImageBytes: fields[4] as Uint8List?,
     );
   }
 
@@ -38,7 +38,7 @@ class DietPlanAdapter extends TypeAdapter<DietPlan> {
       ..writeByte(3)
       ..write(obj.mealType)
       ..writeByte(4)
-      ..write(obj.dietimage);
+      ..write(obj.dietImageBytes);
   }
 
   @override

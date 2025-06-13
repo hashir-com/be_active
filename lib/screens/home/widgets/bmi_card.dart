@@ -28,7 +28,12 @@ class BmiCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: isDesktop ? 150 : isTablet ? 130 : 100,
+      height:
+          isDesktop
+              ? 150
+              : isTablet
+              ? 130
+              : 100,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).primaryColor,
@@ -57,8 +62,18 @@ class BmiCard extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
-              height: isDesktop ? 110 : isTablet ? 90 : 70,
-              width: isDesktop ? 110 : isTablet ? 90 : 70,
+              height:
+                  isDesktop
+                      ? 110
+                      : isTablet
+                      ? 90
+                      : 70,
+              width:
+                  isDesktop
+                      ? 110
+                      : isTablet
+                      ? 90
+                      : 70,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: bmiColor,
@@ -69,9 +84,10 @@ class BmiCard extends StatelessWidget {
                   style: GoogleFonts.roboto(
                     fontSize: isDesktop ? 32 : 24,
                     fontWeight: FontWeight.bold,
-                    color: bmi < 18.5
-                        ? Theme.of(context).primaryColor
-                        : Colors.white,
+                    color:
+                        bmi < 18.5
+                            ? Theme.of(context).primaryColor
+                            : Colors.white,
                   ),
                 ),
               ),
@@ -94,7 +110,6 @@ class BmiCard extends StatelessWidget {
     );
   }
 }
-
 
 String _getBmiCategory(double bmi) {
   if (bmi < 18.5) return "Underweight";

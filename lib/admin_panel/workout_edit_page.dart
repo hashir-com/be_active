@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:thryv/admin_panel/widgets/SetTimeRepSelector.dart';
@@ -30,7 +30,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
   late TextEditingController _typeController;
   late TextEditingController _valueController;
 
-  File? _pickedImage;
+  Uint8List? _pickedImage;
 
   @override
   void initState() {
@@ -45,8 +45,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       text: widget.workout.instruction,
     );
     _infoController = TextEditingController(text: widget.workout.information);
-    _pickedImage =
-        widget.workout.imageUrl != null ? File(widget.workout.imageUrl!) : null;
+    _pickedImage = widget.workout.dietImageBytes; // Already Uint8List?
   }
 
   Future<void> _pickImage() async {
@@ -54,8 +53,9 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       source: ImageSource.gallery,
     );
     if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes(); // ✅ read bytes
       setState(() {
-        _pickedImage = File(pickedFile.path);
+        _pickedImage = bytes;
       });
     }
   }
@@ -65,7 +65,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
       workoutName: _nameController.text.trim(),
       instruction: _instructionController.text.trim(),
       information: _infoController.text.trim(),
-      imageUrl: _pickedImage?.path,
+      dietImageBytes: _pickedImage, // ✅ Correct usage
       unitType: _typeController.text.trim(),
       unitValue: _valueController.text.trim(),
       sets: int.tryParse(_setController.text.trim()),
@@ -92,7 +92,6 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            SizedBox(height: 5),
             _buildTextField(
               _nameController,
               'Workout Name',
@@ -103,42 +102,7 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
             const SizedBox(height: 12),
             _buildTextField(_infoController, 'Information', Icons.info),
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black26),
-                borderRadius: BorderRadius.circular(46),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const SizedBox(width: 12),
-                      Icon(
-                        Icons.timer,
-                        color: Theme.of(context).primaryColorLight,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Set / Time / Reps',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  SetTimeRepSelector(
-                    setsController: _setController,
-                    modeController: _typeController,
-                    valueController: _valueController,
-                  ),
-                ],
-              ),
-            ),
+            _buildSetTimeSelector(),
             const SizedBox(height: 12),
             const Text(
               'Workout Image',
@@ -158,7 +122,8 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
                     _pickedImage != null
                         ? ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
+                          child: Image.memory(
+                            // ✅ Correct widget
                             _pickedImage!,
                             fit: BoxFit.cover,
                             width: double.infinity,
@@ -189,6 +154,42 @@ class _EditWorkoutScreenState extends State<EditWorkoutScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSetTimeSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black26),
+        borderRadius: BorderRadius.circular(46),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: 12),
+              Icon(Icons.timer, color: Theme.of(context).primaryColorLight),
+              const SizedBox(width: 12),
+              Text(
+                'Set / Time / Reps',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColorDark,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SetTimeRepSelector(
+            setsController: _setController,
+            modeController: _typeController,
+            valueController: _valueController,
+          ),
+        ],
       ),
     );
   }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 import 'package:thryv/services/hive_service.dart';
 
@@ -18,13 +20,13 @@ class DietPlan extends HiveObject {
   String? mealType;
 
   @HiveField(4)
-  String? dietimage;
+  Uint8List? dietImageBytes;
 
   DietPlan({
     this.dietName,
     this.servings,
     this.calorie,
     this.mealType,
-    this.dietimage,
+    this.dietImageBytes,
   });
 }

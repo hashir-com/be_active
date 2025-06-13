@@ -61,6 +61,19 @@ class AdminScreenState extends State<AdminScreen> {
     });
   }
 
+  String? extractYouTubeId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+
+    if (uri.host.contains("youtube.com")) {
+      return uri.queryParameters["v"];
+    } else if (uri.host.contains("youtu.be")) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments[0] : null;
+    }
+
+    return null;
+  }
+
   @override
   void dispose() {
     _workoutFormController.removeListener(_onFormControllerChanged);
@@ -166,6 +179,7 @@ class AdminScreenState extends State<AdminScreen> {
                     children: [
                       _buildUserDetailsSection(theme),
                       SizedBox(height: 20),
+
                       Text(
                         "Suggest User Goal",
                         style: TextStyle(
@@ -175,12 +189,12 @@ class AdminScreenState extends State<AdminScreen> {
                       ),
                       Center(
                         child: Wrap(
-                          spacing: isDesktop ? 20 : 4,
+                          spacing: isDesktop ? 20 : 1,
                           children:
                               UserGoal.values.map((goal) {
                                 final isSelected = goal == selectedGoal;
                                 return SizedBox(
-                                  width: isDesktop ? 220 : 120,
+                                  width: isDesktop ? 220 : 113,
                                   child: ChoiceChip(
                                     checkmarkColor: theme.highlightColor,
                                     label: Text(userGoalToString(goal)),
@@ -197,7 +211,7 @@ class AdminScreenState extends State<AdminScreen> {
                                           isSelected
                                               ? isDesktop
                                                   ? 20
-                                                  : 12
+                                                  : 11
                                               : isDesktop
                                               ? 15
                                               : 10,
@@ -246,7 +260,7 @@ class AdminScreenState extends State<AdminScreen> {
                               const SizedBox(width: 20),
                               ElevatedButton(
                                 onPressed: () {
-                                  final videoId = YoutubePlayer.convertUrlToId(
+                                  final videoId = extractYouTubeId(
                                     videoController.text.trim(),
                                   );
 
@@ -294,20 +308,8 @@ class AdminScreenState extends State<AdminScreen> {
                             final id = entry.value;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: Stack(
-                                alignment: Alignment.topRight,
+                              child: Column(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: SizedBox(
-                                      height: 200,
-                                      child: YoutubePlayerWidget(
-                                        videoId: id,
-                                        onFullScreenChanged:
-                                            _onFullScreenChanged,
-                                      ),
-                                    ),
-                                  ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -422,6 +424,20 @@ class AdminScreenState extends State<AdminScreen> {
                                         },
                                       ),
                                     ],
+                                  ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      height: 200,
+                                      width: isDesktop ? 400 : 100,
+                                      child: IgnorePointer(
+                                        child: UniversalYoutubePlayer(
+                                          videoId: id,
+                                          onFullScreenChanged:
+                                              _onFullScreenChanged,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -587,11 +603,11 @@ class AdminScreenState extends State<AdminScreen> {
         const SizedBox(height: 10),
         buildImagePickerField(
           'Workout Image',
-          _workoutFormController
-              .pickedImage, // Use the controller's picked image
+          _workoutFormController.pickedImage, // ✅ now Uint8List?
           _workoutFormController.pickImage,
           _workoutFormController.deleteImage,
         ),
+
         const SizedBox(height: 10),
         Padding(
           padding: const EdgeInsets.all(18.0),
