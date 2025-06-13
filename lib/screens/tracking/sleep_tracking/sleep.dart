@@ -208,9 +208,22 @@ class _SleepScreenState extends State<SleepScreen> {
                     isDesktop: isDesktop,
                   ),
                 ),
+                SizedBox(height: 60),
               ],
             ),
           ),
+        ),
+      ),
+
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        onPressed: () {
+          _onAddEntry();
+        },
+        child: Icon(
+          Icons.bed,
+          size: isDesktop ? 28 : 22,
+          color: Theme.of(context).highlightColor,
         ),
       ),
     );
@@ -339,10 +352,10 @@ class SleepBarChart extends StatelessWidget {
                     ][day.weekday % 7];
                 return Text(
                   weekday,
-                  style: TextStyle(fontSize: isDesktop ? 8.sp : 14.sp),
+                  style: TextStyle(fontSize: isDesktop ? 6.sp : 14.sp),
                 );
               },
-              reservedSize: isDesktop ? 18.h : 30.h,
+              reservedSize: isDesktop ? 28.h : 30.h,
             ),
           ),
           topTitles: AxisTitles(),

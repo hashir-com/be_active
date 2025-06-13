@@ -156,11 +156,11 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       padding: EdgeInsets.all(isDesktop ? 24 : 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(isDesktop ? 20 : 12),
+        borderRadius: BorderRadius.circular(isDesktop ? 20 : 20),
         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
       ),
       child: SizedBox(
-        height: isDesktop ? 300 : 200,
+        height: isDesktop ? 300 : 250,
         child: BarChart(
           BarChartData(
             maxY: dailyGoal.toDouble(),
@@ -251,7 +251,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       appBar: AppBar(
         title: Text(
           'Step Counter',
-          style: TextStyle(fontSize: isDesktop ? 20 : 16),
+          style: TextStyle(fontSize: isDesktop ? 20 : 26),
         ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
@@ -287,7 +287,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                       goalBurn,
                       isDesktop,
                     ),
-                    SizedBox(height: isDesktop ? 24 : 16),
+                    SizedBox(height: isDesktop ? 24 : 18),
                     Text(
                       'Steps Trend',
                       style: Theme.of(context).textTheme.titleMedium,
@@ -323,10 +323,10 @@ class StepCounterScreenState extends State<StepCounterScreen> {
       GestureDetector(
         onTap: _editGoal,
         child: Container(
-          padding: EdgeInsets.all(isDesktop ? 20 : 14),
+          padding: EdgeInsets.all(isDesktop ? 20 : 22),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(isDesktop ? 20 : 14),
+            borderRadius: BorderRadius.circular(isDesktop ? 20 : 22),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,7 +337,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                     child: Text(
                       '$todaySteps of $dailyGoal steps walked',
                       style: TextStyle(
-                        fontSize: isDesktop ? 18 : 14,
+                        fontSize: isDesktop ? 18 : 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -351,7 +351,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                 child: LinearProgressIndicator(
                   value: todaySteps / dailyGoal,
                   color: Theme.of(context).primaryColor,
-                  backgroundColor: Colors.grey[300],
+                  backgroundColor: const Color.fromARGB(255, 224, 224, 224),
                   minHeight: isDesktop ? 12 : 8,
                 ),
               ),
@@ -384,7 +384,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             'Calories Burned',
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              fontSize: isDesktop ? 16 : 14,
+              fontSize: isDesktop ? 16 : 18,
             ),
           ),
           SizedBox(height: 8),
@@ -393,13 +393,13 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             children: [
               Text(
                 'Your Goal:',
-                style: TextStyle(fontSize: isDesktop ? 14 : 12),
+                style: TextStyle(fontSize: isDesktop ? 14 : 14),
               ),
               Text(
                 '${goalBurn.toInt()} Cal 🔥',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: isDesktop ? 14 : 12,
+                  fontSize: isDesktop ? 14 : 14,
                 ),
               ),
             ],
@@ -410,13 +410,13 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             children: [
               Text(
                 'Today\'s Burn:',
-                style: TextStyle(fontSize: isDesktop ? 14 : 12),
+                style: TextStyle(fontSize: isDesktop ? 14 : 14),
               ),
               Text(
                 '${burnedToday.toInt()} Cal 🔥',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: isDesktop ? 14 : 12,
+                  fontSize: isDesktop ? 14 : 14,
                 ),
               ),
             ],

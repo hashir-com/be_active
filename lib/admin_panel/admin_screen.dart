@@ -308,8 +308,21 @@ class AdminScreenState extends State<AdminScreen> {
                             final id = entry.value;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: Column(
+                              child: Stack(
+                                alignment: Alignment.topRight,
                                 children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      height: 200,
+                                      width: isDesktop ? 400 : 400,
+                                      child: UniversalYoutubePlayer(
+                                        videoId: id,
+                                        onFullScreenChanged:
+                                            _onFullScreenChanged,
+                                      ),
+                                    ),
+                                  ),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -424,20 +437,6 @@ class AdminScreenState extends State<AdminScreen> {
                                         },
                                       ),
                                     ],
-                                  ),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: SizedBox(
-                                      height: 200,
-                                      width: isDesktop ? 400 : 100,
-                                      child: IgnorePointer(
-                                        child: UniversalYoutubePlayer(
-                                          videoId: id,
-                                          onFullScreenChanged:
-                                              _onFullScreenChanged,
-                                        ),
-                                      ),
-                                    ),
                                   ),
                                 ],
                               ),
