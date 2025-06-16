@@ -24,8 +24,6 @@ class FoodSearchPage extends StatefulWidget {
 }
 
 class _FoodSearchPageState extends State<FoodSearchPage> {
-
-
   Timer? _debounce;
 
   void _showManualAddDialog() {
@@ -162,7 +160,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
     setState(() => _loading = true);
     try {
       final results = await searchFood(query);
-      if (!mounted) return; 
+      if (!mounted) return;
       setState(() => _foods = results);
     } catch (e) {
       if (kDebugMode) print("Error: $e");
@@ -227,7 +225,7 @@ class _FoodSearchPageState extends State<FoodSearchPage> {
               ),
               onChanged: (value) {
                 if (_debounce?.isActive ?? false) _debounce!.cancel();
-                _debounce = Timer(const Duration(milliseconds: 500), () {
+                _debounce = Timer(const Duration(milliseconds: 300), () {
                   _search(); // Trigger the search after 500ms of no typing
                 });
               },
