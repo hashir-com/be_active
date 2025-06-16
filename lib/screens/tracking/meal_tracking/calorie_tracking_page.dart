@@ -38,17 +38,12 @@ class MealTrackerPage extends StatefulWidget {
 
 class MealTrackerPageState extends State<MealTrackerPage>
     with WidgetsBindingObserver {
-  String _getShortFoodName(String fullName) {
-    final words = fullName.split(' ');
-    if (words.length <= 5) return fullName;
-    return words.sublist(0, 5).join(' ') + '...';
-  }
-
   DateTime selectedDate = DateTime.now();
-  String dropdownValue = "Today"; // Default dropdown value
+  String dropdownValue = "Today";
 
   UserModel? user;
   UserGoalModel? usergoal;
+
   Map<MealType, List<FoodItem>> meals = {
     MealType.breakfast: [],
     MealType.morningSnack: [],
@@ -79,21 +74,31 @@ class MealTrackerPageState extends State<MealTrackerPage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
     try {
       final userBox = Hive.box<UserModel>('userBox');
       final userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
       user = userBox.get('user');
       usergoal = userGoalBox.get('usergoal');
-      if (user?.bmi != null && usergoal?.goal != null) {
-        totalCalorieGoal = suggestInitialCalorieGoal(
-          user!.bmi!,
-          usergoal!.goal!,
-        );
+
+      if (usergoal == null) {
+        usergoal = UserGoalModel();
+        userGoalBox.put('usergoal', usergoal!);
+      }
+
+      if (usergoal!.totalCalorieGoal != null) {
+        totalCalorieGoal = usergoal!.totalCalorieGoal!;
+        usergoal!.mealCalorieGoals?.forEach((key, value) {
+          final meal = _stringToMealType(key);
+          if (meal != null) calorieGoals[meal] = value;
+        });
+      } else {
+        _applyMealCalorieGoals();
       }
     } catch (e) {
-      debugPrint("Hive initialization error: $e");
+      debugPrint("Hive error: $e");
     }
-    _applyMealCalorieGoals();
+
     _loadSavedMeals();
   }
 
@@ -115,14 +120,22 @@ class MealTrackerPageState extends State<MealTrackerPage>
       final percentage = mealDistribution[meal]!;
       return (totalCalorieGoal * percentage).round();
     });
+
+    usergoal?.totalCalorieGoal = totalCalorieGoal.toInt();
+    usergoal?.mealCalorieGoals = {
+      for (var entry in calorieGoals.entries)
+        mealTypeToKey(entry.key): entry.value,
+    };
+    usergoal?.save();
+
+    setState(() {});
   }
 
-  void _onGoalCompleted() async {
-    if (!mounted) return;
+  void _onGoalCompleted() {
     showDialog(
       context: context,
       builder:
-          (context) => AlertDialog(
+          (_) => AlertDialog(
             title: const Text('Goal Achieved! 🎉'),
             content: const Text('You have reached your daily calorie goal!'),
             actions: [
@@ -158,13 +171,13 @@ class MealTrackerPageState extends State<MealTrackerPage>
       final completed = total >= totalCalorieGoal;
 
       await updateDailyProgress(
-        date: DateTime.now(),
+        date: selectedDate,
         type: 'food',
         completed: completed,
       );
 
-      if (!mounted) return;
       if (completed) _onGoalCompleted();
+
       setState(() {});
     } catch (e, st) {
       debugPrint("Error loading meals: $e\n$st");
@@ -192,19 +205,14 @@ class MealTrackerPageState extends State<MealTrackerPage>
   }
 
   void _addFood(MealType meal) async {
-    try {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder:
-              (_) => FoodSearchPage(mealType: meal, selectedDate: selectedDate),
-        ),
-      );
-      if (!mounted) return;
-      _loadSavedMeals();
-    } catch (e) {
-      debugPrint("Navigation or add error: $e");
-    }
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => FoodSearchPage(mealType: meal, selectedDate: selectedDate),
+      ),
+    );
+    _loadSavedMeals();
   }
 
   void _showEditGoalDialog(MealType selectedMeal) {
@@ -235,28 +243,29 @@ class MealTrackerPageState extends State<MealTrackerPage>
                   Navigator.pop(context);
                   return;
                 }
-                setState(() {
-                  final totalOldGoal = calorieGoals.values.reduce(
-                    (a, b) => a + b,
-                  );
-                  final otherMeals =
-                      calorieGoals.keys
-                          .where((m) => m != selectedMeal)
-                          .toList();
-                  calorieGoals[selectedMeal] = newGoal;
-                  final otherMealDistributionSum = otherMeals
-                      .map((m) => mealDistribution[m]!)
-                      .reduce((a, b) => a + b);
-                  for (var meal in otherMeals) {
-                    final ratio =
-                        mealDistribution[meal]! / otherMealDistributionSum;
-                    calorieGoals[meal] =
-                        ((totalOldGoal - newGoal) * ratio).round();
-                  }
-                  totalCalorieGoal = calorieGoals.values.reduce(
-                    (a, b) => a + b,
-                  );
-                });
+
+                final totalOldGoal = calorieGoals.values.reduce(
+                  (a, b) => a + b,
+                );
+                final otherMeals =
+                    calorieGoals.keys.where((m) => m != selectedMeal).toList();
+
+                calorieGoals[selectedMeal] = newGoal;
+
+                final otherMealDistributionSum = otherMeals
+                    .map((m) => mealDistribution[m]!)
+                    .reduce((a, b) => a + b);
+
+                for (var meal in otherMeals) {
+                  final ratio =
+                      mealDistribution[meal]! / otherMealDistributionSum;
+                  calorieGoals[meal] =
+                      ((totalOldGoal - newGoal) * ratio).round();
+                }
+
+                totalCalorieGoal = calorieGoals.values.reduce((a, b) => a + b);
+
+                _applyMealCalorieGoals();
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -290,10 +299,8 @@ class MealTrackerPageState extends State<MealTrackerPage>
               onPressed: () {
                 final input = int.tryParse(controller.text);
                 if (input != null && input > 0) {
-                  setState(() {
-                    totalCalorieGoal = input;
-                    _applyMealCalorieGoals();
-                  });
+                  totalCalorieGoal = input;
+                  _applyMealCalorieGoals();
                 }
                 Navigator.pop(context);
               },
@@ -328,6 +335,12 @@ class MealTrackerPageState extends State<MealTrackerPage>
       'Add Your Food for ${mealTypeToString(meal)} to Track your Calorie intake🔥😋',
       style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
     );
+  }
+
+  String _getShortFoodName(String fullName) {
+    final words = fullName.split(' ');
+    if (words.length <= 5) return fullName;
+    return words.sublist(0, 5).join(' ') + '...';
   }
 
   @override

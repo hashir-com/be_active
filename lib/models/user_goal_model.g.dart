@@ -21,13 +21,15 @@ class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
       workoutPlans: (fields[1] as List?)?.cast<WorkoutPlan>(),
       dietPlans: (fields[2] as List?)?.cast<DietPlan>(),
       videoIds: (fields[3] as List?)?.cast<String>(),
+      totalCalorieGoal: fields[4] as int,
+      mealCalorieGoals: (fields[5] as Map?)?.cast<String, int>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserGoalModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.goalIndex)
       ..writeByte(1)
@@ -35,7 +37,11 @@ class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
       ..writeByte(2)
       ..write(obj.dietPlans)
       ..writeByte(3)
-      ..write(obj.videoIds);
+      ..write(obj.videoIds)
+      ..writeByte(4)
+      ..write(obj.totalCalorieGoal)
+      ..writeByte(5)
+      ..write(obj.mealCalorieGoals);
   }
 
   @override

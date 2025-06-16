@@ -47,7 +47,9 @@ class _EditDietScreenState extends State<EditDietScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       final bytes = await pickedFile.readAsBytes();
       setState(() {
@@ -74,7 +76,7 @@ class _EditDietScreenState extends State<EditDietScreen> {
     widget.userGoal.dietPlans![widget.index] = updatedDiet;
 
     final box = await Hive.openBox<UserGoalModel>('userGoalBox');
-    await box.put('userGoalKey', widget.userGoal); // ensure the correct key
+    await box.put('usergoal', widget.userGoal); // ensure the correct key
 
     if (context.mounted) {
       Navigator.pop(context, true);
@@ -126,22 +128,23 @@ class _EditDietScreenState extends State<EditDietScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.black12),
                 ),
-                child: _pickedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.memory(
-                          _pickedImage!,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
+                child:
+                    _pickedImage != null
+                        ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.memory(
+                            _pickedImage!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                          ),
+                        )
+                        : const Center(
+                          child: Icon(
+                            Icons.add_photo_alternate,
+                            size: 40,
+                            color: Colors.grey,
+                          ),
                         ),
-                      )
-                    : const Center(
-                        child: Icon(
-                          Icons.add_photo_alternate,
-                          size: 40,
-                          color: Colors.grey,
-                        ),
-                      ),
               ),
             ),
             const SizedBox(height: 24),
@@ -152,7 +155,10 @@ class _EditDietScreenState extends State<EditDietScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade700,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
               ),
             ),
           ],

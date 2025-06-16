@@ -50,7 +50,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
     for (int i = 6; i >= 0; i--) {
       DateTime date = DateTime(today.year, today.month, today.day - i);
       StepEntry? entry = stepBox.get(date.toIso8601String());
-      entries.add(entry ?? StepEntry(date: date, steps: 0));
+      entries.add(entry ?? StepEntry(date: date, steps: 0, stepGoal: 10000));
     }
     return entries;
   }
@@ -72,13 +72,30 @@ class StepCounterScreenState extends State<StepCounterScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   int newGoal = int.tryParse(controller.text) ?? dailyGoal;
                   if (_isMounted && newGoal > 0) {
                     setState(() {
                       dailyGoal = newGoal;
                       settingsBox.put('step_goal', newGoal);
                     });
+
+                    // ✅ Update today's StepEntry with new goal
+                    final today = DateTime.now();
+                    final todayKey =
+                        DateTime(
+                          today.year,
+                          today.month,
+                          today.day,
+                        ).toIso8601String();
+                    final existing = stepBox.get(todayKey);
+                    final updatedEntry = StepEntry(
+                      date: today,
+                      steps: existing?.steps ?? 0,
+                      stepGoal: newGoal,
+                    );
+                    await stepBox.put(todayKey, updatedEntry);
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Goal updated to $newGoal steps")),
                     );
@@ -117,7 +134,7 @@ class StepCounterScreenState extends State<StepCounterScreen> {
                   steps = int.tryParse(controller.text) ?? 0;
                   stepBox.put(
                     date.toIso8601String(),
-                    StepEntry(date: date, steps: steps),
+                    StepEntry(date: date, steps: steps, stepGoal: dailyGoal),
                   );
                   if (_isMounted) setState(() {});
                   Navigator.pop(context);
@@ -163,7 +180,12 @@ class StepCounterScreenState extends State<StepCounterScreen> {
         height: isDesktop ? 300 : 250,
         child: BarChart(
           BarChartData(
-            maxY: dailyGoal.toDouble(),
+            maxY:
+                entries
+                    .map((e) => e.stepGoal)
+                    .reduce((a, b) => a > b ? a : b)
+                    .toDouble(),
+
             barGroups:
                 entries.asMap().entries.map((e) {
                   final step = e.value.steps.toDouble();

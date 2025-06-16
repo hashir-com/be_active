@@ -19,7 +19,26 @@ class UserGoalModel extends HiveObject {
   @HiveField(3)
   List<String>? videoIds;
 
-  UserGoalModel({this.goalIndex, this.workoutPlans, this.dietPlans,this.videoIds});
+  @HiveField(4)
+  int totalCalorieGoal;
+
+  @HiveField(5)
+  Map<String, int> mealCalorieGoals;
+
+  UserGoalModel({
+    this.goalIndex,
+    this.workoutPlans,
+    this.dietPlans,
+    this.videoIds,
+    this.totalCalorieGoal = 1750,
+    Map<String, int>? mealCalorieGoals,
+  }) : mealCalorieGoals = mealCalorieGoals ?? {
+          'breakfast': 438,
+          'morningSnack': 219,
+          'lunch': 438,
+          'eveningTea': 219,
+          'dinner': 438,
+        };
 
   UserGoal? get goal => goalIndex != null ? UserGoal.values[goalIndex!] : null;
 

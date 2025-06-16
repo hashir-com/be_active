@@ -19,17 +19,20 @@ class StepEntryAdapter extends TypeAdapter<StepEntry> {
     return StepEntry(
       date: fields[0] as DateTime,
       steps: fields[1] as int,
+      stepGoal: fields[2] as int,
     );
   }
 
   @override
   void write(BinaryWriter writer, StepEntry obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.date)
       ..writeByte(1)
-      ..write(obj.steps);
+      ..write(obj.steps)
+      ..writeByte(2)
+      ..write(obj.stepGoal);
   }
 
   @override

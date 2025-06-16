@@ -330,6 +330,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           borderRadius: BorderRadius.circular(20),
                           child: SizedBox(
                             height: 200,
+                            width: 400,
                             child: UniversalYoutubePlayer(
                               videoId: id,
                               onFullScreenChanged: _onFullScreenChanged,

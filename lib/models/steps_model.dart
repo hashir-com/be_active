@@ -11,5 +11,8 @@ class StepEntry extends HiveObject {
   @HiveField(1)
   final int steps;
 
-  StepEntry({required this.date, required this.steps});
+  @HiveField(2)
+  final int stepGoal;
+
+  StepEntry({required this.date, required this.steps, required this.stepGoal});
 }

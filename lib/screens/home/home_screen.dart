@@ -208,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
             label: "Calories",
             icon: Icons.local_dining,
             value: data['calories']!.toInt(),
-
             goal: data['goal']!.toInt(),
             iconColor: Colors.orange,
             onTap: () async {
@@ -216,11 +215,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(builder: (_) => const MealTrackerPage()),
               );
-              setState(() {});
+              setState(() {}); // Make sure this is inside a StatefulWidget
             },
           );
         },
       ),
+
       SizedBox(height: isWide ? 0 : 10),
       FutureBuilder<Map<String, int>>(
         future: getTodayWaterIntakeAndGoal(),
