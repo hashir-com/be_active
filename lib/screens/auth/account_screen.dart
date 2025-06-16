@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:google_fonts/google_fonts.dart';

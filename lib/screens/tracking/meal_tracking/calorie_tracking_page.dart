@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
@@ -86,16 +88,12 @@ class MealTrackerPageState extends State<MealTrackerPage>
         userGoalBox.put('usergoal', usergoal!);
       }
 
-      if (usergoal!.totalCalorieGoal != null) {
-        totalCalorieGoal = usergoal!.totalCalorieGoal!;
-        usergoal!.mealCalorieGoals?.forEach((key, value) {
-          final meal = _stringToMealType(key);
-          if (meal != null) calorieGoals[meal] = value;
-        });
-      } else {
-        _applyMealCalorieGoals();
-      }
-    } catch (e) {
+      totalCalorieGoal = usergoal!.totalCalorieGoal;
+      usergoal!.mealCalorieGoals.forEach((key, value) {
+        final meal = _stringToMealType(key);
+        if (meal != null) calorieGoals[meal] = value;
+      });
+        } catch (e) {
       debugPrint("Hive error: $e");
     }
 
@@ -340,7 +338,7 @@ class MealTrackerPageState extends State<MealTrackerPage>
   String _getShortFoodName(String fullName) {
     final words = fullName.split(' ');
     if (words.length <= 5) return fullName;
-    return words.sublist(0, 5).join(' ') + '...';
+    return '${words.sublist(0, 5).join(' ')}...';
   }
 
   @override

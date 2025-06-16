@@ -22,7 +22,7 @@ class BmiCard extends StatelessWidget {
     final isTablet = width > 600;
     final isDesktop = width > 1000;
 
-    String bmiCategory = _getBmiCategory(bmi);
+    // String bmiCategory = _getBmiCategory(bmi);
     String bmiCategoryinfo = _getBmiCategoryinfo(bmi);
     Color bmiColor = _getBmiColor(bmi);
 

@@ -118,7 +118,6 @@ class AdminScreenState extends State<AdminScreen> {
 
     final videoIds = userGoal?.videoIds ?? [];
     final width = MediaQuery.of(context).size.width;
-    final isTablet = width > 600;
     final isDesktop = width > 1000;
 
     // It's safer to check if user and userGoal are loaded before accessing their properties
