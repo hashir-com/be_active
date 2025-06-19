@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 Widget buildImagePickerField(
   String label,
-  Uint8List? imageBytes,        // Updated from File? to Uint8List?
+  Uint8List? imageBytes, // Updated from File? to Uint8List?
   VoidCallback onPickImage,
   VoidCallback onDeleteImage,
 ) {
@@ -34,22 +34,23 @@ Widget buildImagePickerField(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white24),
               ),
-              child: imageBytes != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.memory(
-                        imageBytes,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
+              child:
+                  imageBytes != null
+                      ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.memory(
+                          imageBytes,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        ),
+                      )
+                      : const Center(
+                        child: Icon(
+                          Icons.add_photo_alternate,
+                          color: Colors.white70,
+                          size: 40,
+                        ),
                       ),
-                    )
-                  : const Center(
-                      child: Icon(
-                        Icons.add_photo_alternate,
-                        color: Colors.white70,
-                        size: 40,
-                      ),
-                    ),
             ),
             if (imageBytes != null)
               Positioned(

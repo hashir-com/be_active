@@ -13,21 +13,16 @@ class PlatformYoutubePlayer extends StatelessWidget {
 
     // Register the iframe
     // ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      viewId,
-      (int viewId) {
-        final iframe = IFrameElement()
-          ..width = '100%'
-          ..height = '100%'
-          ..src = 'https://www.youtube.com/embed/$videoId'
-          ..style.border = 'none';
-        return iframe;
-      },
-    );
+    ui.platformViewRegistry.registerViewFactory(viewId, (int viewId) {
+      final iframe =
+          IFrameElement()
+            ..width = '100%'
+            ..height = '100%'
+            ..src = 'https://www.youtube.com/embed/$videoId'
+            ..style.border = 'none';
+      return iframe;
+    });
 
-    return SizedBox(
-      height: 200,
-      child: HtmlElementView(viewType: viewId),
-    );
+    return SizedBox(height: 200, child: HtmlElementView(viewType: viewId));
   }
 }

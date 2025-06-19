@@ -23,5 +23,3 @@ Future<List<FoodItem>> searchFood(String query) async {
     throw Exception('Failed to load food data');
   }
 }
-
-

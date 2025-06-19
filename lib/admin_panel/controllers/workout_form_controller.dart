@@ -7,7 +7,8 @@ import 'package:thryv/services/data_service.dart';
 
 class WorkoutFormController extends ChangeNotifier {
   final TextEditingController workoutNameController = TextEditingController();
-  final TextEditingController workoutInstructionController = TextEditingController();
+  final TextEditingController workoutInstructionController =
+      TextEditingController();
   final TextEditingController workoutInfoController = TextEditingController();
   final TextEditingController workoutImageController = TextEditingController();
   final TextEditingController setsController = TextEditingController();
@@ -62,7 +63,8 @@ class WorkoutFormController extends ChangeNotifier {
       workoutName: workoutNameController.text,
       instruction: workoutInstructionController.text,
       information: workoutInfoController.text,
-      dietImageBytes: _pickedImage, // Optional: store file name or base64 string
+      dietImageBytes:
+          _pickedImage, // Optional: store file name or base64 string
       sets: int.tryParse(setsController.text) ?? 0,
       unitType: unitTypeController.text,
       unitValue: unitValueController.text,

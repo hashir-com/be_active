@@ -6,16 +6,16 @@ import 'package:thryv/models/user_goal_model.dart';
 class DataService {
   late Box<UserGoalModel> _userGoalBox;
   late Box<UserModel> _userBox;
-  late Box<DietPlan> _dietPlansBox; 
+  late Box<DietPlan> _dietPlansBox;
 
   UserGoalModel? currentUserGoal;
   UserModel? currentUser;
-  DietPlan? currentDiet; 
+  DietPlan? currentDiet;
 
   Future<void> init() async {
     _userGoalBox = Hive.box<UserGoalModel>('userGoalBox');
     _userBox = Hive.box<UserModel>('userBox');
-    _dietPlansBox = Hive.box<DietPlan>('dietPlans'); 
+    _dietPlansBox = Hive.box<DietPlan>('dietPlans');
 
     currentUserGoal = _userGoalBox.get('usergoal') ?? UserGoalModel();
     currentUser = _userBox.get('user');
@@ -29,11 +29,7 @@ class DataService {
     }
   }
 
-
   UserModel? getUser() => currentUser;
 
-
   UserGoalModel? getUserGoal() => currentUserGoal;
-
-
 }

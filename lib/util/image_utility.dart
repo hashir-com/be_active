@@ -4,13 +4,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 
 class ImageUtility {
-
   static Future<String?> pickImage() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (picked != null) {
       final appDir = await getApplicationDocumentsDirectory();
       final fileName = basename(picked.path);
-      final savedImage = await File(picked.path).copy('${appDir.path}/$fileName');
+      final savedImage = await File(
+        picked.path,
+      ).copy('${appDir.path}/$fileName');
       return savedImage.path;
     }
     return null;

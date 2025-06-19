@@ -27,15 +27,18 @@ class SleepRepository {
   }
 
   Future<void> addEntry(SleepEntry entry) async {
-    final entries = _sleepBox.values.where(
-      (e) =>
-          e.date.year == entry.date.year &&
-          e.date.month == entry.date.month &&
-          e.date.day == entry.date.day,
-    );
+    final duplicates =
+        _sleepBox.values
+            .where(
+              (e) =>
+                  e.date.year == entry.date.year &&
+                  e.date.month == entry.date.month &&
+                  e.date.day == entry.date.day,
+            )
+            .toList();
 
-    for (final existing in entries) {
-      await existing.delete();
+    for (final e in duplicates) {
+      await e.delete();
     }
 
     await _sleepBox.add(entry);

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-Future<double?> showSetGoalDialog(BuildContext context, double currentGoal) async {
+Future<double?> showSetGoalDialog(
+  BuildContext context,
+  double currentGoal,
+) async {
   final controller = TextEditingController(text: currentGoal.toString());
   return showDialog<double>(
     context: context,
@@ -10,10 +13,15 @@ Future<double?> showSetGoalDialog(BuildContext context, double currentGoal) asyn
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(hintText: 'Enter hours (e.g., 7.5)'),
+          decoration: const InputDecoration(
+            hintText: 'Enter hours (e.g., 7.5)',
+          ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
               final value = double.tryParse(controller.text);
@@ -39,21 +47,39 @@ Future<Map<String, DateTime>?> showAddEntryDialog(BuildContext context) async {
       return StatefulBuilder(
         builder: (context, setState) {
           Future<void> pickBedTime() async {
-            final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(bedTime));
+            final time = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.fromDateTime(bedTime),
+            );
             if (time != null) {
               final now = DateTime.now();
               setState(() {
-                bedTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+                bedTime = DateTime(
+                  now.year,
+                  now.month,
+                  now.day,
+                  time.hour,
+                  time.minute,
+                );
               });
             }
           }
 
           Future<void> pickWakeUpTime() async {
-            final time = await showTimePicker(context: context, initialTime: TimeOfDay.fromDateTime(wakeUpTime));
+            final time = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.fromDateTime(wakeUpTime),
+            );
             if (time != null) {
               final now = DateTime.now();
               setState(() {
-                wakeUpTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+                wakeUpTime = DateTime(
+                  now.year,
+                  now.month,
+                  now.day,
+                  time.hour,
+                  time.minute,
+                );
               });
             }
           }
@@ -65,21 +91,31 @@ Future<Map<String, DateTime>?> showAddEntryDialog(BuildContext context) async {
               children: [
                 ListTile(
                   title: const Text('Bed Time'),
-                  trailing: Text('${bedTime.hour.toString().padLeft(2, '0')}:${bedTime.minute.toString().padLeft(2, '0')}'),
+                  trailing: Text(
+                    '${bedTime.hour.toString().padLeft(2, '0')}:${bedTime.minute.toString().padLeft(2, '0')}',
+                  ),
                   onTap: pickBedTime,
                 ),
                 ListTile(
                   title: const Text('Wake Up Time'),
-                  trailing: Text('${wakeUpTime.hour.toString().padLeft(2, '0')}:${wakeUpTime.minute.toString().padLeft(2, '0')}'),
+                  trailing: Text(
+                    '${wakeUpTime.hour.toString().padLeft(2, '0')}:${wakeUpTime.minute.toString().padLeft(2, '0')}',
+                  ),
                   onTap: pickWakeUpTime,
                 ),
               ],
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context, {'bedTime': bedTime, 'wakeUpTime': wakeUpTime});
+                  Navigator.pop(context, {
+                    'bedTime': bedTime,
+                    'wakeUpTime': wakeUpTime,
+                  });
                 },
                 child: const Text('Add'),
               ),

@@ -14,8 +14,5 @@ Future<Map<String, int>> getTodayWaterIntakeAndGoal() async {
   final glassesDrunk = todayData?.glassesDrunk ?? 0;
   final waterGoal = goalModel?.waterGoal ?? 8;
 
-  return {
-    'intake': glassesDrunk,
-    'goal': waterGoal,
-  };
+  return {'intake': glassesDrunk, 'goal': waterGoal};
 }

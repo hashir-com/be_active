@@ -48,7 +48,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => CreateAccountScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => CreateAccountScreen(),
+                    ),
                   );
                 },
                 child: const Text(

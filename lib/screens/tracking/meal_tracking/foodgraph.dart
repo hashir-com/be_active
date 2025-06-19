@@ -3,19 +3,33 @@ import 'package:fl_chart/fl_chart.dart';
 
 class WeeklyCalorieChartScreen extends StatelessWidget {
   final Map<DateTime, double> weeklyData; // day -> total calories
-  const WeeklyCalorieChartScreen({super.key, required this.weeklyData});
+  final int calorieGoal; // Daily calorie goal
+
+  const WeeklyCalorieChartScreen({
+    super.key,
+    required this.weeklyData,
+    required this.calorieGoal,
+  });
+
+  Color getCalorieColor(double calorie, int goal, BuildContext context) {
+    final ratio = calorie / goal;
+    if (ratio >= 1.0) return Colors.green;
+    if (ratio >= 0.75) return Colors.lightGreen;
+    if (ratio >= 0.5) return Colors.orange;
+    if (ratio >= 0.25) return Colors.deepOrange;
+    return Colors.red;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final sortedKeys =
-        weeklyData.keys.toList()
-          ..sort((a, b) => a.weekday.compareTo(b.weekday));
-    final maxY =
-        (weeklyData.values
-                .fold<double>(0, (a, b) => a > b ? a : b)
-                .ceilToDouble() /
-            100 *
-            100) +
+    final sortedKeys = weeklyData.keys.toList()
+      ..sort((a, b) => a.weekday.compareTo(b.weekday));
+
+    final maxY = (weeklyData.values.fold<double>(
+              0, (a, b) => a > b ? a : b)
+          .ceilToDouble() /
+        100 *
+        100) +
         100;
 
     return Scaffold(
@@ -50,29 +64,27 @@ class WeeklyCalorieChartScreen extends StatelessWidget {
                       gridData: FlGridData(
                         show: true,
                         drawVerticalLine: false,
-                        getDrawingHorizontalLine:
-                            (value) => FlLine(
-                              color: Colors.grey.shade300,
-                              strokeWidth: 1,
-                            ),
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: Colors.grey.shade300,
+                          strokeWidth: 1,
+                        ),
                       ),
                       borderData: FlBorderData(show: false),
-                      barGroups:
-                          sortedKeys.map((date) {
-                            final x = date.weekday - 1;
-                            final y = weeklyData[date]!;
-                            return BarChartGroupData(
-                              x: x,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: y,
-                                  width: 20,
-                                  color: Theme.of(context).primaryColorDark,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                      barGroups: sortedKeys.map((date) {
+                        final x = date.weekday - 1;
+                        final y = weeklyData[date]!;
+                        return BarChartGroupData(
+                          x: x,
+                          barRods: [
+                            BarChartRodData(
+                              toY: y,
+                              width: 20,
+                              color: getCalorieColor(y, calorieGoal, context),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ],
+                        );
+                      }).toList(),
                       titlesData: FlTitlesData(
                         bottomTitles: AxisTitles(
                           axisNameSize: 24,
@@ -112,7 +124,6 @@ class WeeklyCalorieChartScreen extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           axisNameSize: 28,
                           sideTitles: SideTitles(
                             reservedSize: 30,
@@ -152,7 +163,7 @@ class WeeklyCalorieChartScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    duration: const Duration(milliseconds: 5400),
+                    duration: const Duration(milliseconds: 800),
                   ),
                 ),
               ],

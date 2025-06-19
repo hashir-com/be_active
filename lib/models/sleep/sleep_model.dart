@@ -20,7 +20,14 @@ class SleepEntry extends HiveObject {
     required this.wakeUpTime,
   });
 
-  double get sleepHours => wakeUpTime.difference(bedTime).inMinutes / 60;
+ double get sleepHours {
+  DateTime adjustedWake = wakeUpTime;
+  if (wakeUpTime.isBefore(bedTime)) {
+    adjustedWake = wakeUpTime.add(const Duration(days: 1));
+  }
+  return adjustedWake.difference(bedTime).inMinutes / 60.0;
+}
+
 }
 
 @HiveType(typeId: 11)

@@ -32,13 +32,15 @@ class UserGoalModel extends HiveObject {
     this.videoIds,
     this.totalCalorieGoal = 1750,
     Map<String, int>? mealCalorieGoals,
-  }) : mealCalorieGoals = mealCalorieGoals ?? {
-          'breakfast': 438,
-          'morningSnack': 219,
-          'lunch': 438,
-          'eveningTea': 219,
-          'dinner': 438,
-        };
+  }) : mealCalorieGoals =
+           mealCalorieGoals ??
+           {
+             'breakfast': 438,
+             'morningSnack': 219,
+             'lunch': 438,
+             'eveningTea': 219,
+             'dinner': 438,
+           };
 
   UserGoal? get goal => goalIndex != null ? UserGoal.values[goalIndex!] : null;
 

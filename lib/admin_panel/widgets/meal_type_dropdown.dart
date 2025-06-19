@@ -53,55 +53,57 @@ class _GradientDropdownState extends State<GradientDropdown> {
     Offset offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width,
-        left: offset.dx,
-        top: offset.dy + size.height + 5,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          child: Material(
-            color: Colors.transparent,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.circular(42),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: widget.options.map((value) {
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        selectedValue = value;
-                        widget.controller.text = value;
-                      });
-                      _toggleDropdown();
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 26,
-                      ),
-                      child: Text(
-                        value,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
+      builder:
+          (context) => Positioned(
+            width: size.width,
+            left: offset.dx,
+            top: offset.dy + size.height + 5,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
-                  );
-                }).toList(),
+                    borderRadius: BorderRadius.circular(42),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children:
+                        widget.options.map((value) {
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                selectedValue = value;
+                                widget.controller.text = value;
+                              });
+                              _toggleDropdown();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 26,
+                              ),
+                              child: Text(
+                                value,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -132,7 +134,10 @@ class _GradientDropdownState extends State<GradientDropdown> {
             GestureDetector(
               onTap: _toggleDropdown,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white12,
                   border: Border.all(color: Colors.white24),

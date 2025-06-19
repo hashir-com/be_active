@@ -1,6 +1,5 @@
 import 'package:hive/hive.dart';
 
-
 import 'package:thryv/screens/home/home_screen.dart';
 import 'package:thryv/services/hive_service.dart';
 

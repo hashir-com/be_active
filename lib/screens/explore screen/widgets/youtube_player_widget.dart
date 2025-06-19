@@ -8,7 +8,11 @@ import 'youtube_player_mobile.dart'
 class UniversalYoutubePlayer extends StatelessWidget {
   final String videoId;
 
-  const UniversalYoutubePlayer({required this.videoId, super.key, required void Function(bool isFullScreen) onFullScreenChanged});
+  const UniversalYoutubePlayer({
+    required this.videoId,
+    super.key,
+    required void Function(bool isFullScreen) onFullScreenChanged,
+  });
 
   @override
   Widget build(BuildContext context) {

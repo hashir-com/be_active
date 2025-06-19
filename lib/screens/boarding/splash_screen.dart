@@ -25,7 +25,11 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (_) => hasUserData ? const NavigationScreen() :OnboardingScreen()),
+        MaterialPageRoute(
+          builder:
+              (_) =>
+                  hasUserData ? const NavigationScreen() : OnboardingScreen(),
+        ),
       );
     });
   }

@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/food_model.dart/food_item.dart';
@@ -171,7 +173,7 @@ class NutritionDetailsPage extends StatelessWidget {
             backgroundColor: color.withOpacity(0.15),
             child: Icon(icon, color: color),
           ),
-          
+
           title: Text(
             label,
             style: const TextStyle(fontWeight: FontWeight.bold),

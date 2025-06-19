@@ -82,7 +82,7 @@ class _SetGoalsState extends State<SetGoals> {
           final data = snapshot.data ?? {'intake': 0, 'goal': 8};
           return TrackerCard(
             label: "Water",
-            
+
             icon: Icons.water_drop_outlined,
             value: data['intake']!,
             goal: data['goal']!,

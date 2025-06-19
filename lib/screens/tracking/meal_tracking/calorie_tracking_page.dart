@@ -93,7 +93,7 @@ class MealTrackerPageState extends State<MealTrackerPage>
         final meal = _stringToMealType(key);
         if (meal != null) calorieGoals[meal] = value;
       });
-        } catch (e) {
+    } catch (e) {
       debugPrint("Hive error: $e");
     }
 
@@ -242,28 +242,34 @@ class MealTrackerPageState extends State<MealTrackerPage>
                   return;
                 }
 
-                final totalOldGoal = calorieGoals.values.reduce(
-                  (a, b) => a + b,
-                );
-                final otherMeals =
-                    calorieGoals.keys.where((m) => m != selectedMeal).toList();
+                setState(() {
+                  final totalOldGoal = calorieGoals.values.reduce(
+                    (a, b) => a + b,
+                  );
+                  final otherMeals =
+                      calorieGoals.keys
+                          .where((m) => m != selectedMeal)
+                          .toList();
 
-                calorieGoals[selectedMeal] = newGoal;
+                  calorieGoals[selectedMeal] = newGoal;
 
-                final otherMealDistributionSum = otherMeals
-                    .map((m) => mealDistribution[m]!)
-                    .reduce((a, b) => a + b);
+                  final otherMealDistributionSum = otherMeals
+                      .map((m) => mealDistribution[m]!)
+                      .reduce((a, b) => a + b);
 
-                for (var meal in otherMeals) {
-                  final ratio =
-                      mealDistribution[meal]! / otherMealDistributionSum;
-                  calorieGoals[meal] =
-                      ((totalOldGoal - newGoal) * ratio).round();
-                }
+                  for (var meal in otherMeals) {
+                    final ratio =
+                        mealDistribution[meal]! / otherMealDistributionSum;
+                    calorieGoals[meal] =
+                        ((totalOldGoal - newGoal) * ratio).round();
+                  }
 
-                totalCalorieGoal = calorieGoals.values.reduce((a, b) => a + b);
+                  totalCalorieGoal = calorieGoals.values.reduce(
+                    (a, b) => a + b,
+                  );
 
-                _applyMealCalorieGoals();
+                  _applyMealCalorieGoals();
+                });
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -507,6 +513,7 @@ class MealTrackerPageState extends State<MealTrackerPage>
                         builder:
                             (_) => WeeklyCalorieChartScreen(
                               weeklyData: _getLast7DaysCalories(),
+                              calorieGoal: totalCalorieGoal.toInt(),
                             ),
                       ),
                     );
@@ -570,14 +577,14 @@ class MealTrackerPageState extends State<MealTrackerPage>
                           ),
                       ],
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                        size: 18,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                      onPressed: () => _showEditGoalDialog(meal),
-                    ),
+                    // IconButton(
+                    //   icon: Icon(
+                    //     Icons.edit,
+                    //     size: 18,
+                    //     color: theme.colorScheme.onSurface,
+                    //   ),
+                    //   onPressed: () => _showEditGoalDialog(meal),
+                    // ),
                     IconButton(
                       icon: Icon(
                         Icons.add_circle,

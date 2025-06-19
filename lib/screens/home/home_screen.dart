@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(isWide ? 120 : 100),
+        preferredSize: Size.fromHeight(130.h),
         child: Container(
           color: theme.primaryColor,
           padding: EdgeInsets.only(top: isWide ? 40 : 60, left: 20),
@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 "Let’s make habits together!",
                 style: GoogleFonts.roboto(
-                  fontSize: isWide ? 16 : 14,
+                  fontSize: 12.sp,
                   color: theme.highlightColor,
                 ),
               ),
