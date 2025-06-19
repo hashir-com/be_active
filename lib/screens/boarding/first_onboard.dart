@@ -106,7 +106,7 @@ class FirstOnboardingPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text("Get Started"),
+                    child: Text("Get Starrted"),
                   )
                   : const SizedBox.shrink(),
         ),
