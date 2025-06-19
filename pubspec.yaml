@@ -80,16 +80,19 @@ flutter_launcher_icons:
   image_path: "assets/thryv gradient logo.png"
   remove_alpha_ios: true
 
-flutter_native_splash:
-  background_image: assets/Train. Track. Thryv..png
+flutter_native_splash: 
   image: assets\splash_logo.png
+  color: "#000000"
+  android: true
+  ios: true
   fullscreen: true
+  web: false
   android_12:
     image: assets\splash_logo.png
-    background_image: assets/Train. Track. Thryv..png
+    color: "#000000"
     icon_background_color: null
-    color: null
     fullscreen: true
+    web: false
 
     
 
