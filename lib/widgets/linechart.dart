@@ -15,7 +15,7 @@ class ProgressLineChart extends StatelessWidget {
           titlesData: FlTitlesData(
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
-                showTitles: true,
+                showTitles: false,
                 reservedSize: 32,
                 interval: 1,
                 getTitlesWidget: (value, _) {
@@ -84,13 +84,13 @@ class ProgressLineChart extends StatelessWidget {
             LineChartBarData(
               isCurved: true,
               color: Colors.white,
-              barWidth: 5,
+              barWidth: 4,
               belowBarData: BarAreaData(show: false),
               dotData: FlDotData(show: true),
               spots: const [
                 FlSpot(0, 2),
                 FlSpot(1, 3),
-                FlSpot(2, 2.5),
+                FlSpot(2, 2.8),
                 FlSpot(3, 4),
                 FlSpot(4, 3.5),
                 FlSpot(5, 4.4),

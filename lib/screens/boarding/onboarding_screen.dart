@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'firstonboard.dart';
-import 'secondonboard.dart';
-import 'create_account_screen.dart';
+import 'first_onboard.dart';
+import 'second_onboard.dart';
+import '../auth/create_account_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -48,7 +48,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => CreateAccountScreen(),
+                    ),
                   );
                 },
                 child: const Text(

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import 'create_account_screen.dart';
-import 'package:be_active/widgets/linechart.dart';
+import 'package:thryv/screens/auth/create_account_screen.dart';
+import 'package:thryv/widgets/icons_first_onboard.dart';
 
-class SecondOnboardingPage extends StatelessWidget {
-  const SecondOnboardingPage({super.key});
+class FirstOnboardingPage extends StatelessWidget {
+  const FirstOnboardingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +14,14 @@ class SecondOnboardingPage extends StatelessWidget {
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color.fromARGB(255, 184, 79, 255), Color(0xFF001AFF)],
+              colors: [Color.fromARGB(255, 0, 0, 0), Color(0xFF040B90)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
           ),
         ),
         Positioned(
-          top: MediaQuery.of(context).size.height * 0.1,
+          top: MediaQuery.of(context).size.height * 0.15,
           left: MediaQuery.of(context).size.width / 2 - 145,
           child: Stack(
             alignment: Alignment.center,
@@ -32,7 +32,7 @@ class SecondOnboardingPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color.fromARGB(67, 255, 255, 255),
+                    color: const Color.fromARGB(104, 255, 255, 255),
                     width: 2,
                   ),
                 ),
@@ -43,41 +43,20 @@ class SecondOnboardingPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color.fromARGB(68, 255, 255, 255),
+                    color: const Color.fromARGB(94, 255, 255, 255),
                     width: 2,
                   ),
                 ),
               ),
+              Padding(padding: EdgeInsets.all(1), child: FirstPageIcons()),
             ],
           ),
-        ),
-        Positioned(
-          top: 105,
-          right: 10,
-          child: SizedBox(
-            height: 50,
-            width: 50,
-            child: Lottie.asset("assets/goal.json"),
-          ),
-        ),
-        Positioned(
-          top: 325,
-          left: 20,
-          child: SizedBox(
-            height: 90,
-            width: 90,
-            child: Lottie.asset("assets/start.json"),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 150.0, left: 40, right: 40),
-          child: const ProgressLineChart(),
         ),
         Positioned(
           bottom: 150,
           left: 30,
           child: Text(
-            "Track Your\nProgress",
+            "Create\nGood Habits",
             style: GoogleFonts.righteous(
               fontSize: 44,
               height: 1,
@@ -89,7 +68,7 @@ class SecondOnboardingPage extends StatelessWidget {
           bottom: 120,
           left: 30,
           child: Text(
-            "Monitor your improvements to stay\nmotivated and consistent.",
+            "Change your Life by slowly adding new Healthy habits\nand sticking to them.",
             style: GoogleFonts.roboto(
               fontSize: 12,
               height: 1,
@@ -98,17 +77,17 @@ class SecondOnboardingPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 75,
-          bottom: 30,
+          bottom: MediaQuery.of(context).size.height * 0.03,
+          left: MediaQuery.of(context).size.width / 2 - 135,
           child: ElevatedButton(
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
+                MaterialPageRoute(builder: (context) => CreateAccountScreen()),
               );
             },
             style: ElevatedButton.styleFrom(
-              foregroundColor: const Color(0xFF001AFF),
+              foregroundColor: const Color.fromARGB(255, 2, 15, 137),
               backgroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 82, vertical: 6),
               textStyle: const TextStyle(

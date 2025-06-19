@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:hive/hive.dart';
+import 'package:thryv/services/hive_service.dart';
 
 part 'user_model.g.dart';
 
@@ -8,10 +10,10 @@ class UserModel extends HiveObject {
   String name;
 
   @HiveField(1)
-  String gender;
+  int age;
 
   @HiveField(2)
-  int age;
+  String gender;
 
   @HiveField(3)
   double height;
@@ -19,11 +21,23 @@ class UserModel extends HiveObject {
   @HiveField(4)
   double weight;
 
+  @HiveField(5)
+  double? bmi;
+
+  @HiveField(6)
+  double? goalWeight;
+
+  @HiveField(7)
+  double? startingWeight; // Add this line
+
   UserModel({
     required this.name,
-    required this.gender,
     required this.age,
+    required this.gender,
     required this.height,
     required this.weight,
+    this.bmi,
+    this.goalWeight,
+    this.startingWeight,
   });
 }
