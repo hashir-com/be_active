@@ -320,6 +320,15 @@ class WaterBarChart extends StatelessWidget {
 
   const WaterBarChart({super.key, required this.waterGoal});
 
+  Color getStepColor(int intake, int waterGoal, BuildContext context) {
+    final ratio = intake / waterGoal;
+    if (ratio >= 1.0) return Theme.of(context).primaryColor;
+    if (ratio >= 0.75) return const Color.fromARGB(255, 0, 42, 255);
+    if (ratio >= 0.5) return Theme.of(context).primaryColorLight;
+    if (ratio >= 0.25) return const Color.fromARGB(255, 255, 135, 55);
+    return const Color.fromARGB(255, 255, 17, 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -343,7 +352,7 @@ class WaterBarChart extends StatelessWidget {
                 BarChartRodData(
                   toY: intake.toDouble(),
                   width: 18,
-                  color: theme.primaryColorDark,
+                  color: getStepColor(intake, waterGoal, context),
                   borderRadius: BorderRadius.circular(6),
                   backDrawRodData: BackgroundBarChartRodData(
                     show: true,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -79,27 +80,35 @@ class FirstOnboardingPage extends StatelessWidget {
         Positioned(
           bottom: MediaQuery.of(context).size.height * 0.03,
           left: MediaQuery.of(context).size.width / 2 - 135,
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CreateAccountScreen()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              foregroundColor: const Color.fromARGB(255, 2, 15, 137),
-              backgroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 82, vertical: 6),
-              textStyle: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-            child: const Text("Get Started"),
-          ),
+          child:
+              kIsWeb
+                  ? ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateAccountScreen(),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: const Color.fromARGB(255, 2, 15, 137),
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 82,
+                        vertical: 6,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text("Get Started"),
+                  )
+                  : const SizedBox.shrink(),
         ),
       ],
     );
