@@ -76,23 +76,23 @@ flutter_launcher_icons:
   android: true
   ios: true
   web:
-    generate: false
+    generate: true
   image_path: "assets/thryv gradient logo.png"
   remove_alpha_ios: true
 
-flutter_native_splash: 
-  image: assets\splash_logo.png
+flutter_native_splash:
+  image: assets/splash_logo.png
   color: "#000000"
   android: true
   ios: true
   fullscreen: true
-  web: false
+  web: false # ❌ Don't generate splash for web
   android_12:
-    image: assets\splash_logo.png
+    image: assets/splash_logo.png
     color: "#000000"
-    icon_background_color: null
     fullscreen: true
-    web: false
+
+
 
     
 

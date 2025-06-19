@@ -1,6 +1,6 @@
 {
-    "name": "be_active",
-    "short_name": "be_active",
+    "name": "thryv",
+    "short_name": "thryv",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

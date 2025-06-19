@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "D:/flutter/be_active/linux/runner"
+    "cmake.sourceDirectory": "D:/flutter/be_active/linux/runner",
+    "terminal.integrated.env.windows": {
+        "PATH": "C:\\Users\\LENOVO\\AppData\\Roaming\\npm;${env:PATH}"
+    }
 }
