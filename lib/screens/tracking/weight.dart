@@ -8,6 +8,7 @@ import 'package:hive/hive.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/models/weight_entry.dart';
 import 'package:thryv/models/user_goal_model.dart';
+import 'package:thryv/theme/app_colors.dart';
 
 class WeightScreen extends StatefulWidget {
   const WeightScreen({super.key});
@@ -233,11 +234,18 @@ class _WeightScreenState extends State<WeightScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final themeColor = _progressColor(isDark);
     final spots = weightDataSpots;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 600;
 
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
-        title: const Text("Weight Tracker"),
+        title: Text(
+          'Weight Tracker',
+          style: TextStyle(fontSize: isDesktop ? 20 : 26),
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body:
       // showTrackingUI

@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:thryv/models/water/water_intake_model.dart';
 import 'package:thryv/models/water/user_settings_model.dart';
+import 'package:thryv/theme/app_colors.dart';
 import 'package:thryv/util/progress_utils.dart';
 
 class WaterScreen extends StatefulWidget {
@@ -151,8 +152,19 @@ class _WaterScreenState extends State<WaterScreen> {
     final progress = glassesDrunk / waterGoal;
     final theme = Theme.of(context);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 600;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Water Tracker"), centerTitle: true),
+      appBar: AppBar(
+        title: Text(
+          'Water Tracker',
+          style: TextStyle(fontSize: isDesktop ? 20 : 26),
+        ),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

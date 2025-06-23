@@ -71,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 "Hello, $name",
                 style: GoogleFonts.gochiHand(
-                  fontSize: isWide ? 40 : 26,
+                  fontSize: isWide ? 40 : 30,
                   color: theme.highlightColor,
                   fontWeight: FontWeight.bold,
                 ),

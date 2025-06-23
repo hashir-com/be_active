@@ -143,18 +143,92 @@ class Aboutus extends StatelessWidget {
   }
 }
 
-class Appversion extends StatelessWidget {
-  const Appversion({super.key});
+class VersionInfoPage extends StatelessWidget {
+  const VersionInfoPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeColor = Theme.of(context).colorScheme.primary;
+
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(28.0),
-          child: Text("         thryv \nVersion : v1.0.0.0"),
+      appBar: AppBar(title: const Text("Version Info"), centerTitle: true),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _sectionTitle("📱 App Version Info", themeColor),
+            const SizedBox(height: 8),
+            _infoRow("Current Version", "1.0.0.1"),
+            _infoRow("Last Updated", "June 2025"),
+
+            const SizedBox(height: 24),
+            _sectionTitle("🔄 What’s New", themeColor),
+            const SizedBox(height: 8),
+            _bulletPoint("Improved performance and smoother experience"),
+            _bulletPoint("Enhanced weight tracking accuracy"),
+            _bulletPoint("Goal-based logic updated for better health insights"),
+            _bulletPoint("Bug fixes and minor UI improvements"),
+
+            const SizedBox(height: 24),
+            _sectionTitle("🚀 Upcoming Features", themeColor),
+            const SizedBox(height: 8),
+            _bulletPoint("Dark mode customization"),
+            _bulletPoint("Integration with smart wearables"),
+            _bulletPoint("Advanced nutrition insights"),
+            _bulletPoint("Community challenge support"),
+
+            const SizedBox(height: 40),
+            Center(
+              child: Text(
+                "Thank you for using our app!",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white70 : Colors.grey.shade800,
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String title, Color color) {
+    return Text(
+      title,
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+    );
+  }
+
+  Widget _infoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text("$label: ", style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(value),
+        ],
+      ),
+    );
+  }
+
+  Widget _bulletPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("• ", style: TextStyle(fontSize: 20, height: 1.4)),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 16, height: 1.4),
+            ),
+          ),
+        ],
       ),
     );
   }

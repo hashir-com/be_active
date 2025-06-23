@@ -6,6 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_dialogs.dart';
 import 'package:thryv/screens/tracking/sleep_tracking/sleep_functions.dart';
+import 'package:thryv/theme/app_colors.dart';
 import 'package:thryv/util/progress_utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -99,8 +100,10 @@ class _SleepScreenState extends State<SleepScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: const BackButton(),
-        title: const Text('Sleep Tracker'),
+        title: Text(
+          'Water Tracker',
+          style: TextStyle(fontSize: isDesktop ? 20 : 26),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -108,6 +111,9 @@ class _SleepScreenState extends State<SleepScreen> {
             tooltip: 'Add Sleep Entry',
           ),
         ],
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Center(
         child: ConstrainedBox(

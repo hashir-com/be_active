@@ -230,7 +230,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Appversion()),
+                      MaterialPageRoute(
+                        builder: (context) => VersionInfoPage(),
+                      ),
                     );
                   },
                 ),

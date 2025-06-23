@@ -74,7 +74,7 @@ class TrackerCard extends StatelessWidget {
             const Spacer(),
             Icon(
               Icons.arrow_forward_ios_rounded,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).primaryColorLight,
               size: 18,
             ),
           ],
