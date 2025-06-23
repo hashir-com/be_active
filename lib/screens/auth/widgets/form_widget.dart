@@ -122,6 +122,14 @@ class _FormWidgetState extends State<FormWidget> {
             return 'Please enter your $label';
           }
 
+          // ✅ Name validation (only letters and spaces allowed)
+          if (label == "Name") {
+            final nameRegex = RegExp(r'^[a-zA-Z\s]+$');
+            if (!nameRegex.hasMatch(value.trim())) {
+              return 'Name must contain only letters';
+            }
+          }
+
           if (isNumeric) {
             final parsedValue = value.replaceAll(',', '.');
             if (label == "Age") {

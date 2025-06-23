@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
 
                 Text(
-                  "Your Goal",
+                  "Suggested Goal",
                   style: GoogleFonts.averiaLibre(
                     fontSize: isWide ? 20 : 18,
                     fontWeight: FontWeight.bold,
@@ -145,11 +145,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
 
                 GestureDetector(
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => ExploreScreen()),
-                      ),
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ExploreScreen()),
+                    );
+                    setState(() {}); // Refresh automatically after returning
+                  },
                   child: BmiCard(bmi: bmi),
                 ),
 

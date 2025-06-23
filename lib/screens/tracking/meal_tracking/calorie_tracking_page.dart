@@ -84,7 +84,7 @@ class MealTrackerPageState extends State<MealTrackerPage>
       usergoal = userGoalBox.get('usergoal');
 
       if (usergoal == null) {
-        usergoal = UserGoalModel();
+        usergoal = UserGoalModel(goal: null);
         userGoalBox.put('usergoal', usergoal!);
       }
 

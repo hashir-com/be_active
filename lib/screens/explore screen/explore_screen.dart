@@ -32,7 +32,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     super.initState();
     final box = Hive.box<UserModel>('userBox');
     final goalbox = Hive.box<UserGoalModel>('userGoalBox');
-    userGoal = goalbox.get('usergoal') ?? UserGoalModel();
+    userGoal = goalbox.get('usergoal') ?? UserGoalModel(goal: null);
     user = box.get('user');
     usergoal = goalbox.get('usergoal');
   }

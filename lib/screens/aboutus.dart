@@ -29,7 +29,7 @@ class Aboutus extends StatelessWidget {
             const SizedBox(height: 8),
             const Center(
               child: Text(
-                'Thrive to Achieve',
+                'By Hashir',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey,
@@ -108,9 +108,17 @@ class Aboutus extends StatelessWidget {
             ),
             const SizedBox(height: 40),
             const Center(
-              child: Text(
-                'Thank you for choosing Thryv 💚',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              child: Column(
+                children: [
+                  Text(
+                    'Thank you for choosing Thryv 💚',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    'Hashir',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),

@@ -91,7 +91,7 @@ class AdminScreenState extends State<AdminScreen> {
       case UserGoal.weightGain:
         return 'Gain Weight';
       case UserGoal.muscleGain:
-        return 'Muscle Gain';
+        return 'Maintain';
     }
   }
 
@@ -188,12 +188,12 @@ class AdminScreenState extends State<AdminScreen> {
                       ),
                       Center(
                         child: Wrap(
-                          spacing: isDesktop ? 20 : 1,
+                          spacing: isDesktop ? 20 : 0,
                           children:
                               UserGoal.values.map((goal) {
                                 final isSelected = goal == selectedGoal;
                                 return SizedBox(
-                                  width: isDesktop ? 220 : 113,
+                                  width: isDesktop ? 220 : 110,
                                   child: ChoiceChip(
                                     checkmarkColor: theme.highlightColor,
                                     label: Text(userGoalToString(goal)),
@@ -705,7 +705,7 @@ class AdminScreenState extends State<AdminScreen> {
     return ValueListenableBuilder<Box<UserGoalModel>>(
       valueListenable: Hive.box<UserGoalModel>('userGoalBox').listenable(),
       builder: (context, box, _) {
-        final userGoal = box.get('usergoal') ?? UserGoalModel();
+        final userGoal = box.get('usergoal') ?? UserGoalModel(goal: null);
         if (userGoal.workoutPlans?.isEmpty ?? true) {
           return const SizedBox.shrink(); // Hide if no workouts
         }
@@ -752,7 +752,7 @@ class AdminScreenState extends State<AdminScreen> {
     return ValueListenableBuilder<Box<UserGoalModel>>(
       valueListenable: Hive.box<UserGoalModel>('userGoalBox').listenable(),
       builder: (context, box, _) {
-        final userGoal = box.get('usergoal') ?? UserGoalModel();
+        final userGoal = box.get('usergoal') ?? UserGoalModel(goal: null);
         if (userGoal.dietPlans?.isEmpty ?? true) {
           return const SizedBox.shrink(); // Hide if no diets
         }

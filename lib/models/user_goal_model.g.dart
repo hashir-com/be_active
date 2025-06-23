@@ -23,6 +23,7 @@ class UserGoalModelAdapter extends TypeAdapter<UserGoalModel> {
       videoIds: (fields[3] as List?)?.cast<String>(),
       totalCalorieGoal: fields[4] as int,
       mealCalorieGoals: (fields[5] as Map?)?.cast<String, int>(),
+      goal: null,
     );
   }
 

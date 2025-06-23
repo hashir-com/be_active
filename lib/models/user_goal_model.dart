@@ -31,7 +31,7 @@ class UserGoalModel extends HiveObject {
     this.dietPlans,
     this.videoIds,
     this.totalCalorieGoal = 1750,
-    Map<String, int>? mealCalorieGoals,
+    Map<String, int>? mealCalorieGoals, required goal,
   }) : mealCalorieGoals =
            mealCalorieGoals ??
            {
@@ -56,7 +56,7 @@ String userGoalToString(UserGoal goal) {
     case UserGoal.weightGain:
       return "Weight Gain";
     case UserGoal.muscleGain:
-      return "Muscle Gain";
+      return "Maintain";
   }
 }
 

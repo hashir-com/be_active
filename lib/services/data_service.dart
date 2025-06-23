@@ -17,7 +17,7 @@ class DataService {
     _userBox = Hive.box<UserModel>('userBox');
     _dietPlansBox = Hive.box<DietPlan>('dietPlans');
 
-    currentUserGoal = _userGoalBox.get('usergoal') ?? UserGoalModel();
+    currentUserGoal = _userGoalBox.get('usergoal') ?? UserGoalModel(goal: null);
     currentUser = _userBox.get('user');
     currentDiet = _dietPlansBox.get('diet');
   }

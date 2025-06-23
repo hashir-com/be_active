@@ -34,7 +34,7 @@ class HiveService {
       userGoalModel.save();
     } else {
       // Create new UserGoalModel and save it in the box
-      final newUserGoal = UserGoalModel(goalIndex: goal.index);
+      final newUserGoal = UserGoalModel(goalIndex: goal.index, goal: null);
       _userGoalBox.put('usergoal', newUserGoal);
     }
   }
