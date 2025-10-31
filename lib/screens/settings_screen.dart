@@ -7,11 +7,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:restart_app/restart_app.dart';
-import 'package:thryv/models/daily_progress.dart';
+import 'package:thryv/models/heatmap/daily_progress.dart';
 import 'package:thryv/models/food_model.dart/diet_model.dart';
 import 'package:thryv/models/food_model.dart/food_item.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
-import 'package:thryv/models/steps_model.dart';
+import 'package:thryv/models/steps/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/admin_panel/admin_screen.dart';
@@ -172,7 +172,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 8),
               _buildCard([
                 Consumer<ThemeProvider>(
-                  builder: (context, themeProvider, _) {
+                  builder: (context, 
+                  themeProvider, _) {
                     return SwitchListTile(
                       secondary: Icon(
                         Icons.nightlight_round,

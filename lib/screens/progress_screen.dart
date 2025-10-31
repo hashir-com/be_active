@@ -4,7 +4,7 @@ import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:thryv/models/daily_progress.dart';
+import 'package:thryv/models/heatmap/daily_progress.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProgressHeatmapScreen extends StatefulWidget {

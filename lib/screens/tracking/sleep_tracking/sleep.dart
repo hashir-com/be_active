@@ -101,7 +101,7 @@ class _SleepScreenState extends State<SleepScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Water Tracker',
+          'Sleep Tracker',
           style: TextStyle(fontSize: isDesktop ? 20 : 26),
         ),
         actions: [

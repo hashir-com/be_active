@@ -8,6 +8,7 @@ import 'package:thryv/screens/tracking/sleep_tracking/sleep.dart';
 import 'package:thryv/screens/tracking/steps.dart';
 import 'package:thryv/screens/tracking/water.dart';
 import 'package:thryv/services/hive_service.dart';
+
 import 'package:thryv/util/meal_tracking_util.dart';
 import 'package:thryv/util/sleep_tracking_util.dart';
 import 'package:thryv/util/steps_tracking.util.dart';
@@ -63,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         preferredSize: Size.fromHeight(130.h),
         child: Container(
           color: theme.primaryColor,
-          padding: EdgeInsets.only(top: isWide ? 40 : 60, left: 20),
+          padding: EdgeInsets.only(top: isWide ? 40.h : 60.h, left: 20.w),
           alignment: Alignment.centerLeft,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 "Hello, $name",
                 style: GoogleFonts.gochiHand(
-                  fontSize: isWide ? 40 : 30,
+                  fontSize: isWide ? 40.sp : 30.sp,
                   color: theme.highlightColor,
                   fontWeight: FontWeight.bold,
                 ),
@@ -79,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 "Let’s make habits together!",
                 style: GoogleFonts.roboto(
-                  fontSize: 12.sp,
+                  fontSize: isWide ? 20.sp : 10.sp,
                   color: theme.highlightColor,
                 ),
               ),
@@ -91,44 +92,35 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           return SingleChildScrollView(
             padding: EdgeInsets.symmetric(
-              horizontal: isWide ? 22 : 20,
-              vertical: isWide ? 12 : 20,
+              horizontal: isWide ? 22.w : 20.w,
+              vertical: isWide ? 12.h : 20.h,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const HorizontalDateList(),
-                const SizedBox(height: 20),
-
+                SizedBox(height: 20.h),
                 Text(
                   "Suggested Goal",
                   style: GoogleFonts.averiaLibre(
-                    fontSize: isWide ? 20 : 18,
+                    fontSize: isWide ? 20.sp : 18.sp,
                     fontWeight: FontWeight.bold,
                     color: theme.textTheme.bodyLarge!.color,
                   ),
                 ),
-                const SizedBox(height: 10),
-
+                SizedBox(height: 10.h),
                 Center(
                   child: Wrap(
-                    spacing: 8,
+                    spacing: 8.w,
                     children:
                         UserGoal.values.map((goal) {
                           final isSelected = goal == selectedGoal;
                           return ChoiceChip(
                             label: Text(userGoalToString(goal)),
                             selected: isSelected,
-                            onSelected: (selected) {
-                              // if (selected) {
-                              //   HiveService().saveUserGoal(goal);
-                              //   setState(() {
-                              //     selectedGoal = goal;
-                              //   });
-                              // }
-                            },
+                            onSelected: (selected) {},
                             labelStyle: TextStyle(
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               color:
                                   isSelected
                                       ? theme.highlightColor
@@ -141,57 +133,52 @@ class _HomeScreenState extends State<HomeScreen> {
                         }).toList(),
                   ),
                 ),
-
-                const SizedBox(height: 20),
-
+                SizedBox(height: 20.h),
                 GestureDetector(
                   onTap: () async {
                     await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => ExploreScreen()),
                     );
-                    setState(() {}); // Refresh automatically after returning
+                    setState(() {});
                   },
                   child: BmiCard(bmi: bmi),
                 ),
-
-                const SizedBox(height: 25),
+                SizedBox(height: 25.h),
                 Text(
                   "Today’s Trackers",
                   style: GoogleFonts.averiaLibre(
-                    fontSize: isWide ? 20 : 18,
+                    fontSize: isWide ? 20.sp : 18.sp,
                     fontWeight: FontWeight.bold,
                     color: theme.textTheme.bodyMedium!.color,
                   ),
                 ),
-                const SizedBox(height: 12),
-
+                SizedBox(height: 12.h),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(18),
+                  padding: EdgeInsets.all(18.r),
                   decoration: BoxDecoration(
                     color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(32),
-                    boxShadow: const [
+                    borderRadius: BorderRadius.circular(32.r),
+                    boxShadow: [
                       BoxShadow(
                         color: Colors.black12,
-                        blurRadius: 10,
-                        offset: Offset(0, 6),
+                        blurRadius: 10.r,
+                        offset: Offset(0, 6.h),
                       ),
                     ],
                   ),
                   child:
                       isWide
                           ? Wrap(
-                            spacing: 24,
-                            runSpacing: 24,
+                            spacing: 24.w,
+                            runSpacing: 24.h,
                             alignment: WrapAlignment.spaceBetween,
                             children: _buildTrackersGrid(isWide),
                           )
                           : Column(children: _buildTrackersGrid(isWide)),
                 ),
-
-                const SizedBox(height: 40),
+                SizedBox(height: 40.h),
               ],
             ),
           );
@@ -217,13 +204,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 MaterialPageRoute(builder: (_) => const MealTrackerPage()),
               );
-              setState(() {}); // Make sure this is inside a StatefulWidget
+              setState(() {});
             },
           );
         },
       ),
-
-      SizedBox(height: isWide ? 0 : 10),
+      SizedBox(height: isWide ? 0 : 10.h),
       FutureBuilder<Map<String, int>>(
         future: getTodayWaterIntakeAndGoal(),
         builder: (context, snapshot) {
@@ -244,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      SizedBox(height: isWide ? 0 : 10),
+      SizedBox(height: isWide ? 0 : 10.h),
       FutureBuilder<Map<String, int>>(
         future: getTodayStepsAndGoal(),
         builder: (context, snapshot) {
@@ -265,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      SizedBox(height: isWide ? 0 : 10),
+      SizedBox(height: isWide ? 0 : 10.h),
       FutureBuilder<Map<String, double>>(
         future: getTodaySleepAndGoal(),
         builder: (context, snapshot) {
@@ -286,7 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-      SizedBox(height: isWide ? 0 : 10),
+      SizedBox(height: isWide ? 0 : 10.h),
     ];
   }
 }

@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:thryv/models/daily_progress.dart';
+import 'package:thryv/models/heatmap/daily_progress.dart';
 import 'package:thryv/models/sleep/sleep_model.dart';
 import 'package:thryv/models/water/user_settings_model.dart';
 import 'package:thryv/models/water/water_intake_model.dart';
@@ -7,7 +7,7 @@ import 'package:thryv/models/weight_entry.dart';
 import '../models/user_model.dart';
 import '../models/food_model.dart/food_item.dart';
 import '../models/user_goal_model.dart';
-import '../models/steps_model.dart';
+import '../models/steps/steps_model.dart';
 import '../models/workout_model.dart';
 import '../models/food_model.dart/diet_model.dart';
 

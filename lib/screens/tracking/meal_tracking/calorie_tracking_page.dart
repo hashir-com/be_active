@@ -213,73 +213,6 @@ class MealTrackerPageState extends State<MealTrackerPage>
     _loadSavedMeals();
   }
 
-  void _showEditGoalDialog(MealType selectedMeal) {
-    final controller = TextEditingController(
-      text: calorieGoals[selectedMeal]!.toString(),
-    );
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Set Calorie Goal for ${mealTypeToString(selectedMeal)}'),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              hintText: 'Enter goal in Calories',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                final newGoal = int.tryParse(controller.text);
-                if (newGoal == null || newGoal <= 0) {
-                  Navigator.pop(context);
-                  return;
-                }
-
-                setState(() {
-                  final totalOldGoal = calorieGoals.values.reduce(
-                    (a, b) => a + b,
-                  );
-                  final otherMeals =
-                      calorieGoals.keys
-                          .where((m) => m != selectedMeal)
-                          .toList();
-
-                  calorieGoals[selectedMeal] = newGoal;
-
-                  final otherMealDistributionSum = otherMeals
-                      .map((m) => mealDistribution[m]!)
-                      .reduce((a, b) => a + b);
-
-                  for (var meal in otherMeals) {
-                    final ratio =
-                        mealDistribution[meal]! / otherMealDistributionSum;
-                    calorieGoals[meal] =
-                        ((totalOldGoal - newGoal) * ratio).round();
-                  }
-
-                  totalCalorieGoal = calorieGoals.values.reduce(
-                    (a, b) => a + b,
-                  );
-
-                  _applyMealCalorieGoals();
-                });
-                Navigator.pop(context);
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   void _showEditTotalGoalDialog() {
     final controller = TextEditingController(text: totalCalorieGoal.toString());
     showDialog(
@@ -577,14 +510,6 @@ class MealTrackerPageState extends State<MealTrackerPage>
                           ),
                       ],
                     ),
-                    // IconButton(
-                    //   icon: Icon(
-                    //     Icons.edit,
-                    //     size: 18,
-                    //     color: theme.colorScheme.onSurface,
-                    //   ),
-                    //   onPressed: () => _showEditGoalDialog(meal),
-                    // ),
                     IconButton(
                       icon: Icon(
                         Icons.add_circle,

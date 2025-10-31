@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'package:hive/hive.dart';
-import 'package:thryv/services/hive_service.dart';
 
 part 'user_model.g.dart';
 

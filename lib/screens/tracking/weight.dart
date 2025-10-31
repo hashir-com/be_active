@@ -57,8 +57,8 @@ class _WeightScreenState extends State<WeightScreen> {
   }
 
   void loadUserData() {
-    if (user.height != null && user.height! > 0) {
-      bmi = user.weight / ((user.height! / 100) * (user.height! / 100));
+    if (user.height > 0) {
+      bmi = user.weight / ((user.height / 100) * (user.height / 100));
     }
 
     if (user.startingWeight == null) {
@@ -199,10 +199,10 @@ class _WeightScreenState extends State<WeightScreen> {
       if (user.goalWeight == null) {
         switch (newGoal) {
           case UserGoal.weightLoss:
-            goalWeight = 24.5 * ((user.height! / 100) * (user.height! / 100));
+            goalWeight = 24.5 * ((user.height / 100) * (user.height / 100));
             break;
           case UserGoal.weightGain:
-            goalWeight = 24.5 * ((user.height! / 100) * (user.height! / 100));
+            goalWeight = 24.5 * ((user.height / 100) * (user.height / 100));
             break;
           case UserGoal.muscleGain:
             goalWeight = user.weight;
@@ -416,19 +416,6 @@ class _WeightScreenState extends State<WeightScreen> {
           ),
         ],
       ),
-      // : Center(
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(24.0),
-      //     child: Text(
-      //       "To track weight, let the admin suggest a goal.",
-      //       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-      //         color: Colors.redAccent,
-      //         fontStyle: FontStyle.italic,
-      //       ),
-      //       textAlign: TextAlign.center,
-      //     ),
-      //   ),
-      // ),
     );
   }
 

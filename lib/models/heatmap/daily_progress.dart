@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:thryv/services/hive_service.dart';
 
 part 'daily_progress.g.dart';
 

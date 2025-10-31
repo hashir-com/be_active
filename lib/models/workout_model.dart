@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:hive/hive.dart';
-import 'package:thryv/services/hive_service.dart';
 
 part 'workout_model.g.dart'; // <- required for code generation
 

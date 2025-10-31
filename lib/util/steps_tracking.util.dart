@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:thryv/models/steps_model.dart';
+import 'package:thryv/models/steps/steps_model.dart';
 import 'package:thryv/models/user_goal_model.dart';
 
 Future<Map<String, int>> getTodayStepsAndGoal() async {

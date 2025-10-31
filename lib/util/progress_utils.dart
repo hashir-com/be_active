@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:thryv/models/daily_progress.dart';
+import 'package:thryv/models/heatmap/daily_progress.dart';
 
 Future<void> updateDailyProgress({
   required DateTime date,

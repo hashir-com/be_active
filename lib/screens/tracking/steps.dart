@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:thryv/models/steps_model.dart';
+import 'package:thryv/models/steps/steps_model.dart';
 import 'package:thryv/theme/app_colors.dart';
 import 'package:thryv/util/progress_utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

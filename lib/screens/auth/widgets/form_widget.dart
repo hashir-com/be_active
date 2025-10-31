@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:thryv/models/user_model.dart';
 import 'package:thryv/screens/home/navigation_screen.dart';
-import 'package:thryv/services/hive_service.dart';
+
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:thryv/services/hive_service.dart';
 
 class FormWidget extends StatefulWidget {
   const FormWidget({super.key, required this.gender});

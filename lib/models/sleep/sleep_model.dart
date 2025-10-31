@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:thryv/services/hive_service.dart';
 
 part 'sleep_model.g.dart';
 
@@ -20,14 +19,13 @@ class SleepEntry extends HiveObject {
     required this.wakeUpTime,
   });
 
- double get sleepHours {
-  DateTime adjustedWake = wakeUpTime;
-  if (wakeUpTime.isBefore(bedTime)) {
-    adjustedWake = wakeUpTime.add(const Duration(days: 1));
+  double get sleepHours {
+    DateTime adjustedWake = wakeUpTime;
+    if (wakeUpTime.isBefore(bedTime)) {
+      adjustedWake = wakeUpTime.add(const Duration(days: 1));
+    }
+    return adjustedWake.difference(bedTime).inMinutes / 60.0;
   }
-  return adjustedWake.difference(bedTime).inMinutes / 60.0;
-}
-
 }
 
 @HiveType(typeId: 11)
